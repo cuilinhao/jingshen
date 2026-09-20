@@ -1,0 +1,4 @@
+/mnt/data/native_rewrite/PGYDepthDemo/PGYDepthDemo.xcodeproj/project.pbxproj: OK
+PASS: actual .pbxproj parsed; 78 object references; {'PGYDepthDemo': 17, 'PGYDepthDemoTests': 4}; resources, scheme, plist, script syntax.
+PASS: no Run Script build phase; no remote package reference; original latest-request-wins guards retained.
+NOT RUN HERE: Apple SDK typecheck/link/sign, native Vision request, Core Image render, iPhone UI or offline first launch.
