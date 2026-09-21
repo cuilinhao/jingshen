@@ -31,7 +31,12 @@ class NativeProjectTests(unittest.TestCase):
         self.assertIn('portrait: portrait', code)
         person_code = (ROOT/'PGYDepthDemo/Imaging/NativeSubjectSegmenter.swift').read_text()
         self.assertIn('VNGeneratePersonInstanceMaskRequest', person_code)
-        self.assertNotIn('VNGeneratePersonSegmentationRequest', person_code)
+        # Semantic coverage is allowed only as detector-guided local recovery; the
+        # primary analysis and returned data still contain independently selected people.
+        self.assertIn('VNGeneratePersonSegmentationRequest', person_code)
+        self.assertIn('source.cropping(to: cropRect)', person_code)
+        self.assertIn('PersonMaskAssembly.removingOverlap', person_code)
+        self.assertIn('PersonMaskAssembly.component', person_code)
         self.assertNotIn('VNGenerateForegroundInstanceMaskRequest', person_code)
         recipe = (ROOT/'PGYDepthDemo/Core/EditRecipe.swift').read_text()
         self.assertIn('selectedPersonID', recipe)

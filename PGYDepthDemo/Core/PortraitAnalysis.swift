@@ -2,7 +2,7 @@ import Foundation
 
 /// Independent soft person masks. Instance IDs are scoped to this exact analysis, never depth.
 struct PortraitAnalysis: Codable, Equatable, Sendable {
-    static let currentSegmentationID = "vision-person-instance-r1-2048-core230-band32-v2"
+    static let currentSegmentationID = "vision-person-multiscale-accurate-2048-v3"
     var segmentationID: String
     let segmentation: SubjectSegmentation
     let sourceSHA256: String
@@ -59,11 +59,22 @@ struct PortraitAnalysis: Codable, Equatable, Sendable {
     func anchor(for id: UInt8) -> UnitPoint2D? {
         guard let mask = person(id: id)?.mask else { return nil }
         var sx = 0.0, sy = 0.0, weight = 0.0
-        let step = max(1, max(mask.width, mask.height) / 128)
+        var step = max(1, max(mask.width, mask.height) / 128)
         for y in stride(from: 0, to: mask.height, by: step) {
             for x in stride(from: 0, to: mask.width, by: step) {
                 let w = Double(mask.bytes[y * mask.width + x])
                 if w >= 224 { sx += Double(x) * w; sy += Double(y) * w; weight += w }
+            }
+        }
+        if weight == 0, step > 1 {
+            // Small visible cores can sit entirely between the coarse sample positions.
+            // Only these exceptional masks pay for a dense pass and dense anchor search.
+            step = 1
+            for y in 0..<mask.height {
+                for x in 0..<mask.width {
+                    let w = Double(mask.bytes[y * mask.width + x])
+                    if w >= 224 { sx += Double(x) * w; sy += Double(y) * w; weight += w }
+                }
             }
         }
         guard weight > 0 else { return nil }
@@ -91,6 +102,20 @@ struct PortraitAnalysis: Codable, Equatable, Sendable {
                 let z = depth.values[y * depth.width + x]
                 all.append(z)
                 if abs(p.x - point.x) < 0.05 && abs(p.y - point.y) < 0.05 { local.append(z) }
+            }
+        }
+        if all.isEmpty {
+            // Even a dense depth grid may miss a subpixel core in the higher-resolution mask.
+            // Map reliable mask pixels to depth instead; neighboring background samples must
+            // not overwhelm a tiny person's value through DepthField.sample's default radius.
+            for y in 0..<mask.height {
+                for x in 0..<mask.width where mask.bytes[y * mask.width + x] >= 224 {
+                    let p = UnitPoint2D(x: Double(x) / Double(max(1, mask.width - 1)),
+                                        y: Double(y) / Double(max(1, mask.height - 1)))
+                    let z = depth.sample(at: p, radius: 0)
+                    all.append(z)
+                    if abs(p.x - point.x) < 0.05 && abs(p.y - point.y) < 0.05 { local.append(z) }
+                }
             }
         }
         var values = local.isEmpty ? all : local

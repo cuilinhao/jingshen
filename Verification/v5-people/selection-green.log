@@ -1,0 +1,16 @@
+BUILD compiling the current Core and Imaging sources for local macOS verification
+[Model] 加载 App 内置模型 DepthAnythingV3_base_504.mlmodelc，computeUnits=2
+[Depth] 自动深度完成 378×504，有效像素 190512/190512，raw=0.37426758…3.2070312，0.466s
+[Depth] 来源=完整内置模型；坐标=原图左上角；数值=相对视差（亮近暗远），不是米数
+[People] 整图 1，局部补充 2，独立人物 3，软蒙版 884×1178
+PREPARED count=3 expected=3 seconds=1.6210399866104126
+CLICK 1 id=1 coverage=255
+CLICK 2 id=2 coverage=255
+CLICK 3 id=3 coverage=255
+[Export] 原始输入重新渲染，最长边≤2048；来源=内置模型自动深度（离线），f=1.8
+EXPORTED focus-id-1.png mask-id-1.png
+[Export] 原始输入重新渲染，最长边≤2048；来源=内置模型自动深度（离线），f=1.8
+EXPORTED focus-id-2.png mask-id-2.png
+[Export] 原始输入重新渲染，最长边≤2048；来源=内置模型自动深度（离线），f=1.8
+EXPORTED focus-id-3.png mask-id-3.png
+PASS all 3 click targets are distinct; exported every selection and mask using the current project pipeline

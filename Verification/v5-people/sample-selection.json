@@ -1,0 +1,47 @@
+{
+  "actualCount" : 3,
+  "aperture" : 1.8,
+  "clicks" : [
+    {
+      "clickIndex" : 1,
+      "coverage" : 255,
+      "point" : {
+        "x" : 0.46,
+        "y" : 0.43
+      },
+      "selectedID" : 1
+    },
+    {
+      "clickIndex" : 2,
+      "coverage" : 255,
+      "point" : {
+        "x" : 0.275,
+        "y" : 0.49
+      },
+      "selectedID" : 2
+    },
+    {
+      "clickIndex" : 3,
+      "coverage" : 255,
+      "point" : {
+        "x" : 0.77,
+        "y" : 0.473
+      },
+      "selectedID" : 3
+    }
+  ],
+  "expectedCount" : 3,
+  "files" : [
+    "focus-id-1.png",
+    "mask-id-1.png",
+    "focus-id-2.png",
+    "mask-id-2.png",
+    "focus-id-3.png",
+    "mask-id-3.png",
+    "verification.json"
+  ],
+  "preparationSeconds" : 1.6210399866104126,
+  "processedHeight" : 1178,
+  "processedWidth" : 884,
+  "segmentationID" : "vision-person-multiscale-accurate-2048-v3"
+}

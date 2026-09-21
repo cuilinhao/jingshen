@@ -50,6 +50,33 @@ final class PortraitFocusTests: XCTestCase {
         let depth = try DepthField(width:5,height:1,values:[0.8,0.8,0.1,0.2,0.2])
         XCTAssertEqual(p.focusDepth(depth:depth,selectedID:1,point:.center),0.8,accuracy:0.001)
     }
+    private func narrowCorePortrait() throws -> PortraitAnalysis {
+        let side = 1024
+        var bytes = [UInt8](repeating: 0, count: side * side)
+        bytes[103 * side + 101] = 255
+        let mask = try GrayMask(width: side, height: side, bytes: Data(bytes))
+        return try PortraitAnalysis(segmentation: .init(
+            labels: .init(width: side, height: side, bytes: Data(bytes.map { $0 > 0 ? 1 : 0 })),
+            subjects: [.init(id: 1, mask: mask)]), sourceSHA256: String(repeating: "a", count: 64),
+            imageSize: .init(width: side, height: side))
+    }
+    func testAnchorFindsNarrowCoreBetweenCoarseSamplePoints() throws {
+        let people = try narrowCorePortrait()
+        let anchor = try XCTUnwrap(people.anchor(for: 1))
+        XCTAssertEqual(anchor.x, 101.0 / 1023, accuracy: 0.000001)
+        XCTAssertEqual(anchor.y, 103.0 / 1023, accuracy: 0.000001)
+        XCTAssertEqual(people.person(id: 1)?.mask.value(at: anchor), 255)
+    }
+    func testFocusDepthMapsNarrowMaskCoreToDepthInsteadOfSamplingOutsidePerson() throws {
+        let people = try narrowCorePortrait()
+        let side = 257
+        var values = [Float](repeating: 0.1, count: side * side)
+        values[26 * side + 25] = 0.8
+        let depth = try DepthField(width: side, height: side, values: values)
+        XCTAssertEqual(depth.sample(at: .center), 0.1, accuracy: 0.001)
+        XCTAssertEqual(people.focusDepth(depth: depth, selectedID: 1, point: .center), 0.8, accuracy: 0.001,
+                       "深度采样网格未命中窄人物时，必须将人物可靠核心映射到深度图，不能取背景焦深")
+    }
     func testPortraitCacheRequiresPhotoSizeAndSegmentationVersion() throws {
         let p = try portrait()
         XCTAssertTrue(p.matches(sourceSHA256:String(repeating:"a",count:64),imageSize:.init(width:500,height:100)))
@@ -60,9 +87,11 @@ final class PortraitFocusTests: XCTestCase {
     }
     func testUnrefinedPersonMaskCacheIsNotReusedAfterRefinementUpdate() throws {
         var old = try portrait()
-        old.segmentationID = "vision-person-instance-r1-2048-v1"
-        XCTAssertFalse(old.matches(sourceSHA256: old.sourceSHA256, imageSize: old.imageSize),
-                       "旧 Vision 蒙版没有清理弱背景孤岛，必须重新识别后再缓存")
+        for version in ["vision-person-instance-r1-2048-v1", "vision-person-instance-r1-2048-core230-band32-v2"] {
+            old.segmentationID = version
+            XCTAssertFalse(old.matches(sourceSHA256: old.sourceSHA256, imageSize: old.imageSize),
+                           "旧整图缓存可能漏掉背景小人，必须执行多尺度识别后再缓存")
+        }
     }
     func testV4RecipeLoadsWithoutAStalePersonAndV5SelectionRoundTrips() throws {
         let legacy = Data("{\"schemaVersion\":4,\"focusPoint\":{\"x\":0.2,\"y\":0.3}}".utf8)

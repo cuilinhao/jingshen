@@ -1,0 +1,373 @@
+Test Suite 'All tests' started at 2026-09-21 17:02:33.914.
+Test Suite 'PGYDepthDemoTests.xctest' started at 2026-09-21 17:02:33.915.
+Test Suite 'AutomaticDepthReferenceTests' started at 2026-09-21 17:02:33.915.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthReferenceTests testActualBottleFocusKeepsMonitorBottleAndToyClear]' started.
+objc[40184]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x12195c310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x1219f8398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthReferenceTests testActualBottleFocusKeepsMonitorBottleAndToyClear]' passed (0.277 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthReferenceTests testActualCabinetFocusBlursAllThreeNearObjects]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthReferenceTests testActualCabinetFocusBlursAllThreeNearObjects]' passed (0.261 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthReferenceTests testActualReferenceHasDenseFiniteNonConstantDepth]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthReferenceTests testActualReferenceHasDenseFiniteNonConstantDepth]' passed (0.275 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthReferenceTests testEveryReportedTapNowSamplesMeasuredModelOutput]' started.
+[ReferenceCPU] actual original tap 1, depth=0.2730504
+[ReferenceCPU] actual original tap 2, depth=0.22184008
+[ReferenceCPU] actual original tap 3, depth=0.86045516
+[ReferenceCPU] actual original tap 4, depth=0.84676397
+[ReferenceCPU] actual original tap 5, depth=0.8525564
+[ReferenceCPU] actual original tap 6, depth=0.22881733
+[ReferenceCPU] actual original tap 7, depth=0.86730075
+[ReferenceCPU] actual original tap 8, depth=0.8599286
+Test Case '-[PGYDepthDemoTests.AutomaticDepthReferenceTests testEveryReportedTapNowSamplesMeasuredModelOutput]' passed (0.209 seconds).
+Test Suite 'AutomaticDepthReferenceTests' passed at 2026-09-21 17:02:34.942.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 1.022 (1.026) seconds
+Test Suite 'AutomaticDepthTests' started at 2026-09-21 17:02:34.942.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testAllPreviousEightTapCoordinatesHaveFiniteDepth]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testAllPreviousEightTapCoordinatesHaveFiniteDepth]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testConstantInferredCacheDoesNotPretendToHaveDepth]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testConstantInferredCacheDoesNotPretendToHaveDepth]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testDifferentDimensionsAndModelRevisionInvalidateCache]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testDifferentDimensionsAndModelRevisionInvalidateCache]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testDifferentPhotoSameDimensionsMustNotReuseDepth]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testDifferentPhotoSameDimensionsMustNotReuseDepth]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testSelectingFarDepthChangesMaskAndBlursAllNearObjects]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testSelectingFarDepthChangesMaskAndBlursAllNearObjects]' passed (0.023 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testSyntheticDepthRangeKeepsSeparatedNearObjectsSharp]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testSyntheticDepthRangeKeepsSeparatedNearObjectsSharp]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testTypedEstimatedDepthRoundTrip]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testTypedEstimatedDepthRoundTrip]' passed (0.016 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testV3BlankLayerCacheNeverSkipsInference]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testV3BlankLayerCacheNeverSkipsInference]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testV3RecipeMigratesFocusRangeButRetainsPhotoEdits]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testV3RecipeMigratesFocusRangeButRetainsPhotoEdits]' passed (0.002 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testV4RecipeRetainsExplicitNarrowRange]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testV4RecipeRetainsExplicitNarrowRange]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testValidInferenceCacheCanBeReused]' started.
+Test Case '-[PGYDepthDemoTests.AutomaticDepthTests testValidInferenceCacheCanBeReused]' passed (0.001 seconds).
+Test Suite 'AutomaticDepthTests' passed at 2026-09-21 17:02:34.990.
+	 Executed 11 tests, with 0 failures (0 unexpected) in 0.046 (0.048) seconds
+Test Suite 'CoreMLSmokeTests' started at 2026-09-21 17:02:34.990.
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testBundledV3ActuallyPredictsFiniteInverseDepth]' started.
+[Model] 加载 App 内置模型 DepthAnythingV3_base_504.mlmodelc，computeUnits=0
+[Depth] 自动深度完成 379×504，有效像素 191016/191016，raw=0.2709961…2.8945312，3.717s
+[Depth] 来源=完整内置模型；坐标=原图左上角；数值=相对视差（亮近暗远），不是米数
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testBundledV3ActuallyPredictsFiniteInverseDepth]' passed (3.956 seconds).
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testCompiledModelIsActuallyInAppBundle]' started.
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testCompiledModelIsActuallyInAppBundle]' passed (0.916 seconds).
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testHalfFloatDepthReaderKeepsFractionalValues]' started.
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testHalfFloatDepthReaderKeepsFractionalValues]' passed (0.004 seconds).
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testInputKeepsTopLeftRowsAndRaw255Values]' started.
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testInputKeepsTopLeftRowsAndRaw255Values]' passed (0.049 seconds).
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testNormalOriginalImportRecomputesOldBlankDraftAndRefocuses]' started.
+[Depth] 旧/失效分析缓存不含当前有效自动深度；保留原图和编辑参数，重新本地推理
+[Model] 加载 App 内置模型 DepthAnythingV2SmallF16.mlmodelc，computeUnits=0
+[Depth] 自动深度完成 518×392，有效像素 203056/203056，raw=0.0029907227…1.0，0.585s
+[Depth] 来源=完整内置模型；坐标=原图左上角；数值=相对视差（亮近暗远），不是米数
+[CoreMLSmoke] original tap=UnitPoint2D(x: 0.8393470790378006, y: 0.5483247422680413) depth=0.24680336
+[CoreMLSmoke] original tap=UnitPoint2D(x: 0.7250859106529209, y: 0.5393041237113402) depth=0.19997384
+[CoreMLSmoke] original tap=UnitPoint2D(x: 0.47079037800687284, y: 0.8537371134020618) depth=0.87756306
+[CoreMLSmoke] original tap=UnitPoint2D(x: 0.49140893470790376, y: 0.7712628865979381) depth=0.86605185
+[CoreMLSmoke] original tap=UnitPoint2D(x: 0.4845360824742268, y: 0.7854381443298968) depth=0.8697145
+[CoreMLSmoke] original tap=UnitPoint2D(x: 0.7414089347079037, y: 0.5747422680412371) depth=0.20612185
+[CoreMLSmoke] original tap=UnitPoint2D(x: 0.4845360824742268, y: 0.8698453608247421) depth=0.88593477
+[CoreMLSmoke] original tap=UnitPoint2D(x: 0.49742268041237114, y: 0.8524484536082474) depth=0.88070244
+[Export] 原始输入重新渲染，最长边≤2048；来源=内置模型自动深度（离线），f=1.4
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testNormalOriginalImportRecomputesOldBlankDraftAndRefocuses]' passed (1.858 seconds).
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testV3LetterboxPreservesRowsAndMeanRGBPadding]' started.
+Test Case '-[PGYDepthDemoTests.CoreMLSmokeTests testV3LetterboxPreservesRowsAndMeanRGBPadding]' passed (0.006 seconds).
+Test Suite 'CoreMLSmokeTests' passed at 2026-09-21 17:02:41.787.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 6.789 (6.797) seconds
+Test Suite 'DepthCoreTests' started at 2026-09-21 17:02:41.788.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testApertureLimitsAndRoundTrip]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testApertureLimitsAndRoundTrip]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testBlurDecreasesAsFNumberIncreases]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testBlurDecreasesAsFNumberIncreases]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testConstantDepthDoesNotInventAnArtificialGradient]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testConstantDepthDoesNotInventAnArtificialGradient]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testDepthNormalizationRejectsInvalidData]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testDepthNormalizationRejectsInvalidData]' passed (0.009 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testDepthRowsAndCornersHaveTopLeftOrigin]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testDepthRowsAndCornersHaveTopLeftOrigin]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testExportSizingNeverUpscales]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testExportSizingNeverUpscales]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testFocusSamplesNeighborhoodMedianRatherThanSingleOutlier]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testFocusSamplesNeighborhoodMedianRatherThanSingleOutlier]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testInvalidDimensionsAreRejected]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testInvalidDimensionsAreRejected]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testRecipeRoundTripAndSanitization]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testRecipeRoundTripAndSanitization]' passed (0.003 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testSameDepthHasSameBlurRegardlessOfSpatialDistance]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testSameDepthHasSameBlurRegardlessOfSpatialDistance]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testSquareCropMapsBackToOriginalDepth]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testSquareCropMapsBackToOriginalDepth]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testTapOutsideAspectFitImageIsIgnored]' started.
+Test Case '-[PGYDepthDemoTests.DepthCoreTests testTapOutsideAspectFitImageIsIgnored]' passed (0.001 seconds).
+Test Suite 'DepthCoreTests' passed at 2026-09-21 17:02:41.809.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.018 (0.021) seconds
+Test Suite 'DraftStoreTests' started at 2026-09-21 17:02:41.809.
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testCorruptAnalysisIsRecoverableWithoutLosingOriginalAndEdits]' started.
+[Draft] v5 已保存原图及编辑参数；分析来源=局部虚化（非深度识别）
+[Draft] 分析缓存不可用，将根据原图重新识别：未能读取数据，因为它的格式不正确。
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testCorruptAnalysisIsRecoverableWithoutLosingOriginalAndEdits]' passed (0.026 seconds).
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testCurrentDraftRoundTripStoresTypedAnalysisAndRecipe]' started.
+[Draft] v5 已保存原图及编辑参数；分析来源=局部虚化（非深度识别）
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testCurrentDraftRoundTripStoresTypedAnalysisAndRecipe]' passed (0.005 seconds).
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testEmptyStoreHasNoDraft]' started.
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testEmptyStoreHasNoDraft]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testLegacyAIDepthIsDiscardedNotMislabeledAsNative]' started.
+[Draft] 迁移旧版草稿：保留原图和参数，不复用旧外部模型的深度缓存
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testLegacyAIDepthIsDiscardedNotMislabeledAsNative]' passed (0.003 seconds).
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testNewSnapshotCleansOnlyOwnUUIDDirectories]' started.
+[Draft] v5 已保存原图及编辑参数；分析来源=局部虚化（非深度识别）
+[Draft] v5 已保存原图及编辑参数；分析来源=局部虚化（非深度识别）
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testNewSnapshotCleansOnlyOwnUUIDDirectories]' passed (0.005 seconds).
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testPointerCannotEscapeDraftDirectory]' started.
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testPointerCannotEscapeDraftDirectory]' passed (0.002 seconds).
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testPreviousCompleteDraftSurvivesRejectedSave]' started.
+[Draft] v5 已保存原图及编辑参数；分析来源=局部虚化（非深度识别）
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testPreviousCompleteDraftSurvivesRejectedSave]' passed (0.003 seconds).
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testV3DraftPersistsEditedLayersUnknownAndFocusTogether]' started.
+[Draft] v5 已保存原图及编辑参数；分析来源=用户校正分层
+Test Case '-[PGYDepthDemoTests.DraftStoreTests testV3DraftPersistsEditedLayersUnknownAndFocusTogether]' passed (0.011 seconds).
+Test Suite 'DraftStoreTests' passed at 2026-09-21 17:02:41.868.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.056 (0.059) seconds
+Test Suite 'ImagingTests' started at 2026-09-21 17:02:41.868.
+Test Case '-[PGYDepthDemoTests.ImagingTests testCICropConvertsTopLeftOrigin]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testCICropConvertsTopLeftOrigin]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testDepthChangeInvalidatesBothRenderAndDiagnosticCache]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testDepthChangeInvalidatesBothRenderAndDiagnosticCache]' passed (0.083 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testDisabledEffectReallyPreservesPixelsNotJustDimensions]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testDisabledEffectReallyPreservesPixelsNotJustDimensions]' passed (0.026 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testEnabledLocalBlurReducesHighFrequencyDetail]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testEnabledLocalBlurReducesHighFrequencyDetail]' passed (0.040 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testFloatCoverageClampsInvalidValuesAndRetainsSoftEdge]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testFloatCoverageClampsInvalidValuesAndRetainsSoftEdge]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testGrayImageRetainsTopLeftRowOrder]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testGrayImageRetainsTopLeftRowOrder]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testInferenceFailureDoesNotReturnFakeReadyPhoto]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testInferenceFailureDoesNotReturnFakeReadyPhoto]' passed (0.014 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testLayeredRenderPreservesSameLayerInteriors]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testLayeredRenderPreservesSameLayerInteriors]' passed (0.059 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testMaximumFNumberRemovesBlur]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testMaximumFNumberRemovesBlur]' passed (0.028 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testNativeFilterParametersExist]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testNativeFilterParametersExist]' passed (0.003 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testOrdinaryImportPreparesRealTypedDepthBeforeExport]' started.
+[Export] 原始输入重新渲染，最长边≤2048；来源=内置模型自动深度（离线），f=1.8
+Test Case '-[PGYDepthDemoTests.ImagingTests testOrdinaryImportPreparesRealTypedDepthBeforeExport]' passed (0.052 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testPeopleCacheSurvivesModelSwitchAndRenderingDoesNotAnalyzeAgain]' started.
+[Export] 原始输入重新渲染，最长边≤2048；来源=内置模型自动深度（离线），f=2.8
+[Depth] 旧/失效分析缓存不含当前有效自动深度；保留原图和编辑参数，重新本地推理
+[Depth] 恢复已校验的自动深度缓存；source SHA256、模型版本、预处理及尺寸均一致
+Test Case '-[PGYDepthDemoTests.ImagingTests testPeopleCacheSurvivesModelSwitchAndRenderingDoesNotAnalyzeAgain]' passed (0.231 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testPersonFailureHasExplicitOrdinaryDepthFallback]' started.
+[People] 人物识别未完成，当前为普通景深：检测到超过4个人，当前无法逐人选择，已使用普通景深。
+Test Case '-[PGYDepthDemoTests.ImagingTests testPersonFailureHasExplicitOrdinaryDepthFallback]' passed (0.016 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testPixelBufferLabelsRespectPaddedRows]' started.
+Test Case '-[PGYDepthDemoTests.ImagingTests testPixelBufferLabelsRespectPaddedRows]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testV3BlankCacheRecomputedInsteadOfReturningUnknown]' started.
+[Depth] 旧/失效分析缓存不含当前有效自动深度；保留原图和编辑参数，重新本地推理
+Test Case '-[PGYDepthDemoTests.ImagingTests testV3BlankCacheRecomputedInsteadOfReturningUnknown]' passed (0.017 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testValidAutomaticCacheBypassesEstimator]' started.
+[Depth] 恢复已校验的自动深度缓存；source SHA256、模型版本、预处理及尺寸均一致
+Test Case '-[PGYDepthDemoTests.ImagingTests testValidAutomaticCacheBypassesEstimator]' passed (0.045 seconds).
+Test Case '-[PGYDepthDemoTests.ImagingTests testWrongImageSameDimensionsCacheIsNotReused]' started.
+[Depth] 旧/失效分析缓存不含当前有效自动深度；保留原图和编辑参数，重新本地推理
+Test Case '-[PGYDepthDemoTests.ImagingTests testWrongImageSameDimensionsCacheIsNotReused]' passed (0.026 seconds).
+Test Suite 'ImagingTests' passed at 2026-09-21 17:02:42.514.
+	 Executed 17 tests, with 0 failures (0 unexpected) in 0.641 (0.646) seconds
+Test Suite 'LayerRegressionTests' started at 2026-09-21 17:02:42.514.
+Test Case '-[PGYDepthDemoTests.LayerRegressionTests testUnassignedPixelsAreNotAssumedToBeFarBackground]' started.
+Test Case '-[PGYDepthDemoTests.LayerRegressionTests testUnassignedPixelsAreNotAssumedToBeFarBackground]' passed (0.001 seconds).
+Test Suite 'LayerRegressionTests' passed at 2026-09-21 17:02:42.515.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'ModelGeometryTests' started at 2026-09-21 17:02:42.516.
+Test Case '-[PGYDepthDemoTests.ModelGeometryTests testLetterboxRestoresPortraitAndLandscapeWithoutPaddingPixels]' started.
+Test Case '-[PGYDepthDemoTests.ModelGeometryTests testLetterboxRestoresPortraitAndLandscapeWithoutPaddingPixels]' passed (0.019 seconds).
+Test Case '-[PGYDepthDemoTests.ModelGeometryTests testV2CacheCannotBeUsedWhenV3Selected]' started.
+Test Case '-[PGYDepthDemoTests.ModelGeometryTests testV2CacheCannotBeUsedWhenV3Selected]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.ModelGeometryTests testV3InverseDepthIsNearBrightAndRejectsNonpositive]' started.
+Test Case '-[PGYDepthDemoTests.ModelGeometryTests testV3InverseDepthIsNearBrightAndRejectsNonpositive]' passed (0.001 seconds).
+Test Suite 'ModelGeometryTests' passed at 2026-09-21 17:02:42.538.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.021 (0.022) seconds
+Test Suite 'PersonMaskAssemblyTests' started at 2026-09-21 17:02:42.538.
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testComponentDoesNotConnectAcrossRowBoundaryOrDiagonally]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testComponentDoesNotConnectAcrossRowBoundaryOrDiagonally]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testComponentKeepsLocalSoftPersonWithoutDistantStrongerIsland]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testComponentKeepsLocalSoftPersonWithoutDistantStrongerIsland]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testComponentSeedPrefersHighestCoverageThenNearestPoint]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testComponentSeedPrefersHighestCoverageThenNearestPoint]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testComponentWithoutReliableSeedReturnsNilAndClampsPoint]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testComponentWithoutReliableSeedReturnsNilAndClampsPoint]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testInvalidDimensionsROIsAndCountsAreRejected]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testInvalidDimensionsROIsAndCountsAreRejected]' passed (0.002 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testOverlapUsesMaximumCoverageAndPreservesFractionalEdges]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testOverlapUsesMaximumCoverageAndPreservesFractionalEdges]' passed (0.002 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testProjectionPreservesTopLeftCoordinatesAndZeroOutsideROI]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testProjectionPreservesTopLeftCoordinatesAndZeroOutsideROI]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testProjectionUsesBilinearPixelCentersAndClampsSourceEdges]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testProjectionUsesBilinearPixelCentersAndClampsSourceEdges]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testSegmentationRebuildsIndependentIDsAndStableCoverageLabels]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskAssemblyTests testSegmentationRebuildsIndependentIDsAndStableCoverageLabels]' passed (0.002 seconds).
+Test Suite 'PersonMaskAssemblyTests' passed at 2026-09-21 17:02:42.550.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.009 (0.013) seconds
+Test Suite 'PersonMaskRefinementTests' started at 2026-09-21 17:02:42.551.
+Test Case '-[PGYDepthDemoTests.PersonMaskRefinementTests testDistanceUsesBothAxesAndDoesNotWrapAtRowBoundary]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskRefinementTests testDistanceUsesBothAxesAndDoesNotWrapAtRowBoundary]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskRefinementTests testMaskWithoutReliableCoreFailsInsteadOfReturningEmptyPerson]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskRefinementTests testMaskWithoutReliableCoreFailsInsteadOfReturningEmptyPerson]' passed (0.002 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskRefinementTests testReliableBodyBecomesOpaqueAndAdjacentEdgesStaySoft]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskRefinementTests testReliableBodyBecomesOpaqueAndAdjacentEdgesStaySoft]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.PersonMaskRefinementTests testWeakDetachedChairAndDistantIslandsAreRemoved]' started.
+Test Case '-[PGYDepthDemoTests.PersonMaskRefinementTests testWeakDetachedChairAndDistantIslandsAreRemoved]' passed (0.001 seconds).
+Test Suite 'PersonMaskRefinementTests' passed at 2026-09-21 17:02:42.557.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.005 (0.006) seconds
+Test Suite 'PortraitFocusTests' started at 2026-09-21 17:02:42.557.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testAnchorFindsNarrowCoreBetweenCoarseSamplePoints]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testAnchorFindsNarrowCoreBetweenCoarseSamplePoints]' passed (0.157 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testBlankTapKeepsCurrentPersonAndClickSwitches]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testBlankTapKeepsCurrentPersonAndClickSwitches]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testCrowdedGroupsAreNotPresentedAsIndividualPeople]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testCrowdedGroupsAreNotPresentedAsIndividualPeople]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testDraftRestoresPeopleAndSelectionTogether]' started.
+[Draft] v5 已保存原图及编辑参数；分析来源=无可用分析缓存，下次重新计算
+[Draft] 分析缓存不可用，将根据原图重新识别：未能打开文件“analysis.plist”，因为它不存在。
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testDraftRestoresPeopleAndSelectionTogether]' passed (0.010 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testFocusDepthIgnoresBackgroundAtSoftBoundary]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testFocusDepthIgnoresBackgroundAtSoftBoundary]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testFocusDepthMapsNarrowMaskCoreToDepthInsteadOfSamplingOutsidePerson]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testFocusDepthMapsNarrowMaskCoreToDepthInsteadOfSamplingOutsidePerson]' passed (0.129 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testLayerOrderKeepsDefocusedForegroundInFrontOfSelectedBackground]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testLayerOrderKeepsDefocusedForegroundInFrontOfSelectedBackground]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testNewSegmentationUsesSavedPointInsteadOfReassignedID]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testNewSegmentationUsesSavedPointInsteadOfReassignedID]' passed (0.002 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testPortraitCacheRequiresPhotoSizeAndSegmentationVersion]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testPortraitCacheRequiresPhotoSizeAndSegmentationVersion]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testSameDepthPeopleCanBeIndependentlyFocused]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testSameDepthPeopleCanBeIndependentlyFocused]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testSoftEdgeCanBeSelectedWithoutSelectingDistantPerson]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testSoftEdgeCanBeSelectedWithoutSelectingDistantPerson]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testUnrefinedPersonMaskCacheIsNotReusedAfterRefinementUpdate]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testUnrefinedPersonMaskCacheIsNotReusedAfterRefinementUpdate]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testV4RecipeLoadsWithoutAStalePersonAndV5SelectionRoundTrips]' started.
+Test Case '-[PGYDepthDemoTests.PortraitFocusTests testV4RecipeLoadsWithoutAStalePersonAndV5SelectionRoundTrips]' passed (0.000 seconds).
+Test Suite 'PortraitFocusTests' passed at 2026-09-21 17:02:42.863.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.303 (0.306) seconds
+Test Suite 'PortraitImagingTests' started at 2026-09-21 17:02:42.864.
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testBlurredForegroundStillOccludesSelectedBackPerson]' started.
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testBlurredForegroundStillOccludesSelectedBackPerson]' passed (0.183 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testDefocusedForegroundSpreadsOverBackgroundWithoutSharpGhost]' started.
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testDefocusedForegroundSpreadsOverBackgroundWithoutSharpGhost]' passed (0.179 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testDefocusedPersonAtFrameEdgeStaysOpaque]' started.
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testDefocusedPersonAtFrameEdgeStaysOpaque]' passed (0.354 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testDisablingPortraitEffectKeepsPixels]' started.
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testDisablingPortraitEffectKeepsPixels]' passed (0.060 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testRefinedConfidenceKeepsDarkPersonDetailAndRemovesBackgroundGhost]' started.
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testRefinedConfidenceKeepsDarkPersonDetailAndRemovesBackgroundGhost]' passed (0.078 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testSameDepthPeopleSwitchWithoutReusingOldPersonCache]' started.
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testSameDepthPeopleSwitchWithoutReusingOldPersonCache]' passed (0.235 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testSelectedPersonDoesNotBleedColorIntoAdjacentBackground]' started.
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testSelectedPersonDoesNotBleedColorIntoAdjacentBackground]' passed (0.178 seconds).
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testSoftMatteAndTopLeftOrientationSurviveCompositing]' started.
+[MatteRows] source top=255 bottom=0; output top=255 bottom=0
+Test Case '-[PGYDepthDemoTests.PortraitImagingTests testSoftMatteAndTopLeftOrientationSurviveCompositing]' passed (0.041 seconds).
+Test Suite 'PortraitImagingTests' passed at 2026-09-21 17:02:44.174.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 1.308 (1.310) seconds
+Test Suite 'ReferenceSceneTests' started at 2026-09-21 17:02:44.174.
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testBottleMonitorToyAndTableShareNearLayer]' started.
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testBottleMonitorToyAndTableShareNearLayer]' passed (0.090 seconds).
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testCabinetCheckerboardAndFloorAreFarLayer]' started.
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testCabinetCheckerboardAndFloorAreFarLayer]' passed (0.085 seconds).
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testFarFocusBlursAllNearObjectsNotJustDisplay]' started.
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testFarFocusBlursAllNearObjectsNotJustDisplay]' passed (0.179 seconds).
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testFixtureIsDeclaredHumanAnnotatedNotAutomatic]' started.
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testFixtureIsDeclaredHumanAnnotatedNotAutomatic]' passed (0.113 seconds).
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testNativeAndLayeredMasksUseDifferentExplicitSources]' started.
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testNativeAndLayeredMasksUseDifferentExplicitSources]' passed (0.004 seconds).
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testNearFocusMatchesRequestedGrouping]' started.
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testNearFocusMatchesRequestedGrouping]' passed (0.190 seconds).
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testReferenceMasksRemainSameInPreviewAndExportCoordinates]' started.
+Test Case '-[PGYDepthDemoTests.ReferenceSceneTests testReferenceMasksRemainSameInPreviewAndExportCoordinates]' passed (0.114 seconds).
+Test Suite 'ReferenceSceneTests' passed at 2026-09-21 17:02:44.951.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.775 (0.777) seconds
+Test Suite 'SceneLayerTests' started at 2026-09-21 17:02:44.951.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testAllObjectsOnTheSelectedLayerStaySharp]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testAllObjectsOnTheSelectedLayerStaySharp]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testAssigningMaskUsesTopLeftNormalizedCoordinatesAtDifferentResolution]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testAssigningMaskUsesTopLeftNormalizedCoordinatesAtDifferentResolution]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testBrushInterpolatesFullStrokeAndCanEraseToUnknown]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testBrushInterpolatesFullStrokeAndCanEraseToUnknown]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testBrushRadiusUsesShortEdgeInsteadOfDistortingPortrait]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testBrushRadiusUsesShortEdgeInsteadOfDistortingPortrait]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testCropInverseMapsFocusToSameSceneLayer]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testCropInverseMapsFocusToSameSceneLayer]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testEveryPixelOnFocusedLayerHasZeroBlurForAllLayerChoices]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testEveryPixelOnFocusedLayerHasZeroBlurForAllLayerChoices]' passed (0.003 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testExplicitFillUnknownDoesNotOverwriteAlreadyAssignedSubjects]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testExplicitFillUnknownDoesNotOverwriteAlreadyAssignedSubjects]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testFarFocusBlursAllNearObjectsTogether]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testFarFocusBlursAllNearObjectsTogether]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testInvalidLayerValuesAreRejectedRatherThanUsedAsDistances]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testInvalidLayerValuesAreRejectedRatherThanUsedAsDistances]' passed (0.038 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testMiddleFocusDoesNotBecomeBackgroundInverse]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testMiddleFocusDoesNotBecomeBackgroundInverse]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testPolygonMarksMissedTransparentObjectWithoutVision]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testPolygonMarksMissedTransparentObjectWithoutVision]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testReassignmentChangesLayerOfAllFutureFocusMasks]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testReassignmentChangesLayerOfAllFutureFocusMasks]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testSceneRoundTripRetainsUnknownAndProvenance]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testSceneRoundTripRetainsUnknownAndProvenance]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testUndoRedoAndNewBranchAreBoundedAndDeterministic]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testUndoRedoAndNewBranchAreBoundedAndDeterministic]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testUnknownPixelsAreNotFarAndAreProtected]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testUnknownPixelsAreNotFarAndAreProtected]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testVisionIDsDoNotOrderOrAssignDepth]' started.
+Test Case '-[PGYDepthDemoTests.SceneLayerTests testVisionIDsDoNotOrderOrAssignDepth]' passed (0.000 seconds).
+Test Suite 'SceneLayerTests' passed at 2026-09-21 17:02:45.003.
+	 Executed 16 tests, with 0 failures (0 unexpected) in 0.049 (0.052) seconds
+Test Suite 'SubjectMaskTests' started at 2026-09-21 17:02:45.003.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testApertureDoesNotChangeSelectionMask]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testApertureDoesNotChangeSelectionMask]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testBackgroundDoesNotReturnAnInverseSelection]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testBackgroundDoesNotReturnAnInverseSelection]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testBiggerLocalRadiusPreservesMoreArea]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testBiggerLocalRadiusPreservesMoreArea]' passed (0.003 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testCoverageSelectionDoesNotAssumeLabelOrderingIsDepth]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testCoverageSelectionDoesNotAssumeLabelOrderingIsDepth]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testExplicitLocalModeOverridesDetectedSubjects]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testExplicitLocalModeOverridesDetectedSubjects]' passed (0.008 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testFutureRecipeVersionIsRejected]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testFutureRecipeVersionIsRejected]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testHitTestKeepsTopLeftOriginAndClampsBorders]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testHitTestKeepsTopLeftOriginAndClampsBorders]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testInvalidMaskDimensionsAndByteCountAreRejected]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testInvalidMaskDimensionsAndByteCountAreRejected]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testLegacyRecipeRetainsEditsAndAddsNewDefaults]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testLegacyRecipeRetainsEditsAndAddsNewDefaults]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testLocalFallbackIsCircularInImagePixelsNotStretched]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testLocalFallbackIsCircularInImagePixelsNotStretched]' passed (0.003 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testMaskDecoderValidatesDimensions]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testMaskDecoderValidatesDimensions]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testRecipeSanitizesNewValues]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testRecipeSanitizesNewValues]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testSoftMaskValuesAreRetained]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testSoftMaskValuesAreRetained]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testSubjectMaskBuilderDoesNotConvertLabelsIntoDepth]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testSubjectMaskBuilderDoesNotConvertLabelsIntoDepth]' passed (0.000 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testTypedAnalysisRoundTripsWithoutInventingDepth]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testTypedAnalysisRoundTripsWithoutInventingDepth]' passed (0.001 seconds).
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testUnknownOrDuplicateSubjectIDsAreRejected]' started.
+Test Case '-[PGYDepthDemoTests.SubjectMaskTests testUnknownOrDuplicateSubjectIDsAreRejected]' passed (0.000 seconds).
+Test Suite 'SubjectMaskTests' passed at 2026-09-21 17:02:45.027.
+	 Executed 16 tests, with 0 failures (0 unexpected) in 0.020 (0.024) seconds
+Test Suite 'PGYDepthDemoTests.xctest' passed at 2026-09-21 17:02:45.027.
+	 Executed 135 tests, with 0 failures (0 unexpected) in 11.064 (11.112) seconds
+Test Suite 'All tests' passed at 2026-09-21 17:02:45.028.
+	 Executed 135 tests, with 0 failures (0 unexpected) in 11.064 (11.114) seconds
+2026-09-21 17:02:45.440 xcodebuild[40114:2957668] [MT] IDETestOperationsObserverDebug: 18.088 elapsed -- Testing started completed.
+2026-09-21 17:02:45.440 xcodebuild[40114:2957668] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-09-21 17:02:45.440 xcodebuild[40114:2957668] [MT] IDETestOperationsObserverDebug: 18.088 sec, +18.088 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/pgy/Documents/Codex/2026-09-21/k-n/work/portrait-v3/DerivedData/Logs/Test/Test-PGYDepthDemo-2026.09.21_17-02-22-+0800.xcresult
+
+** TEST SUCCEEDED **

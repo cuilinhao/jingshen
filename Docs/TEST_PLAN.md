@@ -58,4 +58,6 @@ python3 Scripts/validate_project.py
 
 Xcode **⌘U** 运行核心、图像、流水线与 Core ML 测试，查看 `.xcresult` 中合成边缘、深度渲染等附件。`CoreMLSmokeTests` 使用真实模型，不因缺失跳过；`PortraitImagingTests` 使用人工可控图形检查同深度选择、边缘泄色、前景扩散、coverage 软边混合、深色主体纹理、背景残影清理、贴边透明衰减和关闭效果。
 
+真实多人漏检回归使用 `Scripts/VerifyPortraitPeople.sh IMAGE MODELS.bundle OUTPUT_DIR COUNT X,Y ...`，每个预期人物给一个原图左上归一化点击点。必须人数正确、各点击 ID 互异，并人工检查逐人导出；不能仅以模型返回三个框或三个 mask 判定通过。检查后排小人、主角手臂/衣服归属、椅背残留、前景失焦遮挡，以及旧 v2 人物缓存重算后仍能点击。输出文件和照片保留本地。
+
 TestAction 的 `PGY_SKIP_UI_STARTUP_FOR_TESTS` 只抑制 UI 启动额外的样图分析；普通 ⌘R 不设该变量。`Scripts/Verify_on_Mac.sh` 仅做模拟器 SDK 构建，不等于运行测试、实机签名安装或人物画质验收。

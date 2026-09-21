@@ -1,0 +1,6 @@
+[Model] 加载 App 内置模型 DepthAnythingV3_base_504.mlmodelc，computeUnits=2
+[Depth] 自动深度完成 378×504，有效像素 190512/190512，raw=0.37426758…3.2070312，29.515s
+[Depth] 来源=完整内置模型；坐标=原图左上角；数值=相对视差（亮近暗远），不是米数
+[People] 独立人物 1，软蒙版 884×1178
+PREPARED count=1 seconds=31.04879903793335
+FAIL expected 3 independently selectable people

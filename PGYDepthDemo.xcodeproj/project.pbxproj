@@ -275,6 +275,18 @@
 			"fileRef" = "3E04897177096851D8FE9F35";
 			"isa" = "PBXBuildFile";
 		};
+		"49A2FEE9DB9C350E80B584B8" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "PGYDepthDemo/Core/PersonMaskAssembly.swift";
+			"sourceTree" = "<group>";
+		};
+		"4C8CA0803915D74BF8716C11" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "PGYDepthDemo/Imaging/PersonRegionDetector.swift";
+			"sourceTree" = "<group>";
+		};
 		"4DC04B1012CFBB8C459E7AB3" = {
 			"fileRef" = "599DCA26DC389E7EC1D5D468";
 			"isa" = "PBXBuildFile";
@@ -618,6 +630,8 @@
 		"AA189274DDA4BD074CBB66FE" = {
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"D64BBBF96CCA701A9037AE30",
+				"FD6F710A2EB1B0DC9A986A87",
 				"DAD6CE0A52B5DBEF823C374A",
 				"7B6ECEC397E5FA7D5A6C69E5",
 				"E13401CBFD851CE1E2BAB311",
@@ -779,15 +793,26 @@
 			"path" = "Tests/Fixtures/ReferenceLayers.json";
 			"sourceTree" = "<group>";
 		};
+		"D18403BEA22E9F83FF081D7A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tests/DepthCoreTests/PersonMaskAssemblyTests.swift";
+			"sourceTree" = "<group>";
+		};
 		"D2363CBAB8F7D6A61D03A841" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
 			"path" = "PGYDepthDemo/UI/LayerEditorView.swift";
 			"sourceTree" = "<group>";
 		};
+		"D64BBBF96CCA701A9037AE30" = {
+			"fileRef" = "4C8CA0803915D74BF8716C11";
+			"isa" = "PBXBuildFile";
+		};
 		"D6D3EFCD007A068187E3C9F7" = {
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"E1578E081A05EF63C7A661A4",
 				"DFD70E2EB708255D0731A423",
 				"A37ECDF9EB328F595FF742A1",
 				"2001E3BF42F08B745A43BE26",
@@ -844,6 +869,10 @@
 			"fileRef" = "7A5D6C4E46B287585EEE6737";
 			"isa" = "PBXBuildFile";
 		};
+		"E1578E081A05EF63C7A661A4" = {
+			"fileRef" = "D18403BEA22E9F83FF081D7A";
+			"isa" = "PBXBuildFile";
+		};
 		"E26CB7841AE1D91A07BC586F" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -858,6 +887,9 @@
 		};
 		"E50290A24C49A459B43487C5" = {
 			"children" = (
+				"D18403BEA22E9F83FF081D7A",
+				"4C8CA0803915D74BF8716C11",
+				"49A2FEE9DB9C350E80B584B8",
 				"B3BAB94E3AB1417756FE9185",
 				"9F5A517BEC482EFEFA32D018",
 				"2F87038CE3482D1E5B62CB82",
@@ -984,6 +1016,10 @@
 			"isa" = "PBXGroup";
 			"name" = "Products";
 			"sourceTree" = "<group>";
+		};
+		"FD6F710A2EB1B0DC9A986A87" = {
+			"fileRef" = "49A2FEE9DB9C350E80B584B8";
+			"isa" = "PBXBuildFile";
 		};
 	};
 	"rootObject" = "98F54143AB4E86B28C3AFEE0";

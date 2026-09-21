@@ -2,7 +2,28 @@
 
 日期：2026-09-21。当前修改基于原桌面 Demo，默认切换为 V3 Base 504，并增加独立人物选择。这里区分文件/逻辑检查、苹果运行时结果与真实人像验收；旧 v4 的 Linux 参考计算记录已移到 [历史记录](History/v4_VERIFICATION.md)，不能作为 v5 通过证据。
 
-## 本次人像边缘修复验证
+## 背景小人物独立选择修复
+
+日期：2026-09-21。原整图分割漏掉两位后景人物，导致点击没有对应实例。这是多人选择功能缺陷，本次加入多尺度人体发现、局部精细语义分割及独立蒙版重建；不再把该样片的漏检作为已完成事项的限制。
+
+同一用户原图的旧代码实际验收失败：仅 1 人，预期 3 人。修改后的正式 PhotoPipeline 识别出 3 人；前景、左后、右后点击分别命中 ID 1/2/3，三个点击位置 coverage 均为 255。逐人导出确认选择后人时前景脸、手和白衣仍虚化；三个实例的 ≥128 coverage 没有重叠。照片和任何人物图像没有提交到仓库。
+
+| 检查 | 结果 | 证据 |
+|---|---|---|
+| Swift 核心 | 104 项，0 失败 | [core-tests.log](../Verification/v5-people/core-tests.log) |
+| Python 工程 | 17 项，0 失败 | [python-tests.log](../Verification/v5-people/python-tests.log) |
+| 工程配置 | 140 个对象引用，30 个 App Swift / 15 个测试 Swift | [project-check.log](../Verification/v5-people/project-check.log) |
+| iOS 模拟器 | 135 项，0 失败，包含上述核心测试 | [apple-tests.log](../Verification/v5-people/apple-tests.log) |
+| iPhone Release | 无签名构建成功，未安装真机 | [device-build-summary.log](../Verification/v5-people/device-build-summary.log) |
+| 真实原图回归 | 旧版 1 人失败 → 新版 3 个独立点击及逐人导出通过 | [旧版](../Verification/v5-people/selection-red.log)、[正式验收脚本](../Verification/v5-people/selection-green.log) |
+
+可用 `Scripts/VerifyPortraitPeople.sh` 对其他本地图片重复验收；参数见 `--help`。脚本从当前正式 Core/Imaging 源码编译，真正运行模型和人物分析，不包含照片特定坐标；预期人数和各人的点击位置由调用者提供。新回归覆盖 ROI 原图投影、连通域归属、前景保护、ID 重建、小人物核心密采样，以及旧 v1/v2 人物缓存失效。
+
+独立实图审查还发现右后人物的浅色头枕框误归属，已统一局部输入最长边为 768：检查区域内高置信误归属像素由 150 降至 5，黑衣覆盖均值 0.915→0.912，发顶与侧脸保留。仍有少量软边残留，不能将三个 ID 点击成功等同于所有细边完美。原图运行使用本机 macOS Vision；iOS 模拟器测试与无签名构建分别记录，真机性能及更多 2–4 人样片仍应按验收清单执行。
+
+以下是此前提交的历史验证记录，不能将其中“仅一个人物”的结论作为本次结果。
+
+## 人像边缘修复验证（历史基线）
 
 日期：2026-09-21。正式工程加入蒙版可靠核心清理、原色软边合成和背景圆形散景。原始人物分割缓存 v1 自动失效，深度缓存保持独立。
 

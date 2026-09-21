@@ -46,7 +46,7 @@ struct SubjectMask: Codable, Equatable, Sendable {
 }
 
 struct SubjectSegmentation: Codable, Equatable, Sendable {
-    /// UInt8 subject IDs exactly as returned by Vision. 0 means background.
+    /// UInt8 IDs scoped to this analysis. Multiple Vision requests are remapped; 0 is background.
     let labels: GrayMask
     let subjects: [SubjectMask]
     /// If a very crowded image exceeds the cache budget, remaining subjects form one group.

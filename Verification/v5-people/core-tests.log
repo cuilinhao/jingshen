@@ -1,0 +1,285 @@
+Building for debugging...
+[Using on-disk description]
+[1 / 10]
+[2 / 11] DepthCore
+[5 / 14] DepthCore
+[10 / 16] DepthCore
+[11 / 17] DepthCore
+[14 / 17] DepthCoreTests-product
+[17 / 20] DepthCoreTests-product
+[22 / 24] DepthCoreTests-product
+[23 / 24] DepthCoreTests-product
+[25 / 25] DepthCore-product
+Build complete! (4.44秒)
+Test Suite 'All tests' started at 2026-09-21 16:52:05.500.
+Test Suite 'DepthCoreTests.xctest' started at 2026-09-21 16:52:05.502.
+Test Suite 'AutomaticDepthReferenceTests' started at 2026-09-21 16:52:05.503.
+Test Case '-[DepthCoreTests.AutomaticDepthReferenceTests testActualBottleFocusKeepsMonitorBottleAndToyClear]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthReferenceTests testActualBottleFocusKeepsMonitorBottleAndToyClear]' passed (0.248 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthReferenceTests testActualCabinetFocusBlursAllThreeNearObjects]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthReferenceTests testActualCabinetFocusBlursAllThreeNearObjects]' passed (0.224 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthReferenceTests testActualReferenceHasDenseFiniteNonConstantDepth]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthReferenceTests testActualReferenceHasDenseFiniteNonConstantDepth]' passed (0.302 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthReferenceTests testEveryReportedTapNowSamplesMeasuredModelOutput]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthReferenceTests testEveryReportedTapNowSamplesMeasuredModelOutput]' passed (0.396 seconds).
+Test Suite 'AutomaticDepthReferenceTests' passed at 2026-09-21 16:52:06.674.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 1.171 (1.172) seconds
+Test Suite 'AutomaticDepthTests' started at 2026-09-21 16:52:06.674.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testAllPreviousEightTapCoordinatesHaveFiniteDepth]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testAllPreviousEightTapCoordinatesHaveFiniteDepth]' passed (0.002 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthTests testConstantInferredCacheDoesNotPretendToHaveDepth]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testConstantInferredCacheDoesNotPretendToHaveDepth]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthTests testDifferentDimensionsAndModelRevisionInvalidateCache]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testDifferentDimensionsAndModelRevisionInvalidateCache]' passed (0.003 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthTests testDifferentPhotoSameDimensionsMustNotReuseDepth]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testDifferentPhotoSameDimensionsMustNotReuseDepth]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthTests testSelectingFarDepthChangesMaskAndBlursAllNearObjects]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testSelectingFarDepthChangesMaskAndBlursAllNearObjects]' passed (0.003 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthTests testSyntheticDepthRangeKeepsSeparatedNearObjectsSharp]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testSyntheticDepthRangeKeepsSeparatedNearObjectsSharp]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthTests testTypedEstimatedDepthRoundTrip]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testTypedEstimatedDepthRoundTrip]' passed (0.005 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthTests testV3BlankLayerCacheNeverSkipsInference]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testV3BlankLayerCacheNeverSkipsInference]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthTests testV3RecipeMigratesFocusRangeButRetainsPhotoEdits]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testV3RecipeMigratesFocusRangeButRetainsPhotoEdits]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthTests testV4RecipeRetainsExplicitNarrowRange]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testV4RecipeRetainsExplicitNarrowRange]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.AutomaticDepthTests testValidInferenceCacheCanBeReused]' started.
+Test Case '-[DepthCoreTests.AutomaticDepthTests testValidInferenceCacheCanBeReused]' passed (0.001 seconds).
+Test Suite 'AutomaticDepthTests' passed at 2026-09-21 16:52:06.693.
+	 Executed 11 tests, with 0 failures (0 unexpected) in 0.017 (0.019) seconds
+Test Suite 'DepthCoreTests' started at 2026-09-21 16:52:06.693.
+Test Case '-[DepthCoreTests.DepthCoreTests testApertureLimitsAndRoundTrip]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testApertureLimitsAndRoundTrip]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testBlurDecreasesAsFNumberIncreases]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testBlurDecreasesAsFNumberIncreases]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testConstantDepthDoesNotInventAnArtificialGradient]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testConstantDepthDoesNotInventAnArtificialGradient]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testDepthNormalizationRejectsInvalidData]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testDepthNormalizationRejectsInvalidData]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testDepthRowsAndCornersHaveTopLeftOrigin]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testDepthRowsAndCornersHaveTopLeftOrigin]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testExportSizingNeverUpscales]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testExportSizingNeverUpscales]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testFocusSamplesNeighborhoodMedianRatherThanSingleOutlier]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testFocusSamplesNeighborhoodMedianRatherThanSingleOutlier]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testInvalidDimensionsAreRejected]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testInvalidDimensionsAreRejected]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testRecipeRoundTripAndSanitization]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testRecipeRoundTripAndSanitization]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testSameDepthHasSameBlurRegardlessOfSpatialDistance]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testSameDepthHasSameBlurRegardlessOfSpatialDistance]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testSquareCropMapsBackToOriginalDepth]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testSquareCropMapsBackToOriginalDepth]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testTapOutsideAspectFitImageIsIgnored]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testTapOutsideAspectFitImageIsIgnored]' passed (0.000 seconds).
+Test Suite 'DepthCoreTests' passed at 2026-09-21 16:52:06.697.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.003 (0.004) seconds
+Test Suite 'DraftStoreTests' started at 2026-09-21 16:52:06.697.
+Test Case '-[DepthCoreTests.DraftStoreTests testCorruptAnalysisIsRecoverableWithoutLosingOriginalAndEdits]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testCorruptAnalysisIsRecoverableWithoutLosingOriginalAndEdits]' passed (0.067 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testCurrentDraftRoundTripStoresTypedAnalysisAndRecipe]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testCurrentDraftRoundTripStoresTypedAnalysisAndRecipe]' passed (0.007 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testEmptyStoreHasNoDraft]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testEmptyStoreHasNoDraft]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testLegacyAIDepthIsDiscardedNotMislabeledAsNative]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testLegacyAIDepthIsDiscardedNotMislabeledAsNative]' passed (0.005 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testNewSnapshotCleansOnlyOwnUUIDDirectories]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testNewSnapshotCleansOnlyOwnUUIDDirectories]' passed (0.009 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testPointerCannotEscapeDraftDirectory]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testPointerCannotEscapeDraftDirectory]' passed (0.002 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testPreviousCompleteDraftSurvivesRejectedSave]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testPreviousCompleteDraftSurvivesRejectedSave]' passed (0.005 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testV3DraftPersistsEditedLayersUnknownAndFocusTogether]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testV3DraftPersistsEditedLayersUnknownAndFocusTogether]' passed (0.005 seconds).
+Test Suite 'DraftStoreTests' passed at 2026-09-21 16:52:06.799.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.101 (0.102) seconds
+Test Suite 'LayerRegressionTests' started at 2026-09-21 16:52:06.799.
+Test Case '-[DepthCoreTests.LayerRegressionTests testUnassignedPixelsAreNotAssumedToBeFarBackground]' started.
+Test Case '-[DepthCoreTests.LayerRegressionTests testUnassignedPixelsAreNotAssumedToBeFarBackground]' passed (0.000 seconds).
+Test Suite 'LayerRegressionTests' passed at 2026-09-21 16:52:06.799.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'ModelGeometryTests' started at 2026-09-21 16:52:06.799.
+Test Case '-[DepthCoreTests.ModelGeometryTests testLetterboxRestoresPortraitAndLandscapeWithoutPaddingPixels]' started.
+Test Case '-[DepthCoreTests.ModelGeometryTests testLetterboxRestoresPortraitAndLandscapeWithoutPaddingPixels]' passed (0.031 seconds).
+Test Case '-[DepthCoreTests.ModelGeometryTests testV2CacheCannotBeUsedWhenV3Selected]' started.
+Test Case '-[DepthCoreTests.ModelGeometryTests testV2CacheCannotBeUsedWhenV3Selected]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.ModelGeometryTests testV3InverseDepthIsNearBrightAndRejectsNonpositive]' started.
+Test Case '-[DepthCoreTests.ModelGeometryTests testV3InverseDepthIsNearBrightAndRejectsNonpositive]' passed (0.000 seconds).
+Test Suite 'ModelGeometryTests' passed at 2026-09-21 16:52:06.831.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.031 (0.031) seconds
+Test Suite 'PersonMaskAssemblyTests' started at 2026-09-21 16:52:06.831.
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testComponentDoesNotConnectAcrossRowBoundaryOrDiagonally]' started.
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testComponentDoesNotConnectAcrossRowBoundaryOrDiagonally]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testComponentKeepsLocalSoftPersonWithoutDistantStrongerIsland]' started.
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testComponentKeepsLocalSoftPersonWithoutDistantStrongerIsland]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testComponentSeedPrefersHighestCoverageThenNearestPoint]' started.
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testComponentSeedPrefersHighestCoverageThenNearestPoint]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testComponentWithoutReliableSeedReturnsNilAndClampsPoint]' started.
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testComponentWithoutReliableSeedReturnsNilAndClampsPoint]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testInvalidDimensionsROIsAndCountsAreRejected]' started.
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testInvalidDimensionsROIsAndCountsAreRejected]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testOverlapUsesMaximumCoverageAndPreservesFractionalEdges]' started.
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testOverlapUsesMaximumCoverageAndPreservesFractionalEdges]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testProjectionPreservesTopLeftCoordinatesAndZeroOutsideROI]' started.
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testProjectionPreservesTopLeftCoordinatesAndZeroOutsideROI]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testProjectionUsesBilinearPixelCentersAndClampsSourceEdges]' started.
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testProjectionUsesBilinearPixelCentersAndClampsSourceEdges]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testSegmentationRebuildsIndependentIDsAndStableCoverageLabels]' started.
+Test Case '-[DepthCoreTests.PersonMaskAssemblyTests testSegmentationRebuildsIndependentIDsAndStableCoverageLabels]' passed (0.000 seconds).
+Test Suite 'PersonMaskAssemblyTests' passed at 2026-09-21 16:52:06.835.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.004 (0.005) seconds
+Test Suite 'PersonMaskRefinementTests' started at 2026-09-21 16:52:06.835.
+Test Case '-[DepthCoreTests.PersonMaskRefinementTests testDistanceUsesBothAxesAndDoesNotWrapAtRowBoundary]' started.
+Test Case '-[DepthCoreTests.PersonMaskRefinementTests testDistanceUsesBothAxesAndDoesNotWrapAtRowBoundary]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PersonMaskRefinementTests testMaskWithoutReliableCoreFailsInsteadOfReturningEmptyPerson]' started.
+Test Case '-[DepthCoreTests.PersonMaskRefinementTests testMaskWithoutReliableCoreFailsInsteadOfReturningEmptyPerson]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PersonMaskRefinementTests testReliableBodyBecomesOpaqueAndAdjacentEdgesStaySoft]' started.
+Test Case '-[DepthCoreTests.PersonMaskRefinementTests testReliableBodyBecomesOpaqueAndAdjacentEdgesStaySoft]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PersonMaskRefinementTests testWeakDetachedChairAndDistantIslandsAreRemoved]' started.
+Test Case '-[DepthCoreTests.PersonMaskRefinementTests testWeakDetachedChairAndDistantIslandsAreRemoved]' passed (0.000 seconds).
+Test Suite 'PersonMaskRefinementTests' passed at 2026-09-21 16:52:06.837.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'PortraitFocusTests' started at 2026-09-21 16:52:06.837.
+Test Case '-[DepthCoreTests.PortraitFocusTests testAnchorFindsNarrowCoreBetweenCoarseSamplePoints]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testAnchorFindsNarrowCoreBetweenCoarseSamplePoints]' passed (0.290 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testBlankTapKeepsCurrentPersonAndClickSwitches]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testBlankTapKeepsCurrentPersonAndClickSwitches]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testCrowdedGroupsAreNotPresentedAsIndividualPeople]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testCrowdedGroupsAreNotPresentedAsIndividualPeople]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testDraftRestoresPeopleAndSelectionTogether]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testDraftRestoresPeopleAndSelectionTogether]' passed (0.004 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testFocusDepthIgnoresBackgroundAtSoftBoundary]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testFocusDepthIgnoresBackgroundAtSoftBoundary]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testFocusDepthMapsNarrowMaskCoreToDepthInsteadOfSamplingOutsidePerson]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testFocusDepthMapsNarrowMaskCoreToDepthInsteadOfSamplingOutsidePerson]' passed (0.167 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testLayerOrderKeepsDefocusedForegroundInFrontOfSelectedBackground]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testLayerOrderKeepsDefocusedForegroundInFrontOfSelectedBackground]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testNewSegmentationUsesSavedPointInsteadOfReassignedID]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testNewSegmentationUsesSavedPointInsteadOfReassignedID]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testPortraitCacheRequiresPhotoSizeAndSegmentationVersion]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testPortraitCacheRequiresPhotoSizeAndSegmentationVersion]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testSameDepthPeopleCanBeIndependentlyFocused]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testSameDepthPeopleCanBeIndependentlyFocused]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testSoftEdgeCanBeSelectedWithoutSelectingDistantPerson]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testSoftEdgeCanBeSelectedWithoutSelectingDistantPerson]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testUnrefinedPersonMaskCacheIsNotReusedAfterRefinementUpdate]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testUnrefinedPersonMaskCacheIsNotReusedAfterRefinementUpdate]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.PortraitFocusTests testV4RecipeLoadsWithoutAStalePersonAndV5SelectionRoundTrips]' started.
+Test Case '-[DepthCoreTests.PortraitFocusTests testV4RecipeLoadsWithoutAStalePersonAndV5SelectionRoundTrips]' passed (0.000 seconds).
+Test Suite 'PortraitFocusTests' passed at 2026-09-21 16:52:07.301.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.463 (0.464) seconds
+Test Suite 'ReferenceSceneTests' started at 2026-09-21 16:52:07.301.
+Test Case '-[DepthCoreTests.ReferenceSceneTests testBottleMonitorToyAndTableShareNearLayer]' started.
+Test Case '-[DepthCoreTests.ReferenceSceneTests testBottleMonitorToyAndTableShareNearLayer]' passed (0.133 seconds).
+Test Case '-[DepthCoreTests.ReferenceSceneTests testCabinetCheckerboardAndFloorAreFarLayer]' started.
+Test Case '-[DepthCoreTests.ReferenceSceneTests testCabinetCheckerboardAndFloorAreFarLayer]' passed (0.126 seconds).
+Test Case '-[DepthCoreTests.ReferenceSceneTests testFarFocusBlursAllNearObjectsNotJustDisplay]' started.
+Test Case '-[DepthCoreTests.ReferenceSceneTests testFarFocusBlursAllNearObjectsNotJustDisplay]' passed (0.169 seconds).
+Test Case '-[DepthCoreTests.ReferenceSceneTests testFixtureIsDeclaredHumanAnnotatedNotAutomatic]' started.
+Test Case '-[DepthCoreTests.ReferenceSceneTests testFixtureIsDeclaredHumanAnnotatedNotAutomatic]' passed (0.087 seconds).
+Test Case '-[DepthCoreTests.ReferenceSceneTests testNativeAndLayeredMasksUseDifferentExplicitSources]' started.
+Test Case '-[DepthCoreTests.ReferenceSceneTests testNativeAndLayeredMasksUseDifferentExplicitSources]' passed (0.004 seconds).
+Test Case '-[DepthCoreTests.ReferenceSceneTests testNearFocusMatchesRequestedGrouping]' started.
+Test Case '-[DepthCoreTests.ReferenceSceneTests testNearFocusMatchesRequestedGrouping]' passed (0.180 seconds).
+Test Case '-[DepthCoreTests.ReferenceSceneTests testReferenceMasksRemainSameInPreviewAndExportCoordinates]' started.
+Test Case '-[DepthCoreTests.ReferenceSceneTests testReferenceMasksRemainSameInPreviewAndExportCoordinates]' passed (0.107 seconds).
+Test Suite 'ReferenceSceneTests' passed at 2026-09-21 16:52:08.108.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.806 (0.807) seconds
+Test Suite 'SceneLayerTests' started at 2026-09-21 16:52:08.108.
+Test Case '-[DepthCoreTests.SceneLayerTests testAllObjectsOnTheSelectedLayerStaySharp]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testAllObjectsOnTheSelectedLayerStaySharp]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testAssigningMaskUsesTopLeftNormalizedCoordinatesAtDifferentResolution]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testAssigningMaskUsesTopLeftNormalizedCoordinatesAtDifferentResolution]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testBrushInterpolatesFullStrokeAndCanEraseToUnknown]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testBrushInterpolatesFullStrokeAndCanEraseToUnknown]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testBrushRadiusUsesShortEdgeInsteadOfDistortingPortrait]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testBrushRadiusUsesShortEdgeInsteadOfDistortingPortrait]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testCropInverseMapsFocusToSameSceneLayer]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testCropInverseMapsFocusToSameSceneLayer]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testEveryPixelOnFocusedLayerHasZeroBlurForAllLayerChoices]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testEveryPixelOnFocusedLayerHasZeroBlurForAllLayerChoices]' passed (0.002 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testExplicitFillUnknownDoesNotOverwriteAlreadyAssignedSubjects]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testExplicitFillUnknownDoesNotOverwriteAlreadyAssignedSubjects]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testFarFocusBlursAllNearObjectsTogether]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testFarFocusBlursAllNearObjectsTogether]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testInvalidLayerValuesAreRejectedRatherThanUsedAsDistances]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testInvalidLayerValuesAreRejectedRatherThanUsedAsDistances]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testMiddleFocusDoesNotBecomeBackgroundInverse]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testMiddleFocusDoesNotBecomeBackgroundInverse]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testPolygonMarksMissedTransparentObjectWithoutVision]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testPolygonMarksMissedTransparentObjectWithoutVision]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testReassignmentChangesLayerOfAllFutureFocusMasks]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testReassignmentChangesLayerOfAllFutureFocusMasks]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testSceneRoundTripRetainsUnknownAndProvenance]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testSceneRoundTripRetainsUnknownAndProvenance]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testUndoRedoAndNewBranchAreBoundedAndDeterministic]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testUndoRedoAndNewBranchAreBoundedAndDeterministic]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testUnknownPixelsAreNotFarAndAreProtected]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testUnknownPixelsAreNotFarAndAreProtected]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SceneLayerTests testVisionIDsDoNotOrderOrAssignDepth]' started.
+Test Case '-[DepthCoreTests.SceneLayerTests testVisionIDsDoNotOrderOrAssignDepth]' passed (0.000 seconds).
+Test Suite 'SceneLayerTests' passed at 2026-09-21 16:52:08.115.
+	 Executed 16 tests, with 0 failures (0 unexpected) in 0.005 (0.006) seconds
+Test Suite 'SubjectMaskTests' started at 2026-09-21 16:52:08.115.
+Test Case '-[DepthCoreTests.SubjectMaskTests testApertureDoesNotChangeSelectionMask]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testApertureDoesNotChangeSelectionMask]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testBackgroundDoesNotReturnAnInverseSelection]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testBackgroundDoesNotReturnAnInverseSelection]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testBiggerLocalRadiusPreservesMoreArea]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testBiggerLocalRadiusPreservesMoreArea]' passed (0.003 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testCoverageSelectionDoesNotAssumeLabelOrderingIsDepth]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testCoverageSelectionDoesNotAssumeLabelOrderingIsDepth]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testExplicitLocalModeOverridesDetectedSubjects]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testExplicitLocalModeOverridesDetectedSubjects]' passed (0.008 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testFutureRecipeVersionIsRejected]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testFutureRecipeVersionIsRejected]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testHitTestKeepsTopLeftOriginAndClampsBorders]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testHitTestKeepsTopLeftOriginAndClampsBorders]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testInvalidMaskDimensionsAndByteCountAreRejected]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testInvalidMaskDimensionsAndByteCountAreRejected]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testLegacyRecipeRetainsEditsAndAddsNewDefaults]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testLegacyRecipeRetainsEditsAndAddsNewDefaults]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testLocalFallbackIsCircularInImagePixelsNotStretched]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testLocalFallbackIsCircularInImagePixelsNotStretched]' passed (0.002 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testMaskDecoderValidatesDimensions]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testMaskDecoderValidatesDimensions]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testRecipeSanitizesNewValues]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testRecipeSanitizesNewValues]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testSoftMaskValuesAreRetained]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testSoftMaskValuesAreRetained]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testSubjectMaskBuilderDoesNotConvertLabelsIntoDepth]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testSubjectMaskBuilderDoesNotConvertLabelsIntoDepth]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testTypedAnalysisRoundTripsWithoutInventingDepth]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testTypedAnalysisRoundTripsWithoutInventingDepth]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testUnknownOrDuplicateSubjectIDsAreRejected]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testUnknownOrDuplicateSubjectIDsAreRejected]' passed (0.000 seconds).
+Test Suite 'SubjectMaskTests' passed at 2026-09-21 16:52:08.130.
+	 Executed 16 tests, with 0 failures (0 unexpected) in 0.014 (0.015) seconds
+Test Suite 'DepthCoreTests.xctest' passed at 2026-09-21 16:52:08.130.
+	 Executed 104 tests, with 0 failures (0 unexpected) in 2.618 (2.627) seconds
+Test Suite 'All tests' passed at 2026-09-21 16:52:08.130.
+	 Executed 104 tests, with 0 failures (0 unexpected) in 2.618 (2.630) seconds
+[ReferenceCPU] actual original tap 1, depth=0.2730504
+[ReferenceCPU] actual original tap 2, depth=0.22184008
+[ReferenceCPU] actual original tap 3, depth=0.86045516
+[ReferenceCPU] actual original tap 4, depth=0.84676397
+[ReferenceCPU] actual original tap 5, depth=0.8525564
+[ReferenceCPU] actual original tap 6, depth=0.22881733
+[ReferenceCPU] actual original tap 7, depth=0.86730075
+[ReferenceCPU] actual original tap 8, depth=0.8599286
+[Draft] v5 已保存原图及编辑参数；分析来源=局部虚化（非深度识别）
+[Draft] 分析缓存不可用，将根据原图重新识别：未能读取数据，因为它的格式不正确。
+[Draft] v5 已保存原图及编辑参数；分析来源=局部虚化（非深度识别）
+[Draft] 迁移旧版草稿：保留原图和参数，不复用旧外部模型的深度缓存
+[Draft] v5 已保存原图及编辑参数；分析来源=局部虚化（非深度识别）
+[Draft] v5 已保存原图及编辑参数；分析来源=局部虚化（非深度识别）
+[Draft] v5 已保存原图及编辑参数；分析来源=局部虚化（非深度识别）
+[Draft] v5 已保存原图及编辑参数；分析来源=用户校正分层
+[Draft] v5 已保存原图及编辑参数；分析来源=无可用分析缓存，下次重新计算
+[Draft] 分析缓存不可用，将根据原图重新识别：未能打开文件“analysis.plist”，因为它不存在。
+􀟈  Test run started.
+􀄵  Testing Library Version: 2084
+􀄵  Target Platform: arm64e-apple-macos14.0
+􁁛  Test run with 0 tests in 0 suites passed after 0.001 seconds.
