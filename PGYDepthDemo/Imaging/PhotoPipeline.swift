@@ -29,13 +29,14 @@ struct ExportResult: @unchecked Sendable {
 
 actor PhotoPipeline {
     private let context: CIContext
-    private let segmenter: any SubjectAnalyzing
+    private let depthEstimator: any DepthEstimating
     private let renderer: DepthRenderer
     private struct PreviewAuxiliaryKey: Equatable {
         let id: UUID
         let focus: UnitPoint2D
         let mode: FocusMode
         let tolerance: Double
+        let estimatedTolerance: Double
         let radius: Double
         let feather: Double
         let crop: CropRatio
@@ -43,12 +44,12 @@ actor PhotoPipeline {
     private var auxiliaryKey: PreviewAuxiliaryKey?
     private var auxiliaryImages: (original: CGImage, mask: CGImage)?
 
-    init(subjectAnalyzer: (any SubjectAnalyzing)? = nil) {
+    init(depthEstimator: (any DepthEstimating)? = nil) {
         let context = CIContext(options: [.cacheIntermediates: false,
                                           .workingColorSpace: ImageSupport.colorSpace,
                                           .outputColorSpace: ImageSupport.colorSpace])
         self.context = context
-        segmenter = subjectAnalyzer ?? NativeSubjectSegmenter(context: context)
+        self.depthEstimator = depthEstimator ?? CoreMLDepthEstimator()
         renderer = DepthRenderer(context: context)
     }
 
@@ -60,25 +61,27 @@ actor PhotoPipeline {
             let size = PixelSize(width: decoded.image.width, height: decoded.image.height)
             let analysis: PhotoAnalysis
             var notice: String?
-            // Matching source size is mandatory for cached spatial data. DraftStore commits
-            // original data, analysis and recipe as one snapshot; a corrupt cache is discarded.
-            if let cachedAnalysis, cachedImageSize == size, !cachedAnalysis.isFallback {
-                analysis = cachedAnalysis
-                print("[Subjects] 恢复已保存的原生分析缓存，不重复识别")
-            } else if let native = decoded.nativeDepth {
+            // The source's oriented native depth is authoritative, even when a draft
+            // contains a matching AI estimate. Cache reuse is only for photos without it,
+            // and requires matching source dimensions. DraftStore commits the source,
+            // analysis and recipe together so stale spatial data can be discarded.
+            if let native = decoded.nativeDepth {
                 analysis = .native(native)
+            } else if let cachedAnalysis, cachedImageSize == size, cachedAnalysis.supportsAutomaticDepthCache {
+                analysis = cachedAnalysis
+                print("[Depth] 恢复当前版本景深缓存，不重复推理")
             } else {
                 do {
-                    analysis = .subjects(try segmenter.analyze(decoded.image))
+                    analysis = .estimated(try depthEstimator.estimate(decoded.image))
                 } catch is CancellationError {
                     throw CancellationError()
                 } catch {
                     try Task.checkCancellation()
                     // Not a fatal import error, not a downloaded resource, not pretend depth.
-                    let reason = "系统主体识别未完成：\(error.localizedDescription)"
+                    let reason = "本机景深分析未完成：\(error.localizedDescription)"
                     analysis = .localFallback(reason: reason)
-                    notice = "未识别到主体，已使用局部虚化；可在细调中调整范围"
-                    print("[Subjects] \(reason)；明确切换为圆形局部虚化")
+                    notice = "景深分析失败，已使用局部虚化；可重试景深分析"
+                    print("[Depth] \(reason)；明确切换为圆形局部虚化")
                 }
             }
             if case .subjects(let s) = analysis, s.groupedSubjectCount > 0 {
@@ -97,7 +100,7 @@ actor PhotoPipeline {
             let rendered = try renderer.render(image: photo.preview, photoID: photo.id, analysis: photo.analysis,
                                                sourceSize: photo.sourceSize, recipe: recipe)
             let key = PreviewAuxiliaryKey(id: photo.id, focus: recipe.focusPoint, mode: recipe.focusMode,
-                                          tolerance: recipe.focusTolerance, radius: recipe.localRadius,
+                                          tolerance: recipe.focusTolerance, estimatedTolerance: recipe.estimatedFocusTolerance, radius: recipe.localRadius,
                                           feather: recipe.edgeFeather, crop: recipe.crop)
             let original: CGImage, mask: CGImage
             if auxiliaryKey == key, let images = auxiliaryImages {

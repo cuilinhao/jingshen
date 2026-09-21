@@ -1,42 +1,25 @@
-# 原生主体虚化架构
+# 按深度对焦架构
 
-## 路径
+## 输入与推理
 
-```text
-本地 JPEG / PNG / HEIC 数据
-  → PhotoLoader：EXIF 方向归一化，图像处理最长边≤2048，透明 PNG 合成白底
-  → 有可用原生深度：PhotoAnalysis.native(DepthField)
-  → 否则：NativeSubjectSegmenter → Vision 请求 → PhotoAnalysis.subjects(SubjectSegmentation)
-  → 系统请求失败/没有主体：PhotoAnalysis.localFallback(reason)
-  → 点击坐标逆映射到原图，生成虚化控制蒙版
-  → DepthRenderer → Core Image 可变模糊 / 前景扩散 / 色调 / 裁切
-  → 1024 预览或≤2048 JPEG 导出
-```
+PhotoLoader 使用 ImageIO 读取并应用 EXIF 方向，把原图和辅助深度放到统一的左上角坐标系。PhotoPipeline actor 串行执行处理。缓存必须匹配原图尺寸且来源可复用；没有可用缓存时先取照片原生深度，否则运行 CoreMLDepthEstimator。
 
-没有服务器、模型下载、远程推理或额外模型文件。
+估计器惰性加载 App 内编译好的 DepthAnythingV2SmallF16。Vision 请求使用 scaleFill，将整幅图像映射到固定 518×392 输入，避免中心裁切丢掉前景。输出检查非有限值和全零失败，然后以分位值归一化到 0 远、1 近。这个映射不提供米制距离。模拟器 CPU 推理避免已复现的 GPU 返回全零问题；真机使用 Core ML 的 all 配置。
 
-## 数据含义
+PhotoAnalysis 区分 native、estimated、旧 subjects 和 localFallback。estimated 带模型/预处理版本；旧主体缓存和旧版本估计缓存不会绕过重新分析。失败回退有明确 UI 提示，原图仍可编辑与导出。
 
-`DepthField` 只存照片原生相对视差：0 远，1 近，不承诺实际米数。`SubjectSegmentation.labels` 只存系统主体编号：0 背景，非零为主体。编号的大小不代表远近；`subjects` 保存各主体的软覆盖蒙版。
+## 对焦与渲染
 
-`FocusMaskBuilder` 分别处理原生深度、主体、明确的圆形局部模式。点击某主体时，对其软蒙版取反得到虚化蒙版；点背景时，前景蒙版最大值合并后作为虚化蒙版。只有明确前景相对背景的关系才触发前景扩散，不擅自排序两个主体的距离。
+点击坐标经过当前裁切和图片显示区域转换，映射回完整原图归一化坐标。估计深度采用小邻域中值取焦点值。FocusMaskBuilder 以像素深度到焦点深度的差生成连续虚化量，清晰带默认 0.18；不同实例只要落在带内就保持清晰。原生深度保留独立容差与映射。局部模式使用明确的圆形选区。
 
-`GrayMask` 使用连续字节 Data 保存，记录尺寸并校验数据长度。所有公共坐标统一为原图左上角归一化坐标；Vision PixelBuffer 按左上角逐行读取，尊重 bytesPerRow。只有 Core Image 裁切矩形转换到左下角坐标。
+DepthRenderer 缓存不含光圈的基础蒙版。光圈改变只更新模糊程度，无需重新推理。Core Image 将蒙版映射到预览或导出尺寸，并按尺寸缩放虚化半径。失焦前景的虚化支持区域向轮廓外扩展，避免在原轮廓处截断。图像只做一次可变模糊，不再把第二份模糊前景叠回形成硬剪影。它使用可见邻域颜色，不进行被遮挡背景重建。
 
-## 性能与并发
+曝光、色调、裁切在景深渲染后应用。预览和 JPEG 导出共用渲染器及配方；导出最长边 2048。自动深度预览显示相对深度，不把它标成虚化量图。
 
-PhotoPipeline actor 负责串行图像处理，主线程只管理 UI。导入生成主体蒙版一次；更改光圈不再调用 Vision。变更选中点、模式或清晰范围才更新基础蒙版；光圈改变只更新模糊程度。原图对比和诊断图也有与参数对应的缓存。
+## 状态与持久化
 
-每次导入/预览都有取消与版本校验，旧结果不会覆盖新照片或新参数。系统请求和一次 GPU 提交不能保证中途被打断；只能在开始前、阶段之间与结束后检查取消。性能需要真机测量，不提供预先帧率保证。
+EditorModel 管理 UI 状态、取消旧请求、导出和自动保存。PhotoPipeline 的缓存键包含焦点、模式、两种深度容差、局部范围、照片标识和尺寸。推理结果随照片复用，更改焦点不重新加载模型。
 
-## 持久化
+DraftStore 以带类型的二进制 plist 保存分析、原图和配方。旧配方缺少 estimatedFocusTolerance 时使用默认值，保留原有曝光、光圈等设置。旧主体数据类型保留用于兼容解码，不再是普通照片自动分析入口。
 
-DraftStore 是 Foundation actor，可在 Linux 的 Swift 测试中实际验证。每次写入独立 UUID 快照目录，source.data、analysis.plist、recipe.json 全部写好后才原子替换 current.json 指针。成功提交后仅清理本功能的旧 UUID 目录。
-
-v2 使用二进制 plist 保存带类型的分析，不把标签当作浮点深度。v1 草稿保留原图和编辑参数；不信任旧外部模型的深度缓存，重新从原文件读取原生深度或调用系统识别。缓存损坏时保留原图与参数并重新分析。当前格式提供长度/维度一致性检查，不是加密归档或面向不可信远端文件的安全格式。
-
-## 接入正式项目
-
-业务代码仅 Swift，使用系统 SwiftUI、Vision、Core Image、ImageIO、AVFoundation、Photos/PhotosUI。可把 Core 和 Imaging 作为处理模块接入已有编辑 Recipe；录屏参考 UI 与处理引擎分离。
-
-第一版不做真实场景三维重建、失焦恢复、视频、实时相机、手工笔刷精修、多项目草稿列表或遮挡补全。要提高透明物体、发丝与背景遮挡处质量，需要独立实测和后续改进，不能由“无下载依赖”推导出“与参考软件同算法/同画质”。
+全部照片处理在本地；不含请求服务器、动态下载模型或第三方推理运行库。模型许可证见 THIRD_PARTY_NOTICES.md。

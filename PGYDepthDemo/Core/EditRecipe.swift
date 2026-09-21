@@ -76,6 +76,7 @@ struct EditRecipe: Codable, Equatable, Sendable {
     var depthEnabled = true
     var effectStrength: Double = 1
     var focusTolerance: Double = 0.035
+    var estimatedFocusTolerance: Double = 0.18
     var exposure: Double = 0
     var crop: CropRatio = .original
     var style: PhotoStyle = .original
@@ -88,7 +89,7 @@ struct EditRecipe: Codable, Equatable, Sendable {
 
     private enum CodingKeys: String, CodingKey {
         case schemaVersion, focusPoint, aperture, depthEnabled, effectStrength, focusTolerance
-        case exposure, crop, style, focusMode, localRadius, edgeFeather
+        case exposure, crop, style, focusMode, localRadius, edgeFeather, estimatedFocusTolerance
     }
     init(from decoder: Decoder) throws {
         self.init()
@@ -102,6 +103,7 @@ struct EditRecipe: Codable, Equatable, Sendable {
         depthEnabled = try box.decodeIfPresent(Bool.self, forKey: .depthEnabled) ?? depthEnabled
         effectStrength = try box.decodeIfPresent(Double.self, forKey: .effectStrength) ?? effectStrength
         focusTolerance = try box.decodeIfPresent(Double.self, forKey: .focusTolerance) ?? focusTolerance
+        estimatedFocusTolerance = try box.decodeIfPresent(Double.self, forKey: .estimatedFocusTolerance) ?? estimatedFocusTolerance
         exposure = try box.decodeIfPresent(Double.self, forKey: .exposure) ?? exposure
         crop = try box.decodeIfPresent(CropRatio.self, forKey: .crop) ?? crop
         style = try box.decodeIfPresent(PhotoStyle.self, forKey: .style) ?? style
@@ -119,6 +121,7 @@ struct EditRecipe: Codable, Equatable, Sendable {
         aperture = Aperture.clamp(aperture)
         effectStrength = effectStrength.isFinite ? min(1.5, max(0, effectStrength)) : 1
         focusTolerance = focusTolerance.isFinite ? min(0.2, max(0.01, focusTolerance)) : 0.035
+        estimatedFocusTolerance = estimatedFocusTolerance.isFinite ? min(0.30, max(0.02, estimatedFocusTolerance)) : 0.18
         exposure = exposure.isFinite ? min(1.5, max(-1.5, exposure)) : 0
     }
 }

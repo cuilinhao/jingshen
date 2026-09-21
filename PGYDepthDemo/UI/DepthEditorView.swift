@@ -87,10 +87,11 @@ struct DepthEditorView: View {
                 Button { showFilePicker = true } label: { Label("从文件导入", systemImage: "folder") }
                 Divider()
                 Button { model.showMask.toggle() } label: {
-                    Label(model.showMask ? "关闭蒙版预览" : "查看深度 / 虚化蒙版", systemImage: "square.3.layers.3d")
-                }.disabled(!model.controlsEnabled)
-                Button { model.retryAnalysis() } label: { Label("重新识别主体", systemImage: "arrow.clockwise") }
+                    Label(model.showMask ? "关闭深度 / 蒙版预览" : "查看深度 / 虚化蒙版", systemImage: "square.3.layers.3d")
+                }.disabled(!model.controlsEnabled).accessibilityIdentifier("depthPreview")
+                Button { model.retryAnalysis() } label: { Label("重新分析景深", systemImage: "arrow.clockwise") }
                     .disabled(!model.controlsEnabled)
+                    .accessibilityIdentifier("analysisRetry")
                 Button { model.saveDraft() } label: { Label("保存可编辑草稿", systemImage: "square.and.arrow.down") }
                     .disabled(!model.controlsEnabled)
                 Button { model.reset() } label: { Label("重置编辑", systemImage: "arrow.counterclockwise") }
@@ -104,6 +105,7 @@ struct DepthEditorView: View {
                     .background(DepthTheme.panel, in: Circle())
             }.offset(x: 353, y: 67).disabled(model.isExporting)
                 .accessibilityLabel("更多")
+                .accessibilityIdentifier("moreMenu")
 
             HStack(spacing: 4) {
                 if model.toast == nil {
@@ -121,14 +123,17 @@ struct DepthEditorView: View {
                 Spacer(minLength: 0)
                 Text(model.banner).font(.system(size: 11.2, weight: .semibold))
                     .foregroundStyle(DepthTheme.muted).lineLimit(1).minimumScaleFactor(0.8)
+                    .accessibilityIdentifier("analysisBanner")
                 DepthToggle(enabled: $model.recipe.depthEnabled)
                     .disabled(!model.controlsEnabled)
+                    .accessibilityIdentifier("depthToggle")
             }
             .padding(.horizontal, 8).frame(width: 392, height: 49)
             .background(DepthTheme.panel, in: Capsule()).offset(x: 5, y: 621)
 
             ApertureRuler(value: model.recipe.aperture, isEnabled: model.controlsEnabled,
                           onChange: model.setAperture).offset(x: 10, y: 695)
+                .accessibilityIdentifier("apertureRuler")
 
             HStack(spacing: 0) {
                 toolButton(label: "裁切", action: { activeSheet = .crop }) {
@@ -154,6 +159,7 @@ struct DepthEditorView: View {
                 Image(systemName: "square.and.arrow.down").font(.system(size: 21, weight: .regular))
             }.offset(x: 337, y: 766).disabled(!model.controlsEnabled)
                 .accessibilityLabel("导出照片")
+                .accessibilityIdentifier("exportButton")
         }
         .environment(\.sizeCategory, .large)
     }

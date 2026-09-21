@@ -96,23 +96,40 @@ struct SubjectSegmentation: Codable, Equatable, Sendable {
 enum FocusMode: String, Codable, CaseIterable, Identifiable, Sendable {
     case automatic, local
     var id: Self { self }
-    var title: String { self == .automatic ? "自动主体 / 原生深度" : "局部虚化（圆形选区）" }
+    var title: String { self == .automatic ? "自动景深（原生 / AI）" : "局部虚化（圆形选区）" }
 }
 
 /// Never encode subject IDs as continuous disparity. Each rendering path stays explicitly typed.
 enum PhotoAnalysis: Codable, Equatable, Sendable {
     case native(DepthField)
+    case estimated(DepthEstimate)
     case subjects(SubjectSegmentation)
     case localFallback(reason: String)
 
     var sourceDescription: String {
         switch self {
         case .native: return "照片自带深度"
+        case .estimated: return "AI 估计景深 · 本机处理"
         case .subjects: return "苹果 Vision 主体分割"
         case .localFallback: return "局部虚化（非深度识别）"
         }
     }
     var isNative: Bool { if case .native = self { return true }; return false }
+    var isEstimated: Bool { if case .estimated = self { return true }; return false }
+    var depthField: DepthField? {
+        switch self {
+        case .native(let field): return field
+        case .estimated(let estimate): return estimate.field
+        default: return nil
+        }
+    }
+    var supportsAutomaticDepthCache: Bool {
+        switch self {
+        case .native: return true
+        case .estimated(let estimate): return estimate.modelIdentifier == DepthEstimate.currentModelIdentifier
+        default: return false
+        }
+    }
     var isFallback: Bool { if case .localFallback = self { return true }; return false }
 }
 
@@ -163,6 +180,15 @@ enum FocusMaskBuilder {
                                     bytes: Data(depth.bytes { DepthMath.blurAmount(depth: $0, focus: focus, tolerance: tolerance) }))
             let near = try GrayMask(width: depth.width, height: depth.height,
                                     bytes: Data(depth.bytes { DepthMath.smoothstep(tolerance + 0.04, tolerance + 0.30, $0 - focus) }))
+            return FocusMaskSet(blur: blur, nearDefocus: near.bytes.contains(where: { $0 > 20 }) ? near : nil)
+        case .estimated(let estimate):
+            let depth = estimate.field
+            let focus = DepthFocus.focus(in: depth, at: safe.focusPoint)
+            let tolerance = Float(safe.estimatedFocusTolerance)
+            let blur = try GrayMask(width: depth.width, height: depth.height,
+                                   bytes: Data(depth.bytes { DepthMath.smoothstep(tolerance, min(1, tolerance + 0.22), abs($0 - focus)) }))
+            let near = try GrayMask(width: depth.width, height: depth.height,
+                                   bytes: Data(depth.bytes { DepthMath.smoothstep(tolerance, min(1, tolerance + 0.22), $0 - focus) }))
             return FocusMaskSet(blur: blur, nearDefocus: near.bytes.contains(where: { $0 > 20 }) ? near : nil)
         case .subjects(let segmentation):
             let blur = try segmentation.sharpMask(at: safe.focusPoint).inverted()

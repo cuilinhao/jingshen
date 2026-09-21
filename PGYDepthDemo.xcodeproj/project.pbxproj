@@ -31,6 +31,12 @@
 		BBF5C1C11EFDDB0441CB08EB /* PGYDepthDemo/Imaging/PixelBufferReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABDB83D8BAD8839EE45E2E2F /* PGYDepthDemo/Imaging/PixelBufferReader.swift */; };
 		BF4F181ECAE5110420FA7C1A /* PGYDepthDemo/UI/PhotoCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059B2AB4904EA3BC1510A526 /* PGYDepthDemo/UI/PhotoCanvas.swift */; };
 		DADAB82BBFDE72F52D3EE11F /* PGYDepthDemo/Imaging/PhotoLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FA114F8EFAD8CDA2BC1DBD /* PGYDepthDemo/Imaging/PhotoLoader.swift */; };
+		087819D5E67A60C96D8E7B41 /* PGYDepthDemo/Imaging/CoreMLDepthEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C002BA4B6301EFECFB30F8; };
+		EAF8A8CA5B888A795030CE94 /* PGYDepthDemo/Resources/DepthAnythingV2SmallF16.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 40ED01A64A8CD6FBD46A8E13; };
+		8B850B30C2755A10E8043D9A /* Tests/Fixtures/FocusScene.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B687EAE294162CA17AF02E; };
+		CAD5BECD13E79A9A25902C87 /* Tests/IOS/DepthEdgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF37498EC33B74789EF076CC; };
+		6C23562AE5DACA0436573FE8 /* Tests/IOS/NativeDepthPriorityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 934D6E1DC59A5C12C5D9F185; };
+		21C36E969AF860BB5CABB3DB /* Docs/DepthAnythingV2-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = EC78D780AD7BF2B53255E05E; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +79,12 @@
 		F219C0274590DA45E4BEF1EA /* PGYDepthDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PGYDepthDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2A0095C16D09A6992C4534D /* PGYDepthDemo/State/EditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/State/EditorModel.swift; sourceTree = "<group>"; };
 		F7FA114F8EFAD8CDA2BC1DBD /* PGYDepthDemo/Imaging/PhotoLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/PhotoLoader.swift; sourceTree = "<group>"; };
+		F3C002BA4B6301EFECFB30F8 /* PGYDepthDemo/Imaging/CoreMLDepthEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/CoreMLDepthEstimator.swift; sourceTree = "<group>"; };
+		40ED01A64A8CD6FBD46A8E13 /* PGYDepthDemo/Resources/DepthAnythingV2SmallF16.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = PGYDepthDemo/Resources/DepthAnythingV2SmallF16.mlpackage; sourceTree = "<group>"; };
+		28B687EAE294162CA17AF02E /* Tests/Fixtures/FocusScene.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tests/Fixtures/FocusScene.png; sourceTree = "<group>"; };
+		FF37498EC33B74789EF076CC /* Tests/IOS/DepthEdgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/IOS/DepthEdgeTests.swift; sourceTree = "<group>"; };
+		934D6E1DC59A5C12C5D9F185 /* Tests/IOS/NativeDepthPriorityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/IOS/NativeDepthPriorityTests.swift; sourceTree = "<group>"; };
+		EC78D780AD7BF2B53255E05E /* Docs/DepthAnythingV2-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Docs/DepthAnythingV2-LICENSE.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +108,7 @@
 		1BDBD24583AAF7F81F76B976 /* Swift Sources */ = {
 			isa = PBXGroup;
 			children = (
+				F3C002BA4B6301EFECFB30F8 /* PGYDepthDemo/Imaging/CoreMLDepthEstimator.swift */,
 				599DCA26DC389E7EC1D5D468 /* PGYDepthDemo/App/PGYDepthDemoApp.swift */,
 				2015F6614F0C718480A07F0F /* PGYDepthDemo/Core/DepthField.swift */,
 				40C27E6AA253F02296512C87 /* PGYDepthDemo/Core/DraftStore.swift */,
@@ -120,6 +133,8 @@
 		27EDA01F986DA5EFCB134E3D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				EC78D780AD7BF2B53255E05E /* Docs/DepthAnythingV2-LICENSE.txt */,
+				40ED01A64A8CD6FBD46A8E13 /* PGYDepthDemo/Resources/DepthAnythingV2SmallF16.mlpackage */,
 				893B4AEF2982E8F2E18292F5 /* PGYDepthDemo/Resources/DemoSample.jpg */,
 				4E0EB8D64FC4C63976C2293E /* PGYDepthDemo/Resources/Assets.xcassets */,
 				0AF2650F7F3108D6E801BB76 /* PGYDepthDemo/Resources/PrivacyInfo.xcprivacy */,
@@ -131,6 +146,9 @@
 		BFC937463906E5DB7A02A37C /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				934D6E1DC59A5C12C5D9F185 /* Tests/IOS/NativeDepthPriorityTests.swift */,
+				FF37498EC33B74789EF076CC /* Tests/IOS/DepthEdgeTests.swift */,
+				28B687EAE294162CA17AF02E /* Tests/Fixtures/FocusScene.png */,
 				1EEDB1E87BD929B97AA60721 /* Tests/DepthCoreTests/DepthCoreTests.swift */,
 				E26CB7841AE1D91A07BC586F /* Tests/DepthCoreTests/DraftStoreTests.swift */,
 				CC3717FB8D91C26FA7C660DF /* Tests/DepthCoreTests/SubjectMaskTests.swift */,
@@ -242,6 +260,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				21C36E969AF860BB5CABB3DB /* Docs/DepthAnythingV2-LICENSE.txt in Resources */,
 				AA038E78BCD2C81118D67847 /* PGYDepthDemo/Resources/DemoSample.jpg in Resources */,
 				A3B536CEC5AE3A4A3167642D /* PGYDepthDemo/Resources/Assets.xcassets in Resources */,
 				9B324D754744AEA7780FE8F5 /* PGYDepthDemo/Resources/PrivacyInfo.xcprivacy in Resources */,
@@ -252,6 +271,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B850B30C2755A10E8043D9A /* Tests/Fixtures/FocusScene.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,6 +282,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAF8A8CA5B888A795030CE94 /* PGYDepthDemo/Resources/DepthAnythingV2SmallF16.mlpackage in Sources */,
+				087819D5E67A60C96D8E7B41 /* PGYDepthDemo/Imaging/CoreMLDepthEstimator.swift in Sources */,
 				4DC04B1012CFBB8C459E7AB3 /* PGYDepthDemo/App/PGYDepthDemoApp.swift in Sources */,
 				7D385C39C0888DDF671A905A /* PGYDepthDemo/Core/DepthField.swift in Sources */,
 				0AD6ABDA1B1D24AB455AAB5B /* PGYDepthDemo/Core/DraftStore.swift in Sources */,
@@ -286,6 +308,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C23562AE5DACA0436573FE8 /* Tests/IOS/NativeDepthPriorityTests.swift in Sources */,
+				CAD5BECD13E79A9A25902C87 /* Tests/IOS/DepthEdgeTests.swift in Sources */,
 				A6B3D1BE4F5F9FBAC1B123A4 /* Tests/DepthCoreTests/DepthCoreTests.swift in Sources */,
 				90C7DA61816622A5DEC48B86 /* Tests/DepthCoreTests/DraftStoreTests.swift in Sources */,
 				781C382D6CB5E746D0C1A1E1 /* Tests/DepthCoreTests/SubjectMaskTests.swift in Sources */,

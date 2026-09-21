@@ -1,56 +1,53 @@
-# 原生主体虚化版 v2 · 交付验证记录
+# 验证记录 · 2026-09-20
 
-日期：2026-09-20。环境：Linux x86_64、Swift 6.2.1；App 项目使用 Swift 5 语言模式，最低 iOS 17。
+本次以用户提供的 yuntu0920.png 为输入，对照 demo-01/02 与 xingtu-01/02 的前后景关系，使用提供的 DepthAnythingV2SmallF16 模型实现按深度对焦。
 
-**此环境没有 Xcode、Apple iOS SDK、iOS 模拟器或 iPhone。下面的“通过”不代表通过了 Xcode 编译或真机验收。**
+## 已执行
 
-## 已实际执行
+环境：Apple Silicon Mac，Xcode 27；iPhone 18 Pro 模拟器，iOS 27.0。
 
-| 检查 | 实际结果 | 证据 |
-|---|---|---|
-| Swift 核心、主体选择、局部蒙版、配方测试 | 28 项通过 | `Verification/core-native-final.log` |
-| Swift 草稿持久化与旧版迁移测试 | 7 项通过；与上行合计 35 项，0 失败 | 同上 |
-| 工程静态回归检查 | 6 项通过，0 失败 | `Verification/project-tests-final.log` |
-| 实际 `.pbxproj` OpenStep 解析与引用完整性 | 78 个对象；17 个 App Swift 源码文件、4 个测试文件归属一致 | `Verification/project-validation-native.log` |
-| 无外部模型依赖检查 | 无下载 Run Script、无远程 Package 引用、无外部模型文件或加载代码 | 同上及工程回归检查 |
-| 所有 App Swift 文件与 iOS 图像测试的语法解析 | 通过 `swiftc -frontend -parse`；不是 Apple SDK 类型检查 | `Verification/swift-parse-native.log` |
-| 资源、共享 Scheme、权限与隐私清单、Bash 语法 | 通过静态检查 | `Verification/project-validation-native.log` |
-| 录屏布局保留 | 对照固定几何数值和光圈刻度实现；不是运行后像素比对 | 工程回归检查中的 UI 项 |
+| 检查 | 结果 |
+| --- | --- |
+| Swift 核心测试 | 40 项，0 失败 |
+| Xcode 模拟器测试（包含核心测试） | 56 项，0 失败 |
+| Python 工程/离线配置测试 | 10 项，0 失败 |
+| 实际 pbxproj/资源归属检查 | 通过，模型在 App Sources 编译，样图只进入测试包 |
+| iPhone Release 无签名构建 | BUILD SUCCEEDED；不等同真机安装/运行 |
+| git diff --check | 通过 |
 
-6 项工程回归是 Python 标准库测试，读取实际工程与源码。它们没有用假 Vision 结果来冒充真实识别验证。核心测试使用明确构造的标签、蒙版、深度、配方和临时文件夹，验证数学与持久化行为。
+模拟器测试运行真实 Core ML 权重和 Core Image，不使用固定输出代替模型。实际测试渲染图包括 near-focus.png、far-focus.png、near-export.png、far-export.png、estimated-depth.png；XCTest 报告保留图片附件。
 
-## 本轮审查中修正
+真实样图验证：点瓶子后，瓶子、显示器和附近桌面保持清晰，柜子虚化；点柜子后，柜子清晰，前景显示器、瓶子和桌面虚化。通过渲染图目视复查，主体分组导致的“点瓶子和柜子效果相同”已消除。默认 AI 虚化半径调至 1024 长边下 16 像素，再随光圈和效果强度缩放，以保留更适度的失焦形状。
 
-删除旧模型下载构建阶段，同时删除运行时加载路径，避免“能构建但仍找模型”。将原生深度、主体标签/软蒙版、局部选区分别建模；主体编号不会被用作距离。
+自动断言还覆盖：切换清晰范围后缓存刷新、f16/关闭效果保留像素、预览与缩放导出的平均通道差小于 8/255、草稿类型与模型版本、失败回退、错误尺寸缓存拒绝、真实 JPEG 辅助视差与 EXIF 6 的方向/原生优先级。
 
-更新旧草稿迁移：保留原图和编辑参数，丢弃旧外部模型的深度缓存并重新分析。损坏分析缓存不会丢弃原图；导入和渲染保留版本号与取消保护。
+## 测试发现并修复
 
-补充沙盒文件和用户授权文件大小读取的隐私理由，并调整带标题与 footer 的 SwiftUI Section 为明确的 `content:header:footer:` 初始化写法。相应静态回归先观察到失败，再修改并重新执行通过。
+1. **模拟器 GPU 返回全零深度。**首轮真实样图测试有 5 个焦平面断言失败，定位到模拟器 MPSGraph 后端异常但请求仍返回输出。模拟器改用 CPU，并拒绝全零/非有限预测；模型缓存版本更新，避免恢复调试期间的无效结果。
+2. **失焦前景仍有硬剪影。**旧版整图模糊后再次叠加前景，合成白黑边缘的相邻像素跳变为 43/255。改为扩展前景的虚化支持范围并只模糊一次，模拟器测得跳变 5/255；远处聚焦条纹对比仍大于 240/255。
+3. **缓存可能覆盖原生深度。**恢复时先复用 AI 缓存，可能跳过本次已成功读取的原生辅助深度。改为原生深度优先；真实带 EXIF 旋转的 JPEG 辅助视差测试先红后绿。
+4. **模型构建归属。**集成中检查捕获了模型初始加入 Resources 的错误；最终模型由 Sources 编译为 mlmodelc，估计器加入 App Sources，用户样图只加入测试 Resources。
 
-这些是本次实现者的源码自查，不是独立审计或另一个审查者的验收。
+## 未完成的设备验收与画质边界
 
-## 已提供、但未执行的 Apple SDK 测试
+- 已完成的是模拟器内自动运行、真实推理和渲染检查。当前 Xcode 27 的 Device Hub 无法由桌面自动化工具取得可操作窗口，尝试返回 timeoutReached，未宣称完成逐项手势/系统相册权限/分享面板人工验收。
+- 真机签名安装、`.all` 推理路径、断网首次安装、速度/内存/耗电/散热尚未实测。工程不含网络下载路径，不能据此冒充物理断网测试。
+- 已覆盖真实用户竖图与 EXIF 6 原生深度；尚未穷举所有 EXIF 镜像和不同长宽比的模型表现。
+- 参考醒图照片是屏幕翻拍，带反光和透视；本次验证焦平面行为，不宣称逐像素一致。细线、透明物体和遮挡边缘仍有单目估计误差。
+- 前景扩散会影响轮廓附近可见背景，不重建被遮挡内容；Core Image 可变模糊与醒图专有散景形状可能不同。
 
-`Tests/IOS/ImagingTests.swift` 共 11 项，需要在 Mac 上用 Xcode 的 ⌘U 执行。覆盖灰度图方向、裁切坐标、Core Image 参数、关闭效果/f16 的像素结果、局部虚化、带行填充的 PixelBuffer、浮点软蒙版，以及分析失败回退/缓存复用/尺寸不匹配场景。
+## 复验命令
 
-其中分析失败与缓存测试使用可控的分析器替身，只验证调度与回退；即使这些测试在 Mac 上通过，也不能替代真实 `VNGenerateForegroundInstanceMaskRequest` 的照片验收。
-
-## 仍待 Mac / iPhone 验证
-
-尚未进行 Xcode 类型检查、链接、签名、安装或运行；真实 Vision 主体分割、Core Image 输出画质、相册权限、导出分享、杀进程恢复、连续拖动性能与内存均未在设备上执行。
-
-“Mac 断网构建”与“全新安装 App 后，断网首次识别本地照片”是两项独立的待验收测试。工程没有自定义联网步骤、模型权重或请求，但不能以静态检查推断每台设备上的系统 Vision 都必定成功。识别失败会明确使用局部虚化，不会以此冒充主体识别通过。
-
-`Docs/VideoReference.png` 是用户录屏参考帧，不是新 App 运行截图。主页面沿用参考布局和刻度交互，但尚未逐像素验证；未展示过的展开面板是 Demo 补充设计。
-
-## 在 Mac 上复验
-
-解压到新文件夹，打开 `PGYDepthDemo.xcodeproj`，选择 PGYDepthDemo Scheme 与设备，⌘R 构建运行，⌘U 运行测试。无需先执行脚本或下载模型。
-
-可选的编译检查命令：
-
-```bash
-bash Scripts/Verify_on_Mac.sh
+```sh
+swift test
+python3 -m unittest discover -s Tests -p test_native_project.py -v
+python3 Scripts/validate_project.py
+xcodebuild -project PGYDepthDemo.xcodeproj -scheme PGYDepthDemo \
+  -destination 'platform=iOS Simulator,name=iPhone 18 Pro' \
+  test CODE_SIGNING_ALLOWED=NO
+xcodebuild -project PGYDepthDemo.xcodeproj -scheme PGYDepthDemo \
+  -configuration Release -destination 'generic/platform=iOS' \
+  build CODE_SIGNING_ALLOWED=NO
 ```
 
-该脚本需要已安装完整 Xcode，执行不签名的模拟器 SDK 构建，输出 `Verification/mac-build.log`。它不进行模型下载，不代表真机 UI 验收。功能与离线验收步骤见 `Docs/TEST_PLAN.md`。
+选择本机已安装的模拟器型号/系统版本。应用运行与测试都无需下载模型。

@@ -1,0 +1,119 @@
+Building for debugging...
+[1 / 5]
+[2 / 6] DepthCore
+[3 / 7] DepthCore
+[9 / 11] DepthCore
+[10 / 12] DepthCore
+[13 / 16] DepthCoreTests-product
+[16 / 19] DepthCoreTests-product
+[18 / 19] DepthCoreTests-product
+Build complete! (1.77秒)
+Test Suite 'All tests' started at 2026-09-20 19:45:54.329.
+Test Suite 'DepthCoreTests.xctest' started at 2026-09-20 19:45:54.330.
+Test Suite 'DepthCoreTests' started at 2026-09-20 19:45:54.330.
+Test Case '-[DepthCoreTests.DepthCoreTests testApertureLimitsAndRoundTrip]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testApertureLimitsAndRoundTrip]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testBlurDecreasesAsFNumberIncreases]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testBlurDecreasesAsFNumberIncreases]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testConstantDepthDoesNotInventAnArtificialGradient]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testConstantDepthDoesNotInventAnArtificialGradient]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testDepthNormalizationRejectsInvalidData]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testDepthNormalizationRejectsInvalidData]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testDepthRowsAndCornersHaveTopLeftOrigin]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testDepthRowsAndCornersHaveTopLeftOrigin]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testExportSizingNeverUpscales]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testExportSizingNeverUpscales]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testFocusSamplesNeighborhoodMedianRatherThanSingleOutlier]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testFocusSamplesNeighborhoodMedianRatherThanSingleOutlier]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testInvalidDimensionsAreRejected]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testInvalidDimensionsAreRejected]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testRecipeRoundTripAndSanitization]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testRecipeRoundTripAndSanitization]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testSameDepthHasSameBlurRegardlessOfSpatialDistance]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testSameDepthHasSameBlurRegardlessOfSpatialDistance]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testSquareCropMapsBackToOriginalDepth]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testSquareCropMapsBackToOriginalDepth]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DepthCoreTests testTapOutsideAspectFitImageIsIgnored]' started.
+Test Case '-[DepthCoreTests.DepthCoreTests testTapOutsideAspectFitImageIsIgnored]' passed (0.000 seconds).
+Test Suite 'DepthCoreTests' passed at 2026-09-20 19:45:54.333.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.003 (0.003) seconds
+Test Suite 'DraftStoreTests' started at 2026-09-20 19:45:54.334.
+Test Case '-[DepthCoreTests.DraftStoreTests testCorruptAnalysisIsRecoverableWithoutLosingOriginalAndEdits]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testCorruptAnalysisIsRecoverableWithoutLosingOriginalAndEdits]' passed (0.006 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testEmptyStoreHasNoDraft]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testEmptyStoreHasNoDraft]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testLegacyAIDepthIsDiscardedNotMislabeledAsNative]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testLegacyAIDepthIsDiscardedNotMislabeledAsNative]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testNewSnapshotCleansOnlyOwnUUIDDirectories]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testNewSnapshotCleansOnlyOwnUUIDDirectories]' passed (0.003 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testPointerCannotEscapeDraftDirectory]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testPointerCannotEscapeDraftDirectory]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testPreviousCompleteDraftSurvivesRejectedSave]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testPreviousCompleteDraftSurvivesRejectedSave]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.DraftStoreTests testV2RoundTripStoresTypedAnalysisAndRecipe]' started.
+Test Case '-[DepthCoreTests.DraftStoreTests testV2RoundTripStoresTypedAnalysisAndRecipe]' passed (0.001 seconds).
+Test Suite 'DraftStoreTests' passed at 2026-09-20 19:45:54.347.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.013 (0.014) seconds
+Test Suite 'EstimatedDepthTests' started at 2026-09-20 19:45:54.347.
+Test Case '-[DepthCoreTests.EstimatedDepthTests testDisconnectedObjectsInSameDepthBandStaySharp]' started.
+Test Case '-[DepthCoreTests.EstimatedDepthTests testDisconnectedObjectsInSameDepthBandStaySharp]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.EstimatedDepthTests testEstimatedAnalysisRoundTripsAndIsNotNative]' started.
+Test Case '-[DepthCoreTests.EstimatedDepthTests testEstimatedAnalysisRoundTripsAndIsNotNative]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.EstimatedDepthTests testFarFocusDefocusesBothNearObjects]' started.
+Test Case '-[DepthCoreTests.EstimatedDepthTests testFarFocusDefocusesBothNearObjects]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.EstimatedDepthTests testFocusSamplingRejectsSinglePixelDepthOutlier]' started.
+Test Case '-[DepthCoreTests.EstimatedDepthTests testFocusSamplingRejectsSinglePixelDepthOutlier]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.EstimatedDepthTests testOldModelAndSubjectCachesRequireReanalysis]' started.
+Test Case '-[DepthCoreTests.EstimatedDepthTests testOldModelAndSubjectCachesRequireReanalysis]' passed (0.000 seconds).
+Test Suite 'EstimatedDepthTests' passed at 2026-09-20 19:45:54.349.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'SubjectMaskTests' started at 2026-09-20 19:45:54.349.
+Test Case '-[DepthCoreTests.SubjectMaskTests testApertureDoesNotChangeSelectionMask]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testApertureDoesNotChangeSelectionMask]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testBackgroundSelectsInverseOfAllSubjects]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testBackgroundSelectsInverseOfAllSubjects]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testBiggerLocalRadiusPreservesMoreArea]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testBiggerLocalRadiusPreservesMoreArea]' passed (0.002 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testExplicitLocalModeOverridesDetectedSubjects]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testExplicitLocalModeOverridesDetectedSubjects]' passed (0.008 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testFutureRecipeVersionIsRejected]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testFutureRecipeVersionIsRejected]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testHitTestKeepsTopLeftOriginAndClampsBorders]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testHitTestKeepsTopLeftOriginAndClampsBorders]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testInvalidMaskDimensionsAndByteCountAreRejected]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testInvalidMaskDimensionsAndByteCountAreRejected]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testLegacyRecipeRetainsEditsAndAddsNewDefaults]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testLegacyRecipeRetainsEditsAndAddsNewDefaults]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testLocalFallbackIsCircularInImagePixelsNotStretched]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testLocalFallbackIsCircularInImagePixelsNotStretched]' passed (0.002 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testMaskDecoderValidatesDimensions]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testMaskDecoderValidatesDimensions]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testRecipeSanitizesNewValues]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testRecipeSanitizesNewValues]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testSelectedSubjectStaysSharpRegardlessOfLabelOrdering]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testSelectedSubjectStaysSharpRegardlessOfLabelOrdering]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testSoftMaskValuesAreRetained]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testSoftMaskValuesAreRetained]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testSubjectMaskBuilderDoesNotConvertLabelsIntoDepth]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testSubjectMaskBuilderDoesNotConvertLabelsIntoDepth]' passed (0.000 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testTypedAnalysisRoundTripsWithoutInventingDepth]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testTypedAnalysisRoundTripsWithoutInventingDepth]' passed (0.001 seconds).
+Test Case '-[DepthCoreTests.SubjectMaskTests testUnknownOrDuplicateSubjectIDsAreRejected]' started.
+Test Case '-[DepthCoreTests.SubjectMaskTests testUnknownOrDuplicateSubjectIDsAreRejected]' passed (0.000 seconds).
+Test Suite 'SubjectMaskTests' passed at 2026-09-20 19:45:54.362.
+	 Executed 16 tests, with 0 failures (0 unexpected) in 0.013 (0.014) seconds
+Test Suite 'DepthCoreTests.xctest' passed at 2026-09-20 19:45:54.362.
+	 Executed 40 tests, with 0 failures (0 unexpected) in 0.031 (0.032) seconds
+Test Suite 'All tests' passed at 2026-09-20 19:45:54.363.
+	 Executed 40 tests, with 0 failures (0 unexpected) in 0.031 (0.034) seconds
+[Draft] 已保存原图 + 带来源的景深分析缓存 + 编辑参数
+[Draft] 分析缓存不可用，将根据原图重新识别：未能读取数据，因为它的格式不正确。
+[Draft] 迁移旧版草稿：保留原图和参数，不复用旧外部模型的深度缓存
+[Draft] 已保存原图 + 带来源的景深分析缓存 + 编辑参数
+[Draft] 已保存原图 + 带来源的景深分析缓存 + 编辑参数
+[Draft] 已保存原图 + 带来源的景深分析缓存 + 编辑参数
+[Draft] 已保存原图 + 带来源的景深分析缓存 + 编辑参数
+􀟈  Test run started.
+􀄵  Testing Library Version: 2084
+􀄵  Target Platform: arm64e-apple-macos14.0
+􁁛  Test run with 0 tests in 0 suites passed after 0.001 seconds.

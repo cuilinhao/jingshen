@@ -121,3 +121,47 @@ final class SubjectMaskTests: XCTestCase {
         XCTAssertThrowsError(try JSONDecoder().decode(EditRecipe.self, from: Data(#"{"schemaVersion":9000}"#.utf8)))
     }
 }
+
+final class EstimatedDepthTests: XCTestCase {
+    func testDisconnectedObjectsInSameDepthBandStaySharp() throws {
+        // Two separated near objects with mild model variation; distant cabinet between them.
+        let depth = try DepthField(width: 5, height: 1, values: [0.84, 0.84, 0.15, 0.79, 0.79])
+        var recipe = EditRecipe(); recipe.focusPoint = UnitPoint2D(x: 0, y: 0); recipe.estimatedFocusTolerance = 0.08
+        let result = try FocusMaskBuilder.make(analysis: .estimated(DepthEstimate(field: depth)), recipe: recipe,
+                                              imageSize: PixelSize(width: 500, height: 100))
+        XCTAssertEqual(result.blur.value(at: UnitPoint2D(x: 1, y: 0)), 0)
+        XCTAssertGreaterThan(result.blur.value(at: .center), 200)
+    }
+    func testFarFocusDefocusesBothNearObjects() throws {
+        let depth = try DepthField(width: 9, height: 1, values: [0.8,0.8,0.8,0.1,0.1,0.1,0.82,0.82,0.82])
+        var recipe = EditRecipe(); recipe.focusPoint = .center; recipe.estimatedFocusTolerance = 0.08
+        let result = try FocusMaskBuilder.make(analysis: .estimated(DepthEstimate(field: depth)), recipe: recipe,
+                                              imageSize: PixelSize(width: 900, height: 100))
+        XCTAssertEqual(result.blur.value(at: .center), 0)
+        XCTAssertGreaterThan(result.blur.value(at: UnitPoint2D(x: 0, y: 0)), 200)
+        XCTAssertGreaterThan(result.blur.value(at: UnitPoint2D(x: 1, y: 0)), 200)
+        XCTAssertNotNil(result.nearDefocus)
+    }
+    func testFocusSamplingRejectsSinglePixelDepthOutlier() throws {
+        var values = Array(repeating: Float(0.8), count: 81); values[40] = 0.1
+        let depth = try DepthField(width: 9, height: 9, values: values)
+        XCTAssertEqual(DepthFocus.focus(in: depth, at: .center), 0.8, accuracy: 0.01)
+    }
+    func testEstimatedAnalysisRoundTripsAndIsNotNative() throws {
+        let depth = try DepthField(width: 2, height: 1, values: [0.2,0.8])
+        let analysis = PhotoAnalysis.estimated(DepthEstimate(field: depth))
+        let restored = try PropertyListDecoder().decode(PhotoAnalysis.self, from: PropertyListEncoder().encode(analysis))
+        XCTAssertEqual(restored, analysis); XCTAssertFalse(restored.isNative)
+        XCTAssertTrue(restored.isEstimated); XCTAssertEqual(restored.depthField, depth)
+        XCTAssertTrue(restored.supportsAutomaticDepthCache)
+    }
+    func testOldModelAndSubjectCachesRequireReanalysis() throws {
+        let depth = try DepthField(width: 2, height: 1, values: [0.2,0.8])
+        XCTAssertFalse(PhotoAnalysis.estimated(DepthEstimate(field: depth, modelIdentifier: "outdated")).supportsAutomaticDepthCache)
+        let labels = try GrayMask(width: 2, height: 1, bytes: Data([0,1]))
+        let mask = try GrayMask(width: 2, height: 1, bytes: Data([0,255]))
+        let old = try SubjectSegmentation(labels: labels, subjects: [SubjectMask(id: 1, mask: mask)])
+        XCTAssertFalse(PhotoAnalysis.subjects(old).supportsAutomaticDepthCache)
+        XCTAssertTrue(PhotoAnalysis.native(depth).supportsAutomaticDepthCache)
+    }
+}

@@ -57,7 +57,7 @@ actor DraftStore {
                 print("[Draft] 分析缓存不可用，将根据原图重新识别：\(error.localizedDescription)")
             }
         } else {
-            // v1's origin=ai depth.json is NOT a native depth map. Discard it and rerun Vision.
+            // v1's origin=ai depth.json has no trusted model provenance. Reanalyze the source.
             print("[Draft] 迁移旧版草稿：保留原图和参数，不复用旧外部模型的深度缓存")
         }
         return SavedDraft(sourceData: source, title: metadata.title, recipe: metadata.recipe,
@@ -93,7 +93,7 @@ actor DraftStore {
                 try? fm.removeItem(at: child)
             }
         }
-        print("[Draft] 已保存原图 + 原生分析缓存 + v2 编辑参数")
+        print("[Draft] 已保存原图 + 带来源的景深分析缓存 + 编辑参数")
     }
 
     private func read(_ url: URL, maximumBytes: Int) throws -> Data {

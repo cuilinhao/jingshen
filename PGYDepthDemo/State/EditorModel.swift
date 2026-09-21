@@ -47,26 +47,36 @@ final class EditorModel: ObservableObject {
     var controlsEnabled: Bool { photo != nil && !isPreparing && !isExporting }
     var isUsingLocal: Bool { recipe.focusMode == .local || photo?.analysis.isFallback == true }
     var banner: String {
-        guard let photo else { return "照片在本机处理，无需下载外部模型" }
+        guard let photo else { return "AI 景深模型已内置，照片在本机处理" }
         if recipe.focusMode == .local { return "局部虚化模式，启用圆形清晰选区" }
         switch photo.analysis {
         case .native: return "该图像包含景深数据，启用原生景深"
-        case .subjects: return "该图像无景深数据，启用系统主体虚化"
-        case .localFallback: return "未识别到主体，当前使用局部虚化"
+        case .estimated: return "AI 景深 · 本机处理 · 模型已内置"
+        case .subjects: return "旧版主体虚化 · 可重新分析景深"
+        case .localFallback: return "景深分析不可用，当前使用局部虚化"
         }
     }
     var diagnosticCaption: String {
-        photo?.analysis.isNative == true && !isUsingLocal
-        ? "原生相对深度 · 亮近暗远" : "虚化蒙版 · 白色虚化 / 黑色清晰"
+        guard let analysis = photo?.analysis, !isUsingLocal else {
+            return "虚化蒙版 · 白色虚化 / 黑色清晰"
+        }
+        switch analysis {
+        case .native: return "原生相对深度 · 亮近暗远"
+        case .estimated: return "AI 估计相对深度 · 亮近暗远"
+        case .subjects, .localFallback: return "虚化蒙版 · 白色虚化 / 黑色清晰"
+        }
     }
     var selectionDescription: String {
         guard let photo else { return "尚未加载照片" }
         if isUsingLocal { return "圆形选区内清晰，周围虚化" }
         switch photo.analysis {
-        case .native(let field): return String(format: "原生相对深度 %.3f", field.sample(at: recipe.focusPoint))
+        case .native(let field):
+            return String(format: "原生相对深度 %.3f · 同层保持清晰", field.sample(at: recipe.focusPoint))
+        case .estimated(let estimate):
+            return String(format: "AI 相对深度 %.3f · 同层保持清晰", DepthFocus.focus(in: estimate.field, at: recipe.focusPoint))
         case .subjects(let subjects):
             return subjects.instance(at: recipe.focusPoint) == 0 ? "背景清晰 · 前景主体虚化" : "选中主体清晰 · 其他区域虚化"
-        case .localFallback: return "局部虚化（未识别主体）"
+        case .localFallback: return "局部虚化（景深分析不可用）"
         }
     }
     var focusInCrop: UnitPoint2D? {
