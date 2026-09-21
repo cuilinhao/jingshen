@@ -2,7 +2,27 @@
 
 日期：2026-09-21。当前修改基于原桌面 Demo，默认切换为 V3 Base 504，并增加独立人物选择。这里区分文件/逻辑检查、苹果运行时结果与真实人像验收；旧 v4 的 Linux 参考计算记录已移到 [历史记录](History/v4_VERIFICATION.md)，不能作为 v5 通过证据。
 
-## 最终自动验证
+## 本次人像边缘修复验证
+
+日期：2026-09-21。正式工程加入蒙版可靠核心清理、原色软边合成和背景圆形散景。原始人物分割缓存 v1 自动失效，深度缓存保持独立。
+
+| 检查 | 结果 | 证据 |
+|---|---|---|
+| `swift test` | 93 项，0 失败 | [core-tests.log](../Verification/v5-fixes/core-tests.log) |
+| Python 工程测试 | 17 项，0 失败 | [python-tests.log](../Verification/v5-fixes/python-tests.log) |
+| 工程配置检查 | 134 个对象引用，28 个 App Swift / 14 个测试 Swift | [project-check.log](../Verification/v5-fixes/project-check.log) |
+| iOS 模拟器测试 | 124 项，0 失败，包含上述 93 个核心测试 | [apple-tests.log](../Verification/v5-fixes/apple-tests.log) |
+| iPhone Release 无签名构建 | 成功，未安装真机 | [device-build-summary.log](../Verification/v5-fixes/device-build-summary.log) |
+| 原图实际运行 | 正式 Core + Imaging 源码，Mac Core ML/Vision/PhotoPipeline 导出 | [sample-runtime.log](../Verification/v5-fixes/sample-runtime.log) |
+| 独立代码及输出审查 | 未发现必须处理的新错误 | 下方说明 |
+
+先以旧代码复现了过期缓存复用与软边去色断言失败，再验证修复。新增回归覆盖可靠核心变为不透明、附近软边保留、弱椅背/孤岛剔除、二维距离不跨行、无核心失败，以及深色主体纹理和背景清晰残影；保留同距离换人、前景遮挡、贴边不透明和禁用效果测试。原型之外，重新编译正式工程源码后，用用户原图导出 f/1.8、f/1.4 和 f/2.8 三档效果。
+
+人工检查默认结果：明显黑块、手腕横向碎片及清晰椅背残影消除，灯带结构和圆形高光接近参考风格；手部局部边缘仍略硬。当前只识别出一个前景主体，两个小型背景人物未形成独立实例，不能据此声称多人识别通过。该照片及任何人物输出未加入 Git 仓库。日志时间来自本机模型缓存已热的运行，不代表首次加载或 iPhone 性能。
+
+以下保留修复前的 v5 基线记录；其旧的背景去色实现已由保留原色合成替代。
+
+## v5 初版自动验证（历史基线）
 
 平台：Xcode 27.0 / Swift 6.4，iPhone 17 Pro 模拟器 iOS 26.5；日期 2026-09-21。
 
@@ -43,4 +63,4 @@ Apple 测试真实加载 App Bundle 的 V3/V2 模型，验证 V3 有效输出 37
 
 `PortraitImagingTests` 的人工合成图用于验证合成算法行为，不验证 Vision 能否准确找齐真实人物。`CoreMLSmokeTests` 必须真正加载 Bundle 编译模型，模型缺失应失败；Mac 独立探针不是 iOS App 的端到端替代。完整待执行步骤见 [TEST_PLAN.md](TEST_PLAN.md)。
 
-人物之间相互接触的半透明边缘仍使用近似背景去色；前景真实衬底可能是另一人，不能保证所有颜色接触处无残留。人物整体深度排序也不等于交叉肢体的逐像素遮挡重建。应在真实发丝、透明衣物、人物相互遮挡的照片中验收。
+人物半透明边缘保留原图颜色，可能残留原背景或另一人的颜色；单张样片的阈值不能保证所有场景都合适。人物整体深度排序也不等于交叉肢体的逐像素遮挡重建。应在真实发丝、透明衣物、人物相互遮挡的照片中验收。

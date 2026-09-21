@@ -1,0 +1,5 @@
+/Users/pgy/Desktop/PGYDepthDemo_NativeVision/PGYDepthDemo.xcodeproj/project.pbxproj: OK
+PASS: actual .pbxproj parsed; 134 object references; {'PGYDepthDemo': 28, 'PGYDepthDemoTests': 14}; resources, scheme, plist, script syntax.
+PASS: no Run Script build phase; no remote package reference; original latest-request-wins guards retained.
+SCOPE: this script checks configuration only. Apple runtime and device verification are recorded separately in Docs/VERIFICATION.md.
+PASS: V3 default and V2 comparison models are configured for native compilation in Sources; no raw model copies or test maps in App Resources.

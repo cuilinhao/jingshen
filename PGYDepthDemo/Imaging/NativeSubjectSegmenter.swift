@@ -45,9 +45,13 @@ final class NativeSubjectSegmenter: SubjectAnalyzing {
             try Task.checkCancellation()
             let mask = try autoreleasepool {
                 let pixels = try observation.generateScaledMaskForImage(forInstances: IndexSet(integer: id), from: handler)
-                return try PixelBufferReader.coverage(pixels)
+                let coverage = try PixelBufferReader.coverage(pixels)
+                do {
+                    return try PersonMaskRefinement.refine(coverage)
+                } catch PersonMaskRefinementError.incomplete {
+                    throw PersonSegmentationError.incomplete
+                }
             }
-            guard mask.bytes.contains(where: { $0 >= 224 }) else { throw PersonSegmentationError.incomplete }
             subjects.append(.init(id: UInt8(id), mask: mask))
         }
         print("[People] 独立人物 \(subjects.count)，软蒙版 \(subjects[0].mask.width)×\(subjects[0].mask.height)")

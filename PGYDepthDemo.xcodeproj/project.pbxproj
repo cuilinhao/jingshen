@@ -570,6 +570,12 @@
 			"path" = "Tests/IOS/ImagingTests.swift";
 			"sourceTree" = "<group>";
 		};
+		"9F5A517BEC482EFEFA32D018" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "PGYDepthDemo/Core/PersonMaskRefinement.swift";
+			"sourceTree" = "<group>";
+		};
 		"A0FD69ABAF129BB140E7A283" = {
 			"fileRef" = "43636CD4F562D685873A3915";
 			"isa" = "PBXBuildFile";
@@ -612,6 +618,7 @@
 		"AA189274DDA4BD074CBB66FE" = {
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"DAD6CE0A52B5DBEF823C374A",
 				"7B6ECEC397E5FA7D5A6C69E5",
 				"E13401CBFD851CE1E2BAB311",
 				"60DD3CB28EC697C88154BB89",
@@ -666,6 +673,12 @@
 		"AE77BC712D42DF74CC7FF76F" = {
 			"fileRef" = "DD2AE742B3F8993F1368EFB3";
 			"isa" = "PBXBuildFile";
+		};
+		"B3BAB94E3AB1417756FE9185" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tests/DepthCoreTests/PersonMaskRefinementTests.swift";
+			"sourceTree" = "<group>";
 		};
 		"B6B88D528A146A797610E076" = {
 			"isa" = "PBXFileReference";
@@ -775,6 +788,7 @@
 		"D6D3EFCD007A068187E3C9F7" = {
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"DFD70E2EB708255D0731A423",
 				"A37ECDF9EB328F595FF742A1",
 				"2001E3BF42F08B745A43BE26",
 				"7F3EF62A402CCAAB79F1240C",
@@ -791,6 +805,10 @@
 			);
 			"isa" = "PBXSourcesBuildPhase";
 			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"DAD6CE0A52B5DBEF823C374A" = {
+			"fileRef" = "9F5A517BEC482EFEFA32D018";
+			"isa" = "PBXBuildFile";
 		};
 		"DADAB82BBFDE72F52D3EE11F" = {
 			"fileRef" = "F7FA114F8EFAD8CDA2BC1DBD";
@@ -814,6 +832,10 @@
 			"path" = "PGYDepthDemo/Imaging/ImageSupport.swift";
 			"sourceTree" = "<group>";
 		};
+		"DFD70E2EB708255D0731A423" = {
+			"fileRef" = "B3BAB94E3AB1417756FE9185";
+			"isa" = "PBXBuildFile";
+		};
 		"E0CE9343BBFFF169E3BCA18A" = {
 			"fileRef" = "9583C047CE64A1BD1AFD7B19";
 			"isa" = "PBXBuildFile";
@@ -836,6 +858,8 @@
 		};
 		"E50290A24C49A459B43487C5" = {
 			"children" = (
+				"B3BAB94E3AB1417756FE9185",
+				"9F5A517BEC482EFEFA32D018",
 				"2F87038CE3482D1E5B62CB82",
 				"86F834FF72AE4045D90EB4FC",
 				"7A5D6C4E46B287585EEE6737",

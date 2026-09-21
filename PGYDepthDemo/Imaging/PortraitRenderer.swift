@@ -32,8 +32,20 @@ final class PortraitRenderer {
             UInt8((255 * max(0.4, DepthMath.smoothstep(0.03, 0.55, abs($0 - focus)))).rounded())
         }))
         let mask = try Self.maskImage(control, extent: input.extent)
-        var result = prepared.background.clampedToExtent().applyingFilter("CIMaskedVariableBlur", parameters: [
-            "inputMask": mask.clampedToExtent(), kCIInputRadiusKey: radius
+        // A rounded aperture keeps small highlights distinct. Only the opaque background
+        // gets this highlight response; applying gamma to a person layer would corrupt alpha.
+        let highlights = prepared.background.applyingFilter("CIGammaAdjust", parameters: ["inputPower": 3.0])
+        func backgroundBlur(scale: Double) -> CIImage {
+            highlights.clampedToExtent().applyingFilter("CIBokehBlur", parameters: [
+                kCIInputRadiusKey: radius * 0.86 * scale,
+                "inputRingAmount": 0.0, "inputRingSize": 0.1, "inputSoftness": 0.5
+            ]).applyingFilter("CIGammaAdjust", parameters: ["inputPower": 1.0 / 3.0])
+                .cropped(to: input.extent)
+        }
+        // Interpolate two blur scales using continuous relative depth. This is an artistic
+        // depth-of-field approximation, not a calibrated optical circle of confusion.
+        var result = backgroundBlur(scale: 1).applyingFilter("CIBlendWithMask", parameters: [
+            kCIInputBackgroundImageKey: backgroundBlur(scale: 0.4), kCIInputMaskImageKey: mask
         ]).cropped(to: input.extent)
         for layer in portrait.layers(depth: depth, selectedID: selectedID, focusPoint: recipe.focusPoint) {
             try Task.checkCancellation()
@@ -113,12 +125,11 @@ final class PortraitRenderer {
                 guard a > 0 else { continue }
                 bytes[index * 4 + 3] = Float16(a).bitPattern
                 for c in 0..<3 {
-                    // Matting is linear-light arithmetic. Doing this on gamma-encoded sRGB
-                    // leaves a bright fringe even with an otherwise correct fractional alpha.
+                    // Vision coverage is confidence, not a physical opacity measurement.
+                    // Subtracting an estimated background clips dark hair and leaves patches.
+                    // Preserve the observed color and premultiply in linear light instead.
                     let color = Float(Float16(bitPattern: source[index * 4 + c]))
-                    let underlay = Float(Float16(bitPattern: background[index * 4 + c]))
-                    let value = color - (1 - a) * underlay
-                    bytes[index * 4 + c] = Float16(min(a, max(0, value))).bitPattern
+                    bytes[index * 4 + c] = Float16(color * a).bitPattern
                 }
             }
             layers[subject.id] = CIImage(bitmapData: bytes.withUnsafeBytes { Data($0) }, bytesPerRow: width * 8,

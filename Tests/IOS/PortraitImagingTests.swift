@@ -100,8 +100,13 @@ final class PortraitImagingTests: XCTestCase {
         XCTAssertEqual(output[(row*width+25)*4],original[(row*width+25)*4])
         XCTAssertLessThan(output[((height-1-20)*width+25)*4],8,"人物不能上下颠倒")
         let edge = output[(row*width+12)*4]
-        XCTAssertEqual(Int(edge),Int(original[(row*width+12)*4]),accuracy:2,"半透明红边应保持原始亮度")
-        XCTAssertEqual(Int(output[(row*width+12)*4+2]),Int(original[(row*width+12)*4+2]),accuracy:2,"蓝色衬底应正确重建")
+        // Vision coverage is selection confidence, not a measured physical alpha matte.
+        // Keep the observed edge color and blend it with the new background. Subtracting
+        // an estimated old background invents foreground colors and clips dark hair.
+        XCTAssertGreaterThan(edge,125,"软边必须保留原图颜色，不能二值裁切")
+        XCTAssertLessThan(edge,150,"不能用近似衬底反解前景颜色")
+        XCTAssertGreaterThan(output[(row*width+12)*4+2],215)
+        XCTAssertLessThan(output[(row*width+12)*4+2],235)
     }
     func testDefocusedPersonAtFrameEdgeStaysOpaque() throws {
         let (source,people,depth) = try scene(checker:false,edgePerson:true)
@@ -112,6 +117,34 @@ final class PortraitImagingTests: XCTestCase {
         let blurred = pixels(try draw(textured,texturePeople,textureDepth,id:1))
         XCTAssertLessThan(detail(blurred,x:255,channel:1),detail(pixels(textured),x:255,channel:1)/20,
             "贴边失焦人物不能露出底层原始清晰纹理")
+    }
+    func testRefinedConfidenceKeepsDarkPersonDetailAndRemovesBackgroundGhost() throws {
+        let side = 128
+        var rgba = [UInt8](repeating:255,count:side*side*4)
+        var raw = [UInt8](repeating:0,count:side*side)
+        for y in 0..<side { for x in 0..<side {
+            let index = y*side+x
+            let person = (40..<88).contains(x) && (20..<108).contains(y)
+            let chair = (4..<24).contains(x) && (20..<108).contains(y)
+            let value:UInt8 = person ? (y%2 == 0 ? 20 : 60) : (chair ? (y%2 == 0 ? 80 : 210) : 240)
+            for c in 0..<3 { rgba[index*4+c] = value }
+            raw[index] = person ? 250 : (chair ? 100 : 0)
+        } }
+        let mask = try PersonMaskRefinement.refine(.init(width:side,height:side,bytes:Data(raw)))
+        let people = try PortraitAnalysis(segmentation:.init(
+            labels:.init(width:side,height:side,bytes:Data(raw.map { $0 > 0 ? 1 : 0 })),
+            subjects:[.init(id:1,mask:mask)]),sourceSHA256:String(repeating:"a",count:64),imageSize:.init(width:side,height:side))
+        let source = try ImageSupport.cgImage(CIImage(bitmapData:Data(rgba),bytesPerRow:side*4,
+            size:.init(width:side,height:side),format:.RGBA8,colorSpace:ImageSupport.colorSpace),context:context)
+        let depth = try DepthField(width:side,height:side,values:raw.map { $0 >= 230 ? 0.8 : 0.2 })
+        let original = pixels(source), output = pixels(try draw(source,people,depth,id:1))
+        for y in 35..<95 {
+            XCTAssertEqual(output[(y*side+43)*4],original[(y*side+43)*4],"深色主体靠近亮背景也不能出现黑块或丢失纹理")
+        }
+        func contrast(_ bytes:[UInt8]) -> Int {
+            (35..<95).reduce(0) { $0 + abs(Int(bytes[($1*side+14)*4])-Int(bytes[(($1+1)*side+14)*4])) }
+        }
+        XCTAssertLessThan(contrast(output),contrast(original)/4,"远离人物的低置信度背景不能留下清晰残影")
     }
     func testDisablingPortraitEffectKeepsPixels() throws {
         let (source,people,depth)=try scene()

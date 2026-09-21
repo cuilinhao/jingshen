@@ -56,6 +56,6 @@ python3 -m unittest discover -s Tests
 python3 Scripts/validate_project.py
 ```
 
-Xcode **⌘U** 运行核心、图像、流水线与 Core ML 测试，查看 `.xcresult` 中合成边缘、深度渲染等附件。`CoreMLSmokeTests` 使用真实模型，不因缺失跳过；`PortraitImagingTests` 使用人工可控图形检查同深度选择、边缘泄色、前景扩散、分数 alpha 线性重建、贴边透明衰减和关闭效果。
+Xcode **⌘U** 运行核心、图像、流水线与 Core ML 测试，查看 `.xcresult` 中合成边缘、深度渲染等附件。`CoreMLSmokeTests` 使用真实模型，不因缺失跳过；`PortraitImagingTests` 使用人工可控图形检查同深度选择、边缘泄色、前景扩散、coverage 软边混合、深色主体纹理、背景残影清理、贴边透明衰减和关闭效果。
 
 TestAction 的 `PGY_SKIP_UI_STARTUP_FOR_TESTS` 只抑制 UI 启动额外的样图分析；普通 ⌘R 不设该变量。`Scripts/Verify_on_Mac.sh` 仅做模拟器 SDK 构建，不等于运行测试、实机签名安装或人物画质验收。

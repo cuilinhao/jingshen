@@ -1,0 +1,15 @@
+START actual project sources, macOS runtime, V3+Vision+PhotoPipeline+DepthRenderer
+[Model] 加载 App 内置模型 DepthAnythingV3_base_504.mlmodelc，computeUnits=2
+[Depth] 自动深度完成 378×504，有效像素 190512/190512，raw=0.37426758…3.2070312，0.418s
+[Depth] 来源=完整内置模型；坐标=原图左上角；数值=相对视差（亮近暗远），不是米数
+[People] 独立人物 1，软蒙版 884×1178
+PREPARED seconds=1.1623549461364746 size=PixelSize(width: 884, height: 1178) notice=已识别1个人，点击人物切换清晰主体 persons=1
+SELECTED id=Optional(1) focus=UnitPoint2D(x: 0.48, y: 0.56)
+PERSON id=1 mask=884x1178 area=132022606
+[Export] 原始输入重新渲染，最长边≤2048；来源=内置模型自动深度（离线），f=1.8
+OUTPUT demo-default seconds=0.21054494380950928
+[Export] 原始输入重新渲染，最长边≤2048；来源=内置模型自动深度（离线），f=1.4
+OUTPUT demo-strong seconds=0.06014299392700195
+[Export] 原始输入重新渲染，最长边≤2048；来源=内置模型自动深度（离线），f=2.8
+OUTPUT demo-soft seconds=0.0590740442276001
+DONE total=1.5926449298858643

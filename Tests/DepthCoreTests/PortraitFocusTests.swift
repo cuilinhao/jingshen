@@ -58,6 +58,12 @@ final class PortraitFocusTests: XCTestCase {
         var stale = p; stale.segmentationID = "old"
         XCTAssertFalse(stale.matches(sourceSHA256:p.sourceSHA256,imageSize:p.imageSize))
     }
+    func testUnrefinedPersonMaskCacheIsNotReusedAfterRefinementUpdate() throws {
+        var old = try portrait()
+        old.segmentationID = "vision-person-instance-r1-2048-v1"
+        XCTAssertFalse(old.matches(sourceSHA256: old.sourceSHA256, imageSize: old.imageSize),
+                       "旧 Vision 蒙版没有清理弱背景孤岛，必须重新识别后再缓存")
+    }
     func testV4RecipeLoadsWithoutAStalePersonAndV5SelectionRoundTrips() throws {
         let legacy = Data("{\"schemaVersion\":4,\"focusPoint\":{\"x\":0.2,\"y\":0.3}}".utf8)
         let old = try JSONDecoder().decode(EditRecipe.self,from:legacy)

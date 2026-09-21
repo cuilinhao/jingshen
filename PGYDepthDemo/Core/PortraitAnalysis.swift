@@ -2,7 +2,7 @@ import Foundation
 
 /// Independent soft person masks. Instance IDs are scoped to this exact analysis, never depth.
 struct PortraitAnalysis: Codable, Equatable, Sendable {
-    static let currentSegmentationID = "vision-person-instance-r1-2048-v1"
+    static let currentSegmentationID = "vision-person-instance-r1-2048-core230-band32-v2"
     var segmentationID: String
     let segmentation: SubjectSegmentation
     let sourceSHA256: String
