@@ -96,7 +96,7 @@ final class ImagingTests: XCTestCase {
     func testOrdinaryImportPreparesRealTypedDepthBeforeExport() async throws {
         let data = try ImageSupport.jpegData(checker())
         let estimator = CountingDepthEstimator()
-        let pipeline = PhotoPipeline(depthEstimator: estimator)
+        let pipeline = PhotoPipeline(depthEstimator: estimator, analyzePeople: false)
         let photo = try await pipeline.prepare(data: data, title: "ordinary image")
         guard case .estimated(let depth) = photo.analysis else { return XCTFail("Must infer instead of blank layers") }
         XCTAssertEqual(estimator.calls, 1); XCTAssertEqual(depth.sourceSHA256.count, 64)
@@ -109,9 +109,9 @@ final class ImagingTests: XCTestCase {
     }
     func testValidAutomaticCacheBypassesEstimator() async throws {
         let data = try ImageSupport.jpegData(checker())
-        let estimator = CountingDepthEstimator(), pipeline = PhotoPipeline(depthEstimator: CountingDepthEstimator())
+        let estimator = CountingDepthEstimator(), pipeline = PhotoPipeline(depthEstimator: CountingDepthEstimator(), analyzePeople: false)
         let first = try await pipeline.prepare(data: data, title: "first")
-        let secondPipeline = PhotoPipeline(depthEstimator: estimator)
+        let secondPipeline = PhotoPipeline(depthEstimator: estimator, analyzePeople: false)
         let second = try await secondPipeline.prepare(data: data, title: "restored", cachedAnalysis: first.analysis, cachedImageSize: first.sourceSize)
         XCTAssertEqual(estimator.calls, 0)
         XCTAssertEqual(first.analysis, second.analysis)
@@ -119,31 +119,31 @@ final class ImagingTests: XCTestCase {
     func testV3BlankCacheRecomputedInsteadOfReturningUnknown() async throws {
         let estimator = CountingDepthEstimator()
         let blank = try SceneLayerMap.blank(width: 128, height: 128)
-        let actual = PhotoPipeline(depthEstimator: estimator)
+        let actual = PhotoPipeline(depthEstimator: estimator, analyzePeople: false)
         let photo = try await actual.prepare(data: ImageSupport.jpegData(checker()), title: "v3 draft",
             cachedAnalysis: .layered(.init(map: blank, subjects: nil, notice: nil)), cachedImageSize: .init(width: 128, height: 128))
         XCTAssertEqual(estimator.calls, 1)
         guard case .estimated = photo.analysis else { return XCTFail("Old unknown state leaked") }
     }
     func testWrongImageSameDimensionsCacheIsNotReused() async throws {
-        let estimator = CountingDepthEstimator(), pipeline = PhotoPipeline(depthEstimator: CountingDepthEstimator())
+        let estimator = CountingDepthEstimator(), pipeline = PhotoPipeline(depthEstimator: CountingDepthEstimator(), analyzePeople: false)
         let first = try await pipeline.prepare(data: ImageSupport.jpegData(checker()), title: "A")
         let different = try ImageSupport.grayImage(width: 128, height: 128, bytes: [UInt8](repeating: 120, count: 128*128))
-        let actual = PhotoPipeline(depthEstimator: estimator)
+        let actual = PhotoPipeline(depthEstimator: estimator, analyzePeople: false)
         let second = try await actual.prepare(data: ImageSupport.jpegData(different), title: "B", cachedAnalysis: first.analysis, cachedImageSize: first.sourceSize)
         XCTAssertEqual(estimator.calls, 1)
         guard case .estimated(let a) = first.analysis, case .estimated(let b) = second.analysis else { return XCTFail() }
         XCTAssertNotEqual(a.sourceSHA256, b.sourceSHA256)
     }
     func testInferenceFailureDoesNotReturnFakeReadyPhoto() async throws {
-        let pipeline = PhotoPipeline(depthEstimator: FailingDepthEstimator())
+        let pipeline = PhotoPipeline(depthEstimator: FailingDepthEstimator(), analyzePeople: false)
         do {
             _ = try await pipeline.prepare(data: ImageSupport.jpegData(checker()), title: "failure")
             XCTFail("Inference failure must not return empty layers or circular fallback")
         } catch OfflineDepthError.invalidDepth { /* expected */ }
     }
     func testDepthChangeInvalidatesBothRenderAndDiagnosticCache() async throws {
-        let pipeline = PhotoPipeline(depthEstimator: CountingDepthEstimator())
+        let pipeline = PhotoPipeline(depthEstimator: CountingDepthEstimator(), analyzePeople: false)
         let photo = try await pipeline.prepare(data: ImageSupport.jpegData(checker()), title: "cache")
         let d = try DepthField(width: 4, height: 2, values: [0.2,0.8,0.2,0.8,0.2,0.8,0.2,0.8])
         let changed = photo.replacingAnalysis(.native(d))
@@ -153,6 +153,39 @@ final class ImagingTests: XCTestCase {
         let b = try await pipeline.preview(photo: changed, recipe: r)
         let context = CIContext()
         XCTAssertNotEqual(rgba(a.mask, context: context), rgba(b.mask, context: context))
+    }
+    func testPeopleCacheSurvivesModelSwitchAndRenderingDoesNotAnalyzeAgain() async throws {
+        let estimator = CountingDepthEstimator(), people = CountingPeopleAnalyzer()
+        let pipeline = PhotoPipeline(depthEstimator: estimator, subjectAnalyzer: people)
+        let data = try ImageSupport.jpegData(checker())
+        let first = try await pipeline.prepare(data: data, title: "people")
+        XCTAssertEqual(people.calls, 1)
+        let portrait = try XCTUnwrap(first.portrait)
+        var recipe = EditRecipe(); recipe.selectedPersonID = 1; recipe.focusPoint = .init(x: 0.2, y: 0.5)
+        let a = try await pipeline.preview(photo: first, recipe: recipe)
+        recipe.selectedPersonID = 2; recipe.focusPoint = .init(x: 0.8, y: 0.5)
+        let b = try await pipeline.preview(photo: first, recipe: recipe)
+        recipe.aperture = 2.8
+        _ = try await pipeline.export(photo: first, recipe: recipe)
+        XCTAssertEqual(people.calls, 1); XCTAssertEqual(estimator.calls, 1)
+        XCTAssertNotEqual(rgba(a.mask, context: CIContext()), rgba(b.mask, context: CIContext()))
+        XCTAssertNotNil(b.selectionOutline)
+        let second = try await pipeline.prepare(data: data, title: "V2 comparison", cachedAnalysis: first.analysis,
+            cachedImageSize: first.sourceSize, cachedPortrait: portrait, modelChoice: .v2)
+        XCTAssertEqual(people.calls, 1, "Model switch retains the independent person cache")
+        XCTAssertEqual(estimator.calls, 2, "Changing model invalidates only depth")
+        XCTAssertTrue(second.portraitCacheReused)
+        XCTAssertEqual(second.portrait, portrait)
+        _ = try await pipeline.prepare(data: data, title: "V2 restored", cachedAnalysis: second.analysis,
+            cachedImageSize: second.sourceSize, cachedPortrait: second.portrait, modelChoice: .v2)
+        XCTAssertEqual(estimator.calls, 2); XCTAssertEqual(people.calls, 1)
+    }
+    func testPersonFailureHasExplicitOrdinaryDepthFallback() async throws {
+        let pipeline = PhotoPipeline(depthEstimator: CountingDepthEstimator(), subjectAnalyzer: FailingPeopleAnalyzer())
+        let photo = try await pipeline.prepare(data: ImageSupport.jpegData(checker()), title: "crowd")
+        XCTAssertNil(photo.portrait)
+        XCTAssertNotNil(photo.analysis.continuousDepth)
+        XCTAssertTrue(photo.notice?.contains("普通景深") == true)
     }
     func testLayeredRenderPreservesSameLayerInteriors() throws {
         let context = CIContext(),source = try checker(256)
@@ -184,4 +217,18 @@ private final class CountingDepthEstimator: DepthEstimating {
 }
 private struct FailingDepthEstimator: DepthEstimating {
     func estimate(_ image: CGImage) throws -> DepthField { throw OfflineDepthError.invalidDepth }
+}
+
+private final class CountingPeopleAnalyzer: SubjectAnalyzing {
+    private(set) var calls = 0
+    func analyze(_ source: CGImage) throws -> SubjectSegmentation? {
+        calls += 1
+        let labels = try GrayMask(width: 4, height: 2, bytes: Data([1,1,2,2,1,1,2,2]))
+        let a = try GrayMask(width: 4, height: 2, bytes: Data([255,255,0,0,255,255,0,0]))
+        let b = try a.inverted()
+        return try SubjectSegmentation(labels: labels, subjects: [.init(id: 1, mask: a), .init(id: 2, mask: b)])
+    }
+}
+private struct FailingPeopleAnalyzer: SubjectAnalyzing {
+    func analyze(_ source: CGImage) throws -> SubjectSegmentation? { throw PersonSegmentationError.crowded }
 }

@@ -4,33 +4,33 @@ import Foundation
 /// The source digest and preprocessing identity prevent v3 empty masks / wrong-photo caches
 /// from being silently reused as completed automatic analysis.
 struct InferredDepth: Codable, Equatable, Sendable {
-    static let currentModelID = "DepthAnythingV2SmallF16-fa60d9b6a155734f"
-    static let currentPreprocessingID = "rgb255-scaleFill518x392-p01p99-v1"
+    static let currentModelID = DepthModelChoice.v3.modelID
+    static let currentPreprocessingID = DepthModelChoice.v3.preprocessingID
     var modelID: String
     var preprocessingID: String
     let sourceSHA256: String
     let imageSize: PixelSize
     let field: DepthField
 
-    init(field: DepthField, sourceSHA256: String, imageSize: PixelSize) {
+    init(field: DepthField, sourceSHA256: String, imageSize: PixelSize, modelChoice: DepthModelChoice = .v3) {
         self.field = field
         self.sourceSHA256 = sourceSHA256
         self.imageSize = imageSize
-        modelID = Self.currentModelID
-        preprocessingID = Self.currentPreprocessingID
+        modelID = modelChoice.modelID
+        preprocessingID = modelChoice.preprocessingID
     }
-    func matches(sourceSHA256: String, imageSize: PixelSize) -> Bool {
+    func matches(sourceSHA256: String, imageSize: PixelSize, modelChoice: DepthModelChoice = .v3) -> Bool {
         guard let low = field.values.min(), let high = field.values.max(), high - low > 0.000001 else { return false }
         return self.sourceSHA256.count == 64 && self.sourceSHA256 == sourceSHA256 &&
-        self.imageSize == imageSize && modelID == Self.currentModelID &&
-        preprocessingID == Self.currentPreprocessingID && field.width > 1 && field.height > 1
+        self.imageSize == imageSize && modelID == modelChoice.modelID &&
+        preprocessingID == modelChoice.preprocessingID && field.width > 1 && field.height > 1
     }
 }
 
 enum AutomaticDepthCache {
-    static func reusable(_ analysis: PhotoAnalysis?, sourceSHA256: String, imageSize: PixelSize) -> InferredDepth? {
+    static func reusable(_ analysis: PhotoAnalysis?, sourceSHA256: String, imageSize: PixelSize, modelChoice: DepthModelChoice = .v3) -> InferredDepth? {
         guard case .estimated(let value) = analysis,
-              value.matches(sourceSHA256: sourceSHA256, imageSize: imageSize) else { return nil }
+              value.matches(sourceSHA256: sourceSHA256, imageSize: imageSize, modelChoice: modelChoice) else { return nil }
         return value
     }
 }

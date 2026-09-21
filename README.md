@@ -1,89 +1,70 @@
-# PGYDepthDemo v4 · 完整内置模型 / 自动景深版
+# PGYDepthDemo v5 · 人物选择景深
 
-这份工程已包含你上传的 **DepthAnythingV2SmallF16.mlpackage 全部内容**，不是下载脚本，也不是空模型。普通原图导入后自动计算相对深度，不再要求先标近景 / 远景。
+在原有 Demo 上增加 **Depth Anything V3 Base 504 + Vision 独立人物蒙版 + 分层虚化**。面向单人及 2–4 人照片：点击谁，就突出谁；旁边同一距离的人也会虚化。V2 Small 保留为效果与性能对照。
 
-**当前环境没有 Xcode、Apple iOS SDK 或 iPhone。工程尚未完成 Xcode 编译与真机验收。**本次额外用真实模型权重对你的原图进行了非 Apple 运行时的参考计算，并检验了 8 个历史点击位置和生产 Swift 虚化蒙版；不能将它说成 Core ML / Core Image 的 iPhone 实测。完整记录见 `Docs/VERIFICATION.md`。
+**真实 iPhone 性能和真实人像发丝/肩膀边缘仍需验收。**已经进行的检查与证据、尚未完成的项目见 [验证记录](Docs/VERIFICATION.md)。更换深度模型本身不能保证人物轮廓干净，本版同时改动人物选择和边缘合成。
 
 ## 打开运行
 
-1. 解压到**新的文件夹**，打开 `PGYDepthDemo.xcodeproj`，不是 `Package.swift`，也不要继续打开旧版工程。
-2. Scheme 选择 `PGYDepthDemo`，选择 iPhone 或已安装的 iPhone 模拟器。最低 iOS **17.0**；Swift 5 语言模式；工程使用 Xcode 15 兼容格式。
-3. 真机：Signing & Capabilities → Team 选择你的开发团队。Bundle Identifier 冲突时改成自己的唯一值。
-4. 按 **⌘R**。模型作为 Xcode 的 Compile Sources 输入在本机编译进 App。没有 Run Script、没有远程 Swift Package，没有模型下载步骤。
+从 GitHub 克隆本分支后，**首次打开 Xcode 前先拉取 Git LFS 模型权重**。如果 `git lfs` 命令不可用，先安装 [Git LFS](https://git-lfs.com/)，然后在项目目录执行：
 
-首次编译包含模型编译，启动包含模型加载，需等进度提示结束。App 显示名为 **“景深 Demo 离线v4”**。Xcode、SDK、设备支持和签名环境需要先准备好；这些不是模型下载。模拟器采用 CPU，不能代表 iPhone 速度。
-
-模型位置：
-
-```text
-PGYDepthDemo/Resources/Models/DepthAnythingV2SmallF16.mlpackage/
-├── Manifest.json
-└── Data/com.apple.CoreML/
-    ├── model.mlmodel
-    └── weights/weight.bin
+```sh
+git lfs install --local
+git lfs pull
+python3 -m unittest discover -s Tests -p test_offline_model_project.py
 ```
 
-模型合计 **49,819,122 字节**；权重 **49,419,072 字节**。最终安装包大小还包含编译产物和其他资源，不能用该数字直接推算。完整大小、SHA256 和版本见 `PGYDepthDemo/Resources/ModelInfo.json`、`ARTIFACT_CONTENTS.sha256`。
+`--local` 将 Git LFS 配置限制在此仓库。V3 包内 `Data/com.apple.CoreML/weights/weight.bin` 应为 **233,223,744 字节**，上面的检查还会核对 SHA256；若只有一小段 `version https://git-lfs.github.com/spec/v1` 文本，说明仍是指针，不能编译模型。拉取完成后，App 的构建和运行不再下载权重。
 
-## 这次改了什么
+GitHub 的 **Download ZIP 默认只包含 LFS 指针**，不能据此假定已拿到完整模型；建议使用 Git 克隆并执行 `git lfs pull`。[GitHub 存档说明](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/managing-git-lfs-objects-in-archives-of-your-repository)
 
-普通导入的处理路径现在是：
+1. 在此目录打开 `PGYDepthDemo.xcodeproj`，Scheme 选择 `PGYDepthDemo`，最低 iOS **17.0**。
+2. 选择已安装的 iPhone 模拟器，或在 Signing & Capabilities 设置你的开发团队后选择真机。
+3. 按 **⌘R**。两份完整模型均随工程提供，由 Xcode 编译到 App Bundle，没有构建脚本下载或运行时模型下载。
 
-```text
-本地原图 → EXIF 方向归一化 → 有原生深度则读取
-                        └→ 没有则调用内置 Core ML 模型
-                           → 检查有效输出 → 缓存自动深度 → 编辑界面就绪
-点击照片 → 读取该位置附近的深度 → 保留同一清晰深度范围 → 按深度差虚化其他区域
+首次构建会编译模型，首次分析会加载模型。模拟器使用 CPU，耗时不能代表手机。App 代码为 Swift，使用 Core ML、Vision、Core Image 等苹果系统框架，无第三方推理 SDK 或自定义 Metal shader。
+
+| 用途 | 模型包 | 实际文件总量 |
+|---|---|---:|
+| 默认 | `DepthAnythingV3_base_504.mlpackage` | 233,541,894 字节 |
+| 对照 | `DepthAnythingV2SmallF16.mlpackage` | 49,819,122 字节 |
+
+模型位于 `PGYDepthDemo/Resources/Models/`。数值是未编译模型文件总量，不等于安装包大小。固定版本、逐文件 SHA256 与接口记录在 `PGYDepthDemo/Resources/ModelInfo.json`；许可见 [第三方说明](Docs/THIRD_PARTY_NOTICES.md)。
+
+## 人物选择如何工作
+
+导入时分别准备深度和人物蒙版。照片自带有效原生深度时优先使用它；普通照片使用当前选择的模型。Vision 在处理原图的尺度生成每个人的软蒙版。两类分析独立保存，人物编号不会被当作距离。
+
+- 单人自动选中；多人默认选择面积最大的可识别人，并可点击其他人切换。
+- 选中人物内部保持原始细节，其他人物有独立虚化量，即使他们深度相同。
+- 点击空白保留当前人物。切换时短暂显示轮廓，轮廓不进入导出图。
+- 人物按远近合成；前排失焦人物仍可遮挡后排选中的人，不把后排人物整体贴到最上层。
+- 未识别到可独立选择的人物，或识别失败/检测到拥挤时，界面提示并使用普通景深。无人物照片保留原来的按深度对焦；“局部”模式仍是独立的圆形虚化。
+
+背景先移除人物颜色并做有限距离的边缘延展，再虚化并合成人物；这用于降低肩膀附近的颜色泄漏。它不还原真实被遮挡背景，也不恢复原片已经失焦的细节。
+
+点击换人、拖动光圈只重新渲染，不重复运行深度模型或人物识别。切换 V3/V2 会重新准备对应深度，并可复用有效的人物蒙版。V3 输入等比补边到 504×504，输出去除补边、转换为逆深度并归一化；相对深度图为亮近暗远，不是米数。
+
+## 草稿与保留功能
+
+v5 草稿保存所选人物、模型选择、深度和独立人物蒙版。缓存与源图片 SHA256、处理尺寸及各自分析版本绑定；V2 和 V3 深度不互相复用。重新分割后按保存的焦点位置重新匹配人物，避免沿用重排的编号。v1–v4 草稿仍读取原图和参数；缺失或过期分析重新生成。仍只保留最近一张可编辑草稿。
+
+保留相册/文件导入、原图对比、光圈、色调、裁切、细调、导出及原主界面布局。导出从处理原图重新渲染，**JPEG / SDR / sRGB，最长边不超过 2048，小图不放大**；不包含选中轮廓、对焦框或原图 GPS。预览最长边 1024。
+
+内置 `ReferencePhoto.png` 是原有非人物样图，走普通导入流程；它可验证深度方向和 V2/V3 对照，不能验收多人选择或发丝质量。`Tests/Fixtures` 的人工图和历史预计算深度仅供测试，不进入 App。
+
+## 验证和局限
+
+在 Mac 可运行：
+
+```sh
+swift test
+python3 -m unittest discover -s Tests
+python3 Scripts/validate_project.py
 ```
 
-**不是选一个物体就虚化其他所有物体。**默认清晰半宽为归一化相对深度的 `±0.22`，可在“调整”中修改。多个不相连物体落在同一范围时都保留细节。相对深度不是米数；不同照片的数值不能用来测量实际距离。
+Apple 图像、流水线和模型测试在 Xcode 按 **⌘U** 执行。`CoreMLSmokeTests` 真正加载 Bundle 编译模型；`PortraitImagingTests` 用合成图检查人物切换、边缘泄色与遮挡；这些不能替代真实人像验收。可选 `Scripts/Verify_on_Mac.sh` 只做模拟器 SDK 构建检查。
 
-模型推理仅在导入或明确“重新计算自动深度”时发生。拖动光圈、换焦点只更新蒙版并重新渲染。预测未完成时禁用编辑；失败时显示真实错误，不以空分层、预计算样例或圆形效果伪装成功。
+Vision 最多提供四个独立人物实例，重叠、遮挡、复杂背景或超过四人可能漏检/合并；人数检查也不能发现所有错误。透明物、细发丝和运动模糊仍可能有瑕疵。V3 不保证在每张照片上优于 V2，且体积与运行开销更大。真机应按 [验收清单](Docs/TEST_PLAN.md) 测试单人、2–4 人、同距离人物、前后遮挡和复杂发丝。
 
-## 先检查你提供的原图
-
-全新安装默认打开 `yuntu0920.png`。右上角 **… → 打开原图并自动计算深度** 可重新打开。它与相册 / 文件导入走相同的 `PhotoPipeline.prepare`，**不会加载人工 `ReferenceLayers.json` 或预计算深度**。
-
-等待状态条出现 **“已生成离线自动深度，启用景深虚化”**，然后点击瓶身和柜门对比。瓶身所选深度范围应同时保留显示器、瓶子、黄色玩偶等区域；柜子被选中时则虚化近处区域。实际 Core ML 预测及边缘观感仍需真机验证，不能仅凭参考蒙版声称完全等同醒图。
-
-右上角菜单可显示**相对深度图（亮近暗远）**；“调整”里可改清晰深度范围、强度、羽化等。圆形“局部虚化”仅为用户主动选择的独立模式，不是自动景深的回退。
-
-## 旧草稿恢复
-
-保持相同 Bundle Identifier 覆盖安装时，v1/v2/v3 草稿仍可读取原图与参数。它们的主体编号、人工层、空层或旧 AI 缓存**不会直接复用为 v4 自动深度**，而是在本机重新推理。旧版过窄的清晰范围迁移为 `0.22`；v4 中你自己调整的范围保持不变。
-
-新的缓存必须匹配原始数据 SHA256、处理尺寸、模型版本和预处理版本；常量深度缓存也会失效重算。照片内有原生深度时从原文件重新读取优先使用。模型数据和相机原生数据在类型上分开保存。
-
-本 Demo 仍仅保留最近一张照片的可编辑草稿。导入失败保留上一次成功的照片，不把失败结果写为就绪草稿。
-
-## 保留的功能
-
-主界面保留录屏布局、橙红色对焦框、固定橙色指针 / 灰色滚动刻度尺、底部工具栏、相册 / 文件导入、原图对比、色调、裁切、细调、导出及草稿。未完成与原软件运行截图的逐像素比对。录屏未展示的展开面板是 Demo 补充设计。
-
-导出 **JPEG / SDR / sRGB，最长边最多 2048，小图不放大**；不包含对焦框、UI 或原图 GPS 信息。原始输入始终保留，换焦点不会在已模糊的导出结果上叠加。
-
-App 代码为纯 Swift，调用苹果原生框架，无第三方运行 SDK、Objective-C/C++ 或自定义 Metal shader。`Scripts/ReferenceCPU` 是开发验证工具，**不参与 Xcode 构建、不进入 App、不需要在你的 Mac 安装 Python 来运行 Demo**。
-
-## 离线与局限
-
-模型构建、App 首次分析和日常分析没有联网代码。飞行模式测试应使用已经位于手机本地的照片；仅保存在 iCloud 的照片仍需由系统先取回。
-
-深度模型可能误判透明物体、反光、细线及遮挡；这版不保证任意照片都与醒图完全一致。不恢复原片已经失焦的真实细节，也不重建被遮住的背景。模型输入为该文件实际声明的 **518×392**，全图缩放后预测并映射回原图；边界精度受此分辨率限制。
-
-## 验证与诊断
-
-实际已执行：**75 项 Swift 核心测试、16 项工程检查**；其中 4 项核心测试读取真实模型参考输出，而不是人工标注。另附 **19 项需要 Apple SDK 的图像 / 流水线 / 实际模型测试**，需要在 Xcode 按 **⌘U** 执行，当前环境未运行。
-
-`CoreMLSmokeTests` 会真正加载 Bundle 里的编译模型，将原图按正常导入流程处理，检查 8 个点击、近远切换，并将实际 Core Image 渲染图作为测试附件保留；不会因模型缺失而假装跳过通过。
-
-可选 `bash Scripts/Verify_on_Mac.sh` 做模拟器 SDK 编译检查；不是运行 App 的前置步骤，不下载模型。
-
-日志前缀：`[Model]` 模型加载和计算设备，`[Depth]` 有效尺寸/范围/缓存来源，`[Focus]` 点击坐标和相对深度，`[Draft]` 实际保存来源，`[Export]` 导出。若还看到“未建立景深分层 / 点此标记”，请先核对是否仍运行旧版 App 或旧工程。
-
-## 文件说明
-
-- `Docs/AutomaticDepthValidation/`：真实权重参考计算的深度与生产 Swift 蒙版；不是 App 截图。
-- `Tests/Fixtures/`：独立参考输出及历史人工测试数据，仅测试 Bundle 可读取，不放进 App Bundle。
-- `Docs/VERIFICATION.md`：实际验证 / 未验证项。
-- `Docs/TEST_PLAN.md`：Mac / iPhone 验收清单。
-- `Docs/THIRD_PARTY_NOTICES.md`：模型许可与来源。
+模型与分析代码不联网。飞行模式测试请用手机本地照片；仅存于 iCloud 的照片仍需系统先取回。日志前缀包括 `[Model]`、`[Depth]`、`[People]`、`[Focus]`、`[Draft]`、`[Export]`。

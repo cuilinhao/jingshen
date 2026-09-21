@@ -6,6 +6,7 @@ import CoreGraphics
 /// This does not reconstruct occluded backgrounds or recover details missing from the input.
 final class DepthRenderer {
     private let context: CIContext
+    private let portraitRenderer: PortraitRenderer
     private struct MaskKey: Equatable {
         let photoID: UUID
         let point: UnitPoint2D
@@ -16,7 +17,7 @@ final class DepthRenderer {
     }
     private var cachedKey: MaskKey?
     private var cachedMasks: FocusMaskSet?
-    init(context: CIContext) { self.context = context }
+    init(context: CIContext) { self.context = context; portraitRenderer = PortraitRenderer(context: context) }
 
     private func masks(photoID: UUID, analysis: PhotoAnalysis, recipe: EditRecipe,
                        sourceSize: PixelSize) throws -> FocusMaskSet {
@@ -29,7 +30,7 @@ final class DepthRenderer {
     }
 
     func render(image: CGImage, photoID: UUID, analysis: PhotoAnalysis,
-                sourceSize: PixelSize, recipe: EditRecipe) throws -> CGImage {
+                sourceSize: PixelSize, recipe: EditRecipe, portrait: PortraitAnalysis? = nil) throws -> CGImage {
         try autoreleasepool {
             try Task.checkCancellation()
             var safe = recipe; safe.sanitize()
@@ -37,7 +38,11 @@ final class DepthRenderer {
             let pixelScale = Double(max(image.width, image.height)) / 1024
             let maxRadius = 32 * Aperture.strength(safe.aperture) * safe.effectStrength * pixelScale
             var result = input
-            if safe.depthEnabled, maxRadius > 0.15 {
+            if safe.depthEnabled, maxRadius > 0.15, safe.focusMode == .automatic,
+               let portrait, portrait.person(id: safe.selectedPersonID) != nil, let depth = analysis.continuousDepth {
+                result = try portraitRenderer.render(input: input, photoID: photoID, portrait: portrait,
+                                                     depth: depth, recipe: safe, radius: maxRadius)
+            } else if safe.depthEnabled, maxRadius > 0.15 {
                 let selections = try masks(photoID: photoID, analysis: analysis, recipe: safe, sourceSize: sourceSize)
                 let mask = try maskImage(selections.blur, extent: extent, feather: safe.edgeFeather * pixelScale)
                 result = input.clampedToExtent().applyingFilter("CIMaskedVariableBlur", parameters: [
@@ -95,17 +100,29 @@ final class DepthRenderer {
 
     /// Predicted/native: relative disparity. Explicit local/legacy: actual blur-control mask.
     func maskPreview(image: CGImage, photoID: UUID, analysis: PhotoAnalysis,
-                     sourceSize: PixelSize, recipe: EditRecipe) throws -> CGImage {
+                     sourceSize: PixelSize, recipe: EditRecipe, portrait: PortraitAnalysis? = nil) throws -> CGImage {
         let field: GrayMask
-        if let depth = analysis.continuousDepth, recipe.focusMode == .automatic {
+        if recipe.focusMode == .automatic, let mask = portrait?.person(id: recipe.selectedPersonID)?.mask {
+            field = mask
+        } else if let depth = analysis.continuousDepth, recipe.focusMode == .automatic {
             field = try GrayMask(width: depth.width, height: depth.height, bytes: Data(depth.bytes()))
         } else {
             field = try masks(photoID: photoID, analysis: analysis, recipe: recipe, sourceSize: sourceSize).blur
         }
-        let isDepthMap = analysis.continuousDepth != nil && recipe.focusMode == .automatic
+        let isDepthMap = recipe.focusMode == .automatic && (analysis.continuousDepth != nil || portrait != nil)
         let feather = isDepthMap ? 0 : recipe.edgeFeather * Double(max(image.width, image.height)) / 1024
         let input = try maskImage(field, extent: CIImage(cgImage: image).extent, feather: feather)
         return try ImageSupport.cgImage(ImageSupport.cropped(input, ratio: recipe.crop, originalSize: sourceSize), context: context)
+    }
+
+    func selectionOutline(image: CGImage, sourceSize: PixelSize, recipe: EditRecipe,
+                          portrait: PortraitAnalysis?) throws -> CGImage? {
+        guard recipe.focusMode == .automatic, let mask = portrait?.person(id: recipe.selectedPersonID)?.mask else { return nil }
+        let extent = CIImage(cgImage: image).extent
+        let outline = try PortraitRenderer.maskImage(mask, extent: extent)
+            .applyingFilter("CIMorphologyGradient", parameters: [kCIInputRadiusKey: 1.5])
+            .applyingFilter("CIMaskToAlpha").cropped(to: extent)
+        return try ImageSupport.cgImage(ImageSupport.cropped(outline, ratio: recipe.crop, originalSize: sourceSize), context: context)
     }
 
     private func maskImage(_ mask: GrayMask, extent: CGRect, feather: Double) throws -> CIImage {

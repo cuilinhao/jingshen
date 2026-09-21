@@ -1,43 +1,46 @@
-# v4 交付验证记录
+# v5 验证记录
 
-环境：Linux x86_64，Swift 6.2.1。日期2026-09-20。**没有 Xcode、Apple iOS SDK、模拟器或 iPhone。**本记录严格区分资源 / 参考计算 / Swift测试 / 苹果运行时。
+日期：2026-09-21。当前修改基于原桌面 Demo，默认切换为 V3 Base 504，并增加独立人物选择。这里区分文件/逻辑检查、苹果运行时结果与真实人像验收；旧 v4 的 Linux 参考计算记录已移到 [历史记录](History/v4_VERIFICATION.md)，不能作为 v5 通过证据。
 
-## 已实际执行
+## 最终自动验证
 
-| 检查 | 结果及证据 |
-|---|---|
-| 上传模型完整性 | ZIP CRC、Manifest引用、399433字节的模型与49419072字节的权重真实存在且匹配固定SHA256；`Tests/test_offline_model_project.py` |
-| 实际模型接口检查 | protobuf spec8/CoreML7，输入RGB518×392，输出Float16灰度518×392；没有按网页中的近似尺寸猜测；`model-reference-final.log` |
-| 用户原图 + 真实模型权重参考计算 | 2459个操作（包含常量）完成；每个张量形状、有限性及权重偏移边界均检查；`model-reference-final.log` |
-| 参考计算重跑 | 完整原始输出与测试fixture逐字节相同，SHA256 `5c8411233d7d692da113633a5a39f27802619d0f288db60140ff0189bee4d460` |
-| 8个历史点击 | 全部有有效参考深度；柜子三点0.22–0.27，瓶子五点0.85–0.87；`actual-original-taps.log` |
-| 生产 Swift 对焦蒙版 | 瓶子对焦：显示器/瓶子/玩偶采样点blur0，柜子255；柜子对焦：近处采样237/255/255，柜子0；不是人工层图；同上 |
-| Swift XCTest 核心测试 | 75项通过、0失败；`core-final.log`。其中4项读取真实权重参考输出；其他包括历史兼容、坐标、缓存、范围、草稿等，不把历史人工层测试算作自动识别证据 |
-| 工程 / 模型资源回归 | 16项通过、0失败；`project-final.log` |
-| Xcode工程静态配置 | 实际OpenStep工程解析，116个对象引用，24个App Swift文件、10个测试Swift文件归属正确；完整模型唯一配置在Sources，测试预测/人工图仅在测试Bundle；`project-validation-final.log` |
-| Swift源码语法 | App+测试源码解析通过；`swift-parse-final.log`。**不是Apple SDK类型检查或编译** |
-| 模型与数据相互隔离 | 正常导入调用真实估计器，内置原图同路径；不存在loadReference/analyzeLayers的普通入口；旧无效缓存重新推理；静态检查与核心测试 |
+平台：Xcode 27.0 / Swift 6.4，iPhone 17 Pro 模拟器 iOS 26.5；日期 2026-09-21。
 
-以上日志均在 `Verification/v4/`。`red-*` 是先观察到的预期失败记录，不是当前最终结果；v3目录是历史记录。
+| 检查 | 结果 | 工程内证据 |
+|---|---|---|
+| `swift test` | 88 项，0 失败 | [core-tests.log](../Verification/v5/core-tests.log) |
+| `python3 -m unittest discover -s Tests` | 17 项，0 失败；包括两份完整模型固定哈希与文件长度 | [python-tests.log](../Verification/v5/python-tests.log) |
+| `python3 Scripts/validate_project.py` | 130 个对象引用，27 个 App Swift / 13 个测试 Swift，模型 Sources 与资源检查通过 | [project-check.log](../Verification/v5/project-check.log) |
+| Xcode 模拟器 `test` | 118 项，0 失败；其中包含上述 88 个核心测试，不应重复相加 | [apple-tests.log](../Verification/v5/apple-tests.log) |
+| iPhone Release `build CODE_SIGNING_ALLOWED=NO` | 构建成功；未签名、未安装真机 | [device-build-summary.log](../Verification/v5/device-build-summary.log) |
+| 独立代码审查 | 贴边 alpha 问题已修复并复核；没有未处理的已确认 Critical / Important 项 | 下方回归说明 |
 
-## CPU参考计算到底验证了什么
+Apple 测试真实加载 App Bundle 的 V3/V2 模型，验证 V3 有效输出 379×504、输入方向及 RGB 补边；覆盖模型切换仅失效深度缓存、点击/导出不重跑分析、人物失败普通景深回退。7 项人物合成测试覆盖同距离换人、背景不渗入主体色、前景扩散及遮挡、关闭效果、上下方向、分数 alpha 与画面边缘。
 
-`Scripts/ReferenceCPU` 用公开MLProgram字段、上传模型原始权重和PyTorch数值算子解释此模型。FP16输出边界有模拟；该工具不是Core ML SDK，也不是所有MIL算子的完整实现。重跑证明该工具自身可重复，但没有证明与苹果后端逐位等价。
+回归修复：人物贴边时先在原图范围外延展再模糊；去背景色运算使用 RGBAh / linear-sRGB，避免在 gamma 编码字节中相减产生亮边。两项问题均先用合成图复现，再验证通过。非对称图片确认 `render(toBitmap:)` 与蒙版均按左上起始的行序读取；原先失败的上下断言来自测试误假定 bottom-up，已校正。
 
-它能提供“这份真实权重对该原图生成了可区分远近的稠密场”的证据。生产Swift将其转换为虚化蒙版，8个点击可复核。它**不能**验证CoreImage到CVPixelBuffer的实际方向/颜色转换、Core ML调度、苹果原生滤镜、UI或iPhone性能。参考计算用Pillow缩放，iOS使用CoreImage；后端数值和插值可能有差异。
+人工检查了合成输出附件：[清晰红色主体与虚化绿色人物](../Verification/v5/portrait-edge.jpeg)、[非对称软边输出](../Verification/v5/asymmetric-render.jpeg)。它们验证合成行为，不是人体识别准确率或真实发丝效果。
 
-`Docs/AutomaticDepthValidation` 的图是参考深度与Swift蒙版可视化，**不是App运行截图**，也不是苹果原生渲染的画质证明。它们不进入App。模型文件未被改写；所有参考输出与人工测试数据只属于Tests/Docs。
+普通模拟器启动已进入编辑界面；系统账号提示遮挡界面，未以此声称完成 UI 点击流程验收。未修改系统账号。完整 `.xcresult`、构建日志和独立 Mac 探针保存在当前任务 `/Users/pgy/Documents/Codex/2026-09-21/k-n/work/`，工程内保留了最终测试日志和摘要。
 
-## 没有执行，不能声称通过
+## V3 苹果运行时探针验证了什么
 
-Xcode类型检查、链接、模型原生编译、签名安装；真正的Core ML加载/预测；Core Image渲染/边缘效果；真机首次离线推理；真实相册权限、手势、任务取消、草稿恢复与导出；耗时/内存/流畅度；UI逐像素还原。
+输入为工程原有 `ReferencePhoto.png`（1060×1410），没有使用真实人像。模型输入 RGB 504×504，输出 `depth`、`confidence` 均为 Float16 `[1,504,504]`。加速输出 strides `[258048,512,1]`；CPU 输出 `[254016,504,1]`。因此 App 数组读取必须尊重 strides。
 
-附19项 Apple SDK 图像/流水线/模型测试，**均尚未在当前环境运行**。其中 `CoreMLSmokeTests` 必须真正从Bundle加载编译模型并走普通原图导入，不能以测试桩替换；模型缺失会失败，不会跳过。需在Mac按⌘U执行后查看输出附件，再按TEST_PLAN真机验收。
+等比输入内容为 379×504，左补边 62、右补边 63；已经检查输入图方向。补边后的深度统计不同于有效内容，App 应在归一化前去掉补边。探针观察到瓶子/玩偶的原始深度低于柜子/墙，支持取逆数后亮近暗远的映射。`.all` 与 CPU 的等比输入原始深度平均相对差约 0.54%。
 
-当前环境没有可用的独立代码审查代理。已进行源码自查与上述自动检查，未声称独立审计。
+探针的 `.all` 首次加载约 13.01 秒、预测约 0.108–0.118 秒；CPU 加载约 0.882 秒、预测约 0.209–0.348 秒。它们来自这台 Mac 的独立脚本，每后端只测一次加载；不代表 iPhone、不含 Vision 和完整 UI，也不适合当作性能承诺。
 
-## 审查结果与保留边界
+`confidence` 的实际值大于 1，不是概率；当前应用没有用它做人物边缘判断。探针的归一化对比使用 p2/p98，生产 App 保持既有 p1/p99；探针统计不能当成生产像素输出。
 
-已修复v3根因：普通输入不再发布空unknown层，也不把未识别主体当远景。缓存来源明确、与原图绑定；相对深度和原生深度分型；先验证有效数据再进入可编辑状态；光圈/焦点不重复推理；旧图测试蒙版不进入App。
+这张非人物图中 V3 的显示器深度与柜子接近，没有复现 V2 历史 fixture 中显示器与瓶子同层的预期。V2 的历史点击断言应绑定 V2 对照路径，不能强行要求 V3 相同。此结果也说明“模型更大”不能证明所有场景更准。
 
-同景深范围保护是对模型预测的连续距离区间，不是保证所有语义主体总在同一层。透明/反光/遮挡仍可能估错，低分辨率深度放大会影响轮廓。没有光学标定、失焦细节恢复或遮挡补全。此前“人工校正”的旧类型仅用于兼容和测试，不作为本版自动链路。
+## 仍需真实照片与设备验收
+
+- 真实 iPhone 安装、首次飞行模式分析、模型切换的峰值内存与耗时、热状态和连续交互表现。
+- 用户真实单人/2–4 人样片中的人物漏检、合并、发丝、肩膀、衣服边缘与复杂背景质量。
+- 真实前后遮挡、原片已有失焦、导出画质及与预览的一致性；权限、裁切、快速换人和旧草稿的实机操作。
+
+`PortraitImagingTests` 的人工合成图用于验证合成算法行为，不验证 Vision 能否准确找齐真实人物。`CoreMLSmokeTests` 必须真正加载 Bundle 编译模型，模型缺失应失败；Mac 独立探针不是 iOS App 的端到端替代。完整待执行步骤见 [TEST_PLAN.md](TEST_PLAN.md)。
+
+人物之间相互接触的半透明边缘仍使用近似背景去色；前景真实衬底可能是另一人，不能保证所有颜色接触处无残留。人物整体深度排序也不等于交叉肢体的逐像素遮挡重建。应在真实发丝、透明衣物、人物相互遮挡的照片中验收。

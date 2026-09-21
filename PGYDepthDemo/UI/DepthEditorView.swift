@@ -87,9 +87,9 @@ struct DepthEditorView: View {
                 Button { showFilePicker = true } label: { Label("从文件导入", systemImage: "folder") }
                 Divider()
                 Button { model.showMask.toggle() } label: {
-                    Label(model.showMask ? "关闭蒙版预览" : "查看深度 / 虚化蒙版", systemImage: "square.3.layers.3d")
+                    Label(model.showMask ? "关闭蒙版预览" : (model.isUsingPortrait ? "查看所选人物蒙版" : "查看深度 / 虚化蒙版"), systemImage: "square.3.layers.3d")
                 }.disabled(!model.controlsEnabled)
-                Button { model.retryAnalysis() } label: { Label("重新计算自动深度", systemImage: "arrow.clockwise") }
+                Button { model.retryAnalysis() } label: { Label("重新分析深度与人物", systemImage: "arrow.clockwise") }
                     .disabled(!model.controlsEnabled)
                 Button { model.saveDraft() } label: { Label("保存可编辑草稿", systemImage: "square.and.arrow.down") }
                     .disabled(!model.controlsEnabled)
@@ -110,7 +110,7 @@ struct DepthEditorView: View {
                     if model.isRendering { ProgressView().controlSize(.mini).scaleEffect(0.65) }
                     else { Image(systemName: "hand.tap").font(.system(size: 12, weight: .light)) }
                 }
-                Text(model.toast ?? "点击屏幕调整对焦点")
+                Text(model.toast ?? (model.isUsingPortrait ? "点击人物切换清晰主体" : "点击屏幕调整对焦点"))
                     .font(.system(size: model.toast == nil ? 9 : 10, weight: .regular))
                     .lineLimit(1).minimumScaleFactor(0.75)
             }

@@ -1,6 +1,5 @@
 """Checks the delivered project itself, not a hand-written configuration snapshot."""
 import pathlib
-import re
 import subprocess
 import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -19,14 +18,24 @@ class NativeProjectTests(unittest.TestCase):
     def test_no_download_scripts_or_placeholder_model(self):
         for name in ['Scripts/PrepareDepthModel.sh', 'Download_Model.command', 'Scripts/ModelManifest.json']:
             self.assertFalse((ROOT/name).exists(), name)
-        self.assertEqual(len(list((ROOT/'PGYDepthDemo').rglob('*.mlpackage'))), 1)
+        self.assertEqual({p.name for p in (ROOT/'PGYDepthDemo').rglob('*.mlpackage')},
+                         {'DepthAnythingV3_base_504.mlpackage', 'DepthAnythingV2SmallF16.mlpackage'})
 
-    def test_automatic_model_replaces_subject_only_depth_guess(self):
+    def test_depth_and_person_analysis_are_independent(self):
         code = (ROOT/'PGYDepthDemo/Imaging/PhotoPipeline.swift').read_text()
         self.assertIn('depthEstimator.estimate', code)
         self.assertIn('AutomaticDepthCache.reusable', code)
         self.assertNotIn('analyzeLayers', code)
-        self.assertNotIn('segmenter.analyze', code)
+        self.assertIn('subjectAnalyzer.analyze', code)
+        self.assertIn('cachedPortrait.matches', code)
+        self.assertIn('portrait: portrait', code)
+        person_code = (ROOT/'PGYDepthDemo/Imaging/NativeSubjectSegmenter.swift').read_text()
+        self.assertIn('VNGeneratePersonInstanceMaskRequest', person_code)
+        self.assertNotIn('VNGeneratePersonSegmentationRequest', person_code)
+        self.assertNotIn('VNGenerateForegroundInstanceMaskRequest', person_code)
+        recipe = (ROOT/'PGYDepthDemo/Core/EditRecipe.swift').read_text()
+        self.assertIn('selectedPersonID', recipe)
+        self.assertIn('depthModel: DepthModelChoice = .v3', recipe)
         all_code = '\n'.join(p.read_text() for p in (ROOT/'PGYDepthDemo').rglob('*.swift'))
         self.assertNotIn('URLSession', all_code)
 
@@ -47,7 +56,7 @@ class NativeProjectTests(unittest.TestCase):
         self.assertNotIn('Section("选择方式")', panel)
         self.assertIn('} header: { Text("选择方式") } footer: {', panel)
 
-    def test_no_single_subject_focus_rule_remains(self):
+    def test_legacy_scene_depth_mapping_remains_available(self):
         code = (ROOT/'PGYDepthDemo/Core/SubjectMasks.swift').read_text()
         self.assertNotIn('func sharpMask(',code)
         self.assertIn('case .layered(let scene)',code)

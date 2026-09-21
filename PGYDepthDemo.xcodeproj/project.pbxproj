@@ -9,10 +9,22 @@
 			"fileRef" = "7CC25714D7F275ADB9F5EF4B";
 			"isa" = "PBXBuildFile";
 		};
+		"019F946B4238820672B88594" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tests/DepthCoreTests/ModelGeometryTests.swift";
+			"sourceTree" = "<group>";
+		};
 		"059B2AB4904EA3BC1510A526" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
 			"path" = "PGYDepthDemo/UI/PhotoCanvas.swift";
+			"sourceTree" = "<group>";
+		};
+		"062BC890639FE706567F3070" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "PGYDepthDemo/Core/DepthModelChoice.swift";
 			"sourceTree" = "<group>";
 		};
 		"06A564AACE985B9950D1CEF3" = {
@@ -26,6 +38,10 @@
 			);
 			"isa" = "PBXResourcesBuildPhase";
 			"runOnlyForDeploymentPostprocessing" = "0";
+		};
+		"06E47EFFF4FB6B30E8046573" = {
+			"fileRef" = "F322C2E5D537004502178518";
+			"isa" = "PBXBuildFile";
 		};
 		"0818DA54BC561824AF24692F" = {
 			"fileRef" = "E56E7B1DDFFD9620669FE97B";
@@ -134,6 +150,10 @@
 			"path" = "Tests/DepthCoreTests/DepthCoreTests.swift";
 			"sourceTree" = "<group>";
 		};
+		"2001E3BF42F08B745A43BE26" = {
+			"fileRef" = "C1D1AC64E03974D7903B857D";
+			"isa" = "PBXBuildFile";
+		};
 		"2015F6614F0C718480A07F0F" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -184,6 +204,12 @@
 		"2A29A8C7E653D4DBCA757D07" = {
 			"fileRef" = "D2363CBAB8F7D6A61D03A841";
 			"isa" = "PBXBuildFile";
+		};
+		"2F87038CE3482D1E5B62CB82" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "PGYDepthDemo/Imaging/PortraitRenderer.swift";
+			"sourceTree" = "<group>";
 		};
 		"322042D878B8BB65BD326D05" = {
 			"fileRef" = "5A0482D5492045B513253899";
@@ -298,7 +324,7 @@
 			"buildSettings" = {
 				"CODE_SIGN_STYLE" = "Automatic";
 				"COREML_CODEGEN_LANGUAGE" = "Swift";
-				"CURRENT_PROJECT_VERSION" = "4";
+				"CURRENT_PROJECT_VERSION" = "5";
 				"DEVELOPMENT_TEAM" = "";
 				"GENERATE_INFOPLIST_FILE" = "NO";
 				"INFOPLIST_FILE" = "PGYDepthDemo/Resources/Info.plist";
@@ -306,7 +332,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				"MARKETING_VERSION" = "4.0";
+				"MARKETING_VERSION" = "5.0";
 				"PRODUCT_BUNDLE_IDENTIFIER" = "com.pgy.depthdemo";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
 				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
@@ -326,6 +352,10 @@
 		};
 		"5FD44A720CC59C5836132F95" = {
 			"fileRef" = "959C89D15F3308736F693F58";
+			"isa" = "PBXBuildFile";
+		};
+		"60DD3CB28EC697C88154BB89" = {
+			"fileRef" = "062BC890639FE706567F3070";
 			"isa" = "PBXBuildFile";
 		};
 		"625A9FDF7EE4D38F2C909F68" = {
@@ -399,8 +429,18 @@
 			"isa" = "PBXFrameworksBuildPhase";
 			"runOnlyForDeploymentPostprocessing" = "0";
 		};
+		"7A5D6C4E46B287585EEE6737" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "folder.mlpackage";
+			"path" = "PGYDepthDemo/Resources/Models/DepthAnythingV3_base_504.mlpackage";
+			"sourceTree" = "<group>";
+		};
 		"7A89BF9D4E0E909EC74A5984" = {
 			"fileRef" = "FA7A94155BEC7FFBEAD8546A";
+			"isa" = "PBXBuildFile";
+		};
+		"7B6ECEC397E5FA7D5A6C69E5" = {
+			"fileRef" = "2F87038CE3482D1E5B62CB82";
 			"isa" = "PBXBuildFile";
 		};
 		"7CC25714D7F275ADB9F5EF4B" = {
@@ -413,9 +453,19 @@
 			"fileRef" = "2015F6614F0C718480A07F0F";
 			"isa" = "PBXBuildFile";
 		};
+		"7F3EF62A402CCAAB79F1240C" = {
+			"fileRef" = "019F946B4238820672B88594";
+			"isa" = "PBXBuildFile";
+		};
 		"85ACFFD750A1F58C31770A29" = {
 			"fileRef" = "3A25599954E1A6270DC9CF13";
 			"isa" = "PBXBuildFile";
+		};
+		"86F834FF72AE4045D90EB4FC" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tests/IOS/PortraitImagingTests.swift";
+			"sourceTree" = "<group>";
 		};
 		"89E1FD6268CC0F221A2BE178" = {
 			"buildSettings" = {
@@ -547,6 +597,10 @@
 			"fileRef" = "42FC43CB06AF79BE44C1A1CB";
 			"isa" = "PBXBuildFile";
 		};
+		"A37ECDF9EB328F595FF742A1" = {
+			"fileRef" = "86F834FF72AE4045D90EB4FC";
+			"isa" = "PBXBuildFile";
+		};
 		"A3B536CEC5AE3A4A3167642D" = {
 			"fileRef" = "4E0EB8D64FC4C63976C2293E";
 			"isa" = "PBXBuildFile";
@@ -558,6 +612,10 @@
 		"AA189274DDA4BD074CBB66FE" = {
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"7B6ECEC397E5FA7D5A6C69E5",
+				"E13401CBFD851CE1E2BAB311",
+				"60DD3CB28EC697C88154BB89",
+				"06E47EFFF4FB6B30E8046573",
 				"4DC04B1012CFBB8C459E7AB3",
 				"7D385C39C0888DDF671A905A",
 				"0AD6ABDA1B1D24AB455AAB5B",
@@ -669,6 +727,12 @@
 			"productReference" = "8BCD5BC4CDFDF0918087C782";
 			"productType" = "com.apple.product-type.application";
 		};
+		"C1D1AC64E03974D7903B857D" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tests/DepthCoreTests/PortraitFocusTests.swift";
+			"sourceTree" = "<group>";
+		};
 		"C44D0F0889ECBC3C6F0B7AC6" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -711,6 +775,9 @@
 		"D6D3EFCD007A068187E3C9F7" = {
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"A37ECDF9EB328F595FF742A1",
+				"2001E3BF42F08B745A43BE26",
+				"7F3EF62A402CCAAB79F1240C",
 				"A6B3D1BE4F5F9FBAC1B123A4",
 				"90C7DA61816622A5DEC48B86",
 				"781C382D6CB5E746D0C1A1E1",
@@ -751,6 +818,10 @@
 			"fileRef" = "9583C047CE64A1BD1AFD7B19";
 			"isa" = "PBXBuildFile";
 		};
+		"E13401CBFD851CE1E2BAB311" = {
+			"fileRef" = "7A5D6C4E46B287585EEE6737";
+			"isa" = "PBXBuildFile";
+		};
 		"E26CB7841AE1D91A07BC586F" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -765,6 +836,13 @@
 		};
 		"E50290A24C49A459B43487C5" = {
 			"children" = (
+				"2F87038CE3482D1E5B62CB82",
+				"86F834FF72AE4045D90EB4FC",
+				"7A5D6C4E46B287585EEE6737",
+				"C1D1AC64E03974D7903B857D",
+				"019F946B4238820672B88594",
+				"062BC890639FE706567F3070",
+				"F322C2E5D537004502178518",
 				"1BDBD24583AAF7F81F76B976",
 				"27EDA01F986DA5EFCB134E3D",
 				"BFC937463906E5DB7A02A37C",
@@ -806,7 +884,7 @@
 			"buildSettings" = {
 				"CODE_SIGN_STYLE" = "Automatic";
 				"COREML_CODEGEN_LANGUAGE" = "Swift";
-				"CURRENT_PROJECT_VERSION" = "4";
+				"CURRENT_PROJECT_VERSION" = "5";
 				"DEVELOPMENT_TEAM" = "";
 				"GENERATE_INFOPLIST_FILE" = "NO";
 				"INFOPLIST_FILE" = "PGYDepthDemo/Resources/Info.plist";
@@ -814,7 +892,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				"MARKETING_VERSION" = "4.0";
+				"MARKETING_VERSION" = "5.0";
 				"PRODUCT_BUNDLE_IDENTIFIER" = "com.pgy.depthdemo";
 				"PRODUCT_NAME" = "$(TARGET_NAME)";
 				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
@@ -850,6 +928,12 @@
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
 			"path" = "PGYDepthDemo/State/EditorModel.swift";
+			"sourceTree" = "<group>";
+		};
+		"F322C2E5D537004502178518" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "PGYDepthDemo/Core/PortraitAnalysis.swift";
 			"sourceTree" = "<group>";
 		};
 		"F7FA114F8EFAD8CDA2BC1DBD" = {

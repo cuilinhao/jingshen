@@ -15,7 +15,7 @@ enum OfflineDepthError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingBundledModel:
-            return "App 内没有已编译的景深模型。请打开完整 v4 工程，确认 DepthAnythingV2SmallF16.mlpackage 位于 Compile Sources 后重新构建；不需要联网下载。"
+            return "App 内没有已编译的景深模型。请打开完整 v5 工程，确认所选 mlpackage 位于 Compile Sources 后重新构建；不需要联网下载。"
         case .incompatibleModel(let reason): return "内置景深模型接口不匹配：\(reason)"
         case .predictionFailed(let reason): return "本机景深计算失败：\(reason)。没有改用空分层或人工样例，请重新分析。"
         case .invalidDepth: return "模型未返回有效的深度变化。请重新分析或更换照片；没有生成虚假的景深。"
@@ -28,15 +28,16 @@ enum OfflineDepthError: Error, LocalizedError {
 final class OfflineDepthEstimator: DepthEstimating {
     private let context: CIContext
     private let bundle: Bundle
+    let modelChoice: DepthModelChoice
     private var model: MLModel?
     private var usesCPU = false
-    init(context: CIContext, bundle: Bundle = .main) {
-        self.context = context; self.bundle = bundle
+    init(context: CIContext, bundle: Bundle = .main, modelChoice: DepthModelChoice = .v3) {
+        self.context = context; self.bundle = bundle; self.modelChoice = modelChoice
     }
 
     private func load(cpuOnly: Bool = false) throws -> MLModel {
         if let model, !cpuOnly || usesCPU { return model }
-        guard let url = bundle.url(forResource: "DepthAnythingV2SmallF16", withExtension: "mlmodelc") else {
+        guard let url = bundle.url(forResource: modelChoice.resourceName, withExtension: "mlmodelc") else {
             throw OfflineDepthError.missingBundledModel
         }
         let configuration = MLModelConfiguration()
@@ -65,8 +66,8 @@ final class OfflineDepthEstimator: DepthEstimating {
             }
             guard let feature = loaded.modelDescription.inputDescriptionsByName["image"],
                   let constraint = feature.imageConstraint,
-                  constraint.pixelsWide == 518, constraint.pixelsHigh == 392 else {
-                throw OfflineDepthError.incompatibleModel("预期 RGB image 518×392")
+                  constraint.pixelsWide == modelChoice.width, constraint.pixelsHigh == modelChoice.height else {
+                throw OfflineDepthError.incompatibleModel("预期所选模型的 RGB 输入尺寸")
             }
             // The uploaded model graph already subtracts RGB mean and divides by std.
             // Supply ordinary 0…255 RGB image data. Do NOT normalize it to 0…1 again.
@@ -91,12 +92,15 @@ final class OfflineDepthEstimator: DepthEstimating {
             if let pixels = value.imageBufferValue { raw = try PixelBufferReader.floats(pixels) }
             else if let array = value.multiArrayValue { raw = try Self.readArray(array) }
             else { throw OfflineDepthError.incompatibleModel("depth 不是浮点图像或数组") }
-            guard raw.width == 518, raw.height == 392,
+            guard raw.width == modelChoice.width, raw.height == modelChoice.height,
                   raw.values.allSatisfy({ $0.isFinite }),
                   let low = raw.values.min(), let high = raw.values.max(), high - low > 0.000001 else {
                 throw OfflineDepthError.invalidDepth
             }
-            let depth = try DepthField.normalizing(width: raw.width, height: raw.height, values: raw.values)
+            let geometry = DepthInputGeometry(imageSize: .init(width: image.width, height: image.height),
+                width: raw.width, height: raw.height, letterbox: modelChoice == .v3)
+            let values = try geometry.unpad(raw.values)
+            let depth = try modelChoice.normalize(width: geometry.contentWidth, height: geometry.contentHeight, values: values)
             guard let normalizedLow = depth.values.min(), let normalizedHigh = depth.values.max(),
                   normalizedHigh - normalizedLow > 0.000001 else { throw OfflineDepthError.invalidDepth }
             print("[Depth] 自动深度完成 \(depth.width)×\(depth.height)，有效像素 \(depth.values.count)/\(depth.values.count)，raw=\(low)…\(high)，\(String(format: "%.3f", Date().timeIntervalSince(start)))s")
@@ -105,21 +109,25 @@ final class OfflineDepthEstimator: DepthEstimating {
         }
     }
 
-    /// Full-image scale fill: preserve all source content, matching the model's published
-    /// fixed-size evaluation. The output field is mapped back across the full source extent.
-    /// No rotation, crop, black padding, reference-image coordinates, or second normalization.
+    /// RGB255; the model already contains scaling and ImageNet normalization.
     func makeInput(_ image: CGImage, width: Int, height: Int, format: OSType) throws -> CVPixelBuffer {
         var optional: CVPixelBuffer?
         let attrs: [CFString: Any] = [kCVPixelBufferCGImageCompatibilityKey: true,
-                                      kCVPixelBufferCGBitmapContextCompatibilityKey: true,
-                                      kCVPixelBufferIOSurfacePropertiesKey: [:]]
+            kCVPixelBufferCGBitmapContextCompatibilityKey: true, kCVPixelBufferIOSurfacePropertiesKey: [:]]
         guard CVPixelBufferCreate(kCFAllocatorDefault, width, height, format,
-                                  attrs as CFDictionary, &optional) == kCVReturnSuccess,
-              let buffer = optional else { throw ImagingError.invalidPixelBuffer }
-        let scaled = CIImage(cgImage: image).transformed(by: CGAffineTransform(
-            scaleX: CGFloat(width) / CGFloat(image.width), y: CGFloat(height) / CGFloat(image.height)))
-        context.render(scaled, to: buffer, bounds: CGRect(x: 0, y: 0, width: width, height: height),
-                       colorSpace: ImageSupport.colorSpace)
+            attrs as CFDictionary, &optional) == kCVReturnSuccess, let buffer = optional else {
+            throw ImagingError.invalidPixelBuffer
+        }
+        let geometry = DepthInputGeometry(imageSize: .init(width: image.width, height: image.height),
+            width: width, height: height, letterbox: modelChoice == .v3)
+        let bounds = CGRect(x: 0, y: 0, width: width, height: height)
+        let content = CIImage(cgImage: image).transformed(by: CGAffineTransform(
+            scaleX: CGFloat(geometry.contentWidth) / CGFloat(image.width),
+            y: CGFloat(geometry.contentHeight) / CGFloat(image.height)))
+            .transformed(by: CGAffineTransform(translationX: CGFloat(geometry.left),
+                y: CGFloat(height - geometry.top - geometry.contentHeight)))
+        let padding = CIImage(color: CIColor(red: 0.485, green: 0.456, blue: 0.406)).cropped(to: bounds)
+        context.render(content.composited(over: padding), to: buffer, bounds: bounds, colorSpace: ImageSupport.colorSpace)
         return buffer
     }
 

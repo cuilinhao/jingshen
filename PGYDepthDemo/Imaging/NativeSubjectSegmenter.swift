@@ -4,61 +4,53 @@ import CoreGraphics
 import CoreImage
 
 protocol SubjectAnalyzing {
-    func analyze(_ source: CGImage) throws -> SubjectSegmentation
+    func analyze(_ source: CGImage) throws -> SubjectSegmentation?
 }
 
-/// Uses only Apple's system Vision request. No bundled model, SDK dependency, or network code.
-/// Owned by PhotoPipeline's actor: request.perform must not block the MainActor.
-final class NativeSubjectSegmenter: SubjectAnalyzing {
-    private let context: CIContext
-    init(context: CIContext) { self.context = context }
+enum PersonSegmentationError: Error, LocalizedError {
+    case crowded, incomplete
+    var errorDescription: String? {
+        switch self {
+        case .crowded: return "检测到超过4个人，当前无法逐人选择，已使用普通景深。"
+        case .incomplete: return "未能可靠分开所有人物，已使用普通景深；可更换照片后重试。"
+        }
+    }
+}
 
-    func analyze(_ source: CGImage) throws -> SubjectSegmentation {
+/// Per-person soft mattes at the decoded image resolution, not the 504px depth resolution.
+/// Called on PhotoPipeline's serial actor, off the main thread.
+final class NativeSubjectSegmenter: SubjectAnalyzing {
+    init(context: CIContext) {}
+    func analyze(_ source: CGImage) throws -> SubjectSegmentation? {
         try Task.checkCancellation()
-        let started = Date()
-        // Limit mask memory and analysis cost. Export scales soft masks to the source (≤2048).
-        let image = try ImageSupport.resized(source, longestEdge: 1024, context: context)
-        let request = VNGenerateForegroundInstanceMaskRequest()
-        let handler = VNImageRequestHandler(cgImage: image, orientation: .up, options: [:])
-        print("[Subjects] 系统 Vision 分析 \(image.width)×\(image.height)，不下载外部资源")
+        let handler = VNImageRequestHandler(cgImage: source, orientation: .up, options: [:])
+        let faces = VNDetectFaceRectanglesRequest()
+        try handler.perform([faces])
+        let faceCount = faces.results?.count ?? 0
+        guard faceCount <= 4 else { throw PersonSegmentationError.crowded }
+        let request = VNGeneratePersonInstanceMaskRequest()
         try handler.perform([request])
         try Task.checkCancellation()
         guard let observation = request.results?.first, !observation.allInstances.isEmpty else {
-            throw ImagingError.noSubjects
+            if faceCount > 0 { throw PersonSegmentationError.incomplete }
+            return nil
         }
-        let rawLabels = try PixelBufferReader.labels(observation.instanceMask)
         let ids = observation.allInstances.sorted()
-        guard ids.allSatisfy({ $0 > 0 && $0 <= 255 }) else { throw ImagingError.invalidPixelBuffer }
-
-        // Bound worst-case memory: up to 15 individual subjects + one group for the rest.
-        // Relabel the remaining pixels to that group ID; NEVER silently treat them as background.
-        var groups: [(id: UInt8, instances: IndexSet)] = []
-        var labels = rawLabels
-        let groupedCount: Int
-        if ids.count > 16 {
-            for id in ids.prefix(15) { groups.append((UInt8(id), IndexSet(integer: id))) }
-            let remaining = Array(ids.dropFirst(15)), groupID = UInt8(ids[15])
-            let membership = Set(remaining)
-            groups.append((groupID, IndexSet(remaining)))
-            labels = try GrayMask(width: rawLabels.width, height: rawLabels.height,
-                                  bytes: Data(rawLabels.bytes.map { membership.contains(Int($0)) ? groupID : $0 }))
-            groupedCount = remaining.count
-        } else {
-            groups = ids.map { (UInt8($0), IndexSet(integer: $0)) }
-            groupedCount = 0
+        guard ids.count <= 4, ids.count >= faceCount, ids.allSatisfy({ $0 > 0 && $0 <= 255 }) else {
+            throw PersonSegmentationError.incomplete
         }
+        let labels = try PixelBufferReader.labels(observation.instanceMask)
         var subjects: [SubjectMask] = []
-        for group in groups {
+        for id in ids {
             try Task.checkCancellation()
             let mask = try autoreleasepool {
-                let buffer = try observation.generateScaledMaskForImage(forInstances: group.instances, from: handler)
-                return try PixelBufferReader.coverage(buffer)
+                let pixels = try observation.generateScaledMaskForImage(forInstances: IndexSet(integer: id), from: handler)
+                return try PixelBufferReader.coverage(pixels)
             }
-            guard mask.bytes.contains(where: { $0 > 8 }) else { throw ImagingError.noSubjects }
-            subjects.append(SubjectMask(id: group.id, mask: mask))
+            guard mask.bytes.contains(where: { $0 >= 224 }) else { throw PersonSegmentationError.incomplete }
+            subjects.append(.init(id: UInt8(id), mask: mask))
         }
-        let result = try SubjectSegmentation(labels: labels, subjects: subjects, groupedSubjectCount: groupedCount)
-        print("[Subjects] 已缓存 \(result.subjects.count) 个主体/组，耗时 \(String(format: "%.3f", Date().timeIntervalSince(started)))s")
-        return result
+        print("[People] 独立人物 \(subjects.count)，软蒙版 \(subjects[0].mask.width)×\(subjects[0].mask.height)")
+        return try SubjectSegmentation(labels: labels, subjects: subjects)
     }
 }

@@ -27,6 +27,7 @@ enum ImagingError: Error, LocalizedError {
 
 enum ImageSupport {
     static let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+    static let linearColorSpace = CGColorSpace(name: CGColorSpace.linearSRGB)!
 
     static func grayImage(width: Int, height: Int, bytes: [UInt8]) throws -> CGImage {
         guard width > 0, height > 0, width * height == bytes.count,

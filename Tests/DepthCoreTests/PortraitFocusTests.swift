@@ -72,6 +72,20 @@ final class PortraitFocusTests: XCTestCase {
         let grouped = try SubjectSegmentation(labels:p.segmentation.labels,subjects:p.segmentation.subjects,groupedSubjectCount:2)
         XCTAssertThrowsError(try PortraitAnalysis(segmentation:grouped,sourceSHA256:p.sourceSHA256,imageSize:p.imageSize))
     }
+    func testNewSegmentationUsesSavedPointInsteadOfReassignedID() throws {
+        let people = try portrait()
+        var old = EditRecipe(); old.selectedPersonID = 1; old.focusPoint = .init(x: 0.9, y: 0.5)
+        XCTAssertEqual(people.restoringSelection(in: old, cacheReused: false).selectedPersonID, 2)
+        let cached = people.restoringSelection(in: old, cacheReused: true)
+        XCTAssertEqual(cached.selectedPersonID, 1)
+        XCTAssertGreaterThanOrEqual(try XCTUnwrap(people.person(id: 1)).mask.value(at: cached.focusPoint), 64)
+        var local = old; local.focusMode = .local
+        XCTAssertEqual(people.restoringSelection(in: local, cacheReused: false).focusPoint, local.focusPoint)
+        XCTAssertEqual(people.restoringSelection(in: local, cacheReused: false).selectedPersonID, 2)
+        let fresh = people.restoringSelection(in: EditRecipe(), cacheReused: false)
+        XCTAssertNotNil(fresh.selectedPersonID)
+        XCTAssertGreaterThanOrEqual(try XCTUnwrap(people.person(id: fresh.selectedPersonID)).mask.value(at: fresh.focusPoint), 64)
+    }
     func testDraftRestoresPeopleAndSelectionTogether() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at:root) }

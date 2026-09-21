@@ -25,6 +25,14 @@ struct PhotoCanvas: View {
                         .frame(width: rect.width, height: rect.height)
                         .position(x: rect.x + rect.width / 2, y: rect.y + rect.height / 2)
                 }
+                if let outline = model.selectionOutline, !showingOriginal, !model.showMask,
+                   !model.isPreparing, !model.isRendering {
+                    Image(uiImage: outline).renderingMode(.template).resizable().interpolation(.high)
+                        .foregroundStyle(DepthTheme.accent)
+                        .frame(width: rect.width, height: rect.height)
+                        .position(x: rect.x + rect.width / 2, y: rect.y + rect.height / 2)
+                        .allowsHitTesting(false).accessibilityHidden(true)
+                }
                 Rectangle().fill(.clear).contentShape(Rectangle())
                     .gesture(SpatialTapGesture().onEnded { event in
                         guard let point = ImageGeometry.unitPoint(x: event.location.x, y: event.location.y, inside: rect) else { return }
@@ -32,7 +40,7 @@ struct PhotoCanvas: View {
                     })
                     .simultaneousGesture(LongPressGesture(minimumDuration: 0.25)
                         .updating($holdingOriginal) { current, state, _ in state = current })
-                    .accessibilityLabel("照片预览，点击选择焦点，长按比较原图")
+                    .accessibilityLabel(model.isUsingPortrait ? "照片预览，点击人物使其清晰，长按比较原图" : "照片预览，点击选择焦点，长按比较原图")
                 if let point = model.focusInCrop, !showingOriginal, !model.showMask, !model.isPreparing {
                     FocusReticle(pulse: model.focusPulse)
                         .position(x: rect.x + point.x * rect.width, y: rect.y + point.y * rect.height)
@@ -49,7 +57,7 @@ struct PhotoCanvas: View {
                     Color.black.opacity(0.28)
                     VStack(spacing: 12) {
                         ProgressView().tint(DepthTheme.accent)
-                        Text(model.isExporting ? "正在导出…" : "正在生成自动深度…")
+                        Text(model.isExporting ? "正在导出…" : "正在分析深度与人物…")
                             .font(.system(size: 14, weight: .medium))
                         if model.isPreparing {
                             Text("照片在本机处理，不会上传")

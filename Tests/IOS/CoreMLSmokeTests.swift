@@ -6,7 +6,7 @@ import CoreVideo
 @testable import PGYDepthDemo
 
 /// These tests require an actual Apple runtime. They are intentionally NOT mocks and are
-/// not marked skipped when the model is absent. Run Command-U with the complete v4 target.
+/// not marked skipped when the model is absent. Run Command-U with the complete v5 target.
 final class CoreMLSmokeTests: XCTestCase {
     func testCompiledModelIsActuallyInAppBundle() throws {
         let url = try XCTUnwrap(Bundle.main.url(forResource: "DepthAnythingV2SmallF16", withExtension: "mlmodelc"), "Model must be compiled into App, not downloaded later")
@@ -17,14 +17,24 @@ final class CoreMLSmokeTests: XCTestCase {
         XCTAssertNotNil(model.modelDescription.outputDescriptionsByName["depth"])
     }
 
+    func testBundledV3ActuallyPredictsFiniteInverseDepth() throws {
+        let url = try XCTUnwrap(Bundle.main.url(forResource: "ReferencePhoto", withExtension: "png"))
+        let context = CIContext()
+        let image = try PhotoLoader.decode(Data(contentsOf: url), context: context).image
+        let field = try OfflineDepthEstimator(context: context).estimate(image)
+        XCTAssertEqual(field.width, 379); XCTAssertEqual(field.height, 504)
+        XCTAssertTrue(field.values.allSatisfy(\.isFinite))
+        XCTAssertGreaterThan(field.sample(at: .init(x: 0.485, y: 0.785)), field.sample(at: .init(x: 0.84, y: 0.55)))
+    }
+
     func testNormalOriginalImportRecomputesOldBlankDraftAndRefocuses() async throws {
         let url = try XCTUnwrap(Bundle.main.url(forResource: "ReferencePhoto", withExtension: "png"))
         let data = try Data(contentsOf: url)
-        let pipeline = PhotoPipeline() // Real OfflineDepthEstimator, no injected map or predictor.
+        let pipeline = PhotoPipeline(analyzePeople: false) // Real OfflineDepthEstimator, no injected map or predictor.
         let blank = try SceneLayerMap.blank(width: 770, height: 1024)
         let photo = try await pipeline.prepare(data: data, title: "normal imported PNG",
              cachedAnalysis: .layered(.init(map: blank, subjects: nil, notice: nil)),
-             cachedImageSize: .init(width: 1060, height: 1410))
+             cachedImageSize: .init(width: 1060, height: 1410), modelChoice: .v2)
         guard case .estimated(let estimated) = photo.analysis else { return XCTFail("Automatic depth missing") }
         let depth = estimated.field
         XCTAssertEqual(depth.width, 518); XCTAssertEqual(depth.height, 392)
@@ -64,7 +74,7 @@ final class CoreMLSmokeTests: XCTestCase {
     func testInputKeepsTopLeftRowsAndRaw255Values() throws {
         let bytes = [UInt8](repeating: 0, count: 32*16) + [UInt8](repeating: 255, count: 32*16)
         let original = try ImageSupport.grayImage(width: 32, height: 32, bytes: bytes)
-        let estimator = OfflineDepthEstimator(context: CIContext())
+        let estimator = OfflineDepthEstimator(context: CIContext(), modelChoice: .v2)
         let input = try estimator.makeInput(original, width: 518, height: 392, format: kCVPixelFormatType_32BGRA)
         XCTAssertEqual(CVPixelBufferLockBaseAddress(input, .readOnly), kCVReturnSuccess)
         defer { CVPixelBufferUnlockBaseAddress(input, .readOnly) }
@@ -74,6 +84,21 @@ final class CoreMLSmokeTests: XCTestCase {
         XCTAssertGreaterThan(base[350*stride+200*4], 250, "No double 0...1 normalization")
     }
 
+    func testV3LetterboxPreservesRowsAndMeanRGBPadding() throws {
+        let bytes = [UInt8](repeating:0,count:10*10) + [UInt8](repeating:255,count:10*10)
+        let original = try ImageSupport.grayImage(width:10,height:20,bytes:bytes)
+        let estimator = OfflineDepthEstimator(context:CIContext())
+        let input = try estimator.makeInput(original,width:504,height:504,format:kCVPixelFormatType_32BGRA)
+        XCTAssertEqual(CVPixelBufferLockBaseAddress(input,.readOnly),kCVReturnSuccess)
+        defer { CVPixelBufferUnlockBaseAddress(input,.readOnly) }
+        let base = try XCTUnwrap(CVPixelBufferGetBaseAddress(input)).assumingMemoryBound(to:UInt8.self)
+        let row = CVPixelBufferGetBytesPerRow(input)
+        XCTAssertLessThan(base[30*row+250*4],5)
+        XCTAssertGreaterThan(base[470*row+250*4],250)
+        XCTAssertEqual(Double(base[200*row+20*4]),0.406*255,accuracy:2)
+        XCTAssertEqual(Double(base[200*row+20*4+1]),0.456*255,accuracy:2)
+        XCTAssertEqual(Double(base[200*row+20*4+2]),0.485*255,accuracy:2)
+    }
     func testHalfFloatDepthReaderKeepsFractionalValues() throws {
         var optional: CVPixelBuffer?
         XCTAssertEqual(CVPixelBufferCreate(kCFAllocatorDefault, 3, 2, kCVPixelFormatType_OneComponent16Half,

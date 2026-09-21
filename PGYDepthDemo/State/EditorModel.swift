@@ -15,6 +15,11 @@ final class EditorModel: ObservableObject {
         didSet {
             guard !applyingSnapshot, recipe != oldValue else { return }
             recipe.sanitize()
+            if recipe.focusMode == .automatic, oldValue.focusMode != .automatic, let portrait = photo?.portrait {
+                recipe = portrait.restoringSelection(in: recipe, cacheReused: true)
+                selectionHighlightPending = true
+            }
+            clearSelectionOutline()
             schedulePreview()
             scheduleDraft()
         }
@@ -22,6 +27,7 @@ final class EditorModel: ObservableObject {
     @Published private(set) var previewImage: UIImage? = UIImage(named: "ReferencePhoto.png")
     @Published private(set) var originalImage: UIImage?
     @Published private(set) var maskImage: UIImage?
+    @Published private(set) var selectionOutline: UIImage?
     @Published private(set) var photo: PhotoSession?
     @Published private(set) var isPreparing = false
     @Published private(set) var isRendering = false
@@ -39,6 +45,8 @@ final class EditorModel: ObservableObject {
     private var previewTask: Task<Void, Never>?
     private var saveTask: Task<Void, Never>?
     private var toastTask: Task<Void, Never>?
+    private var selectionOutlineTask: Task<Void, Never>?
+    private var selectionHighlightPending = false
     private var importGeneration = 0
     private var renderGeneration = 0
     private var applyingSnapshot = false
@@ -46,14 +54,22 @@ final class EditorModel: ObservableObject {
 
     var controlsEnabled: Bool { photo != nil && !isPreparing && !isExporting }
     var isUsingLocal: Bool { recipe.focusMode == .local }
+    var isUsingPortrait: Bool { !isUsingLocal && photo?.portrait?.person(id: recipe.selectedPersonID) != nil }
+    var hasNativeDepth: Bool {
+        if let photo, case .native = photo.analysis { return true }
+        return false
+    }
     var layeredScene: LayeredScene? {
         guard let photo, case .layered(let scene) = photo.analysis else { return nil }
         return scene
     }
     var banner: String {
-        if isPreparing { return "正在生成离线自动深度，请稍候…" }
-        guard let photo else { return "v4 内置完整模型 · 本机自动深度" }
+        if isPreparing { return "正在分析深度与人物，请稍候…" }
+        guard let photo else { return "V3 Base · 本机人物景深" }
         if recipe.focusMode == .local { return "局部虚化模式，启用圆形清晰选区" }
+        if isUsingPortrait, let portrait = photo.portrait {
+            return "已识别 \(portrait.segmentation.subjects.count) 人 · 仅所选人物清晰"
+        }
         switch photo.analysis {
         case .native: return "该图像包含景深数据，启用原生景深"
         case .estimated: return "已生成离线自动深度，启用景深虚化"
@@ -65,12 +81,17 @@ final class EditorModel: ObservableObject {
         }
     }
     var diagnosticCaption: String {
-        photo?.analysis.continuousDepth != nil && !isUsingLocal
-        ? "相对深度 · 亮近暗远 · 非测距" : "虚化蒙版 · 白色虚化 / 黑色清晰"
+        if isUsingPortrait { return "人物蒙版 · 白色为所选人物" }
+        return photo?.analysis.continuousDepth != nil && !isUsingLocal
+            ? "相对深度 · 亮近暗远 · 非测距" : "虚化蒙版 · 白色虚化 / 黑色清晰"
     }
     var selectionDescription: String {
         guard let photo else { return "尚未加载照片" }
         if isUsingLocal { return "圆形选区内清晰，周围虚化" }
+        if isUsingPortrait, let portrait = photo.portrait {
+            let count = portrait.segmentation.subjects.count
+            return count == 1 ? "保持人物清晰，按背景远近渐变虚化" : "已识别 \(count) 人 · 所选人物清晰，其他人虚化"
+        }
         switch photo.analysis {
         case .native(let field): return String(format: "原生相对深度 %.3f · 同范围清晰", field.sample(at: recipe.focusPoint))
         case .estimated(let estimated):
@@ -100,7 +121,7 @@ final class EditorModel: ObservableObject {
             guard token == importGeneration else { return }
             if let saved {
                 open(data: saved.sourceData, title: saved.title, restored: saved.recipe,
-                     cachedAnalysis: saved.analysis, cachedImageSize: saved.imageSize)
+                     cachedAnalysis: saved.analysis, cachedImageSize: saved.imageSize, cachedPortrait: saved.portrait)
             } else {
                 loadSample()
             }
@@ -139,12 +160,14 @@ final class EditorModel: ObservableObject {
     }
 
     private func open(data: Data, title: String, restored: EditRecipe,
-                      cachedAnalysis: PhotoAnalysis?, cachedImageSize: PixelSize?) {
-        beginImport(title: title, restored: restored, cachedAnalysis: cachedAnalysis, cachedImageSize: cachedImageSize) { data }
+                      cachedAnalysis: PhotoAnalysis?, cachedImageSize: PixelSize?, cachedPortrait: PortraitAnalysis?) {
+        beginImport(title: title, restored: restored, cachedAnalysis: cachedAnalysis,
+                    cachedImageSize: cachedImageSize, cachedPortrait: cachedPortrait) { data }
     }
 
     private func beginImport(title: String, restored: EditRecipe = EditRecipe(),
                              cachedAnalysis: PhotoAnalysis? = nil, cachedImageSize: PixelSize? = nil,
+                             cachedPortrait: PortraitAnalysis? = nil,
                              load: @escaping () async throws -> Data) {
         importGeneration += 1
         let token = importGeneration
@@ -152,6 +175,8 @@ final class EditorModel: ObservableObject {
         previewTask?.cancel()
         saveTask?.cancel()
         renderGeneration += 1
+        clearSelectionOutline()
+        selectionHighlightPending = false
         isPreparing = true
         errorMessage = nil
         toastTask?.cancel(); toast = nil
@@ -164,17 +189,27 @@ final class EditorModel: ObservableObject {
                 try Task.checkCancellation()
                 let prepared = try await pipeline.prepare(data: data, title: title,
                                                           cachedAnalysis: cachedAnalysis,
-                                                          cachedImageSize: cachedImageSize)
+                                                          cachedImageSize: cachedImageSize,
+                                                          cachedPortrait: cachedPortrait,
+                                                          modelChoice: restored.depthModel)
                 var initial = restored
                 initial.sanitize()
-                let crop = initial.crop.unitRect(imageWidth: prepared.original.width, imageHeight: prepared.original.height)
-                if crop.localPoint(from: initial.focusPoint) == nil { initial.focusPoint = crop.center }
+                if let portrait = prepared.portrait {
+                    initial = portrait.restoringSelection(in: initial, cacheReused: prepared.portraitCacheReused)
+                } else {
+                    initial.selectedPersonID = nil
+                }
+                if initial.focusMode == .local || prepared.portrait == nil {
+                    let crop = initial.crop.unitRect(imageWidth: prepared.original.width, imageHeight: prepared.original.height)
+                    if crop.localPoint(from: initial.focusPoint) == nil { initial.focusPoint = crop.center }
+                }
                 let result = try await pipeline.preview(photo: prepared, recipe: initial)
                 guard !Task.isCancelled, token == importGeneration else { return }
                 applyingSnapshot = true
                 recipe = initial
                 applyingSnapshot = false
                 photo = prepared
+                selectionHighlightPending = initial.focusMode == .automatic && initial.selectedPersonID != nil
                 apply(result)
                 isPreparing = false
                 focusPulse += 1
@@ -198,6 +233,22 @@ final class EditorModel: ObservableObject {
         guard let photo, controlsEnabled else { return }
         let crop = recipe.crop.unitRect(imageWidth: photo.original.width, imageHeight: photo.original.height)
         let point = crop.originalPoint(from: pointInDisplayedCrop)
+        if !isUsingLocal, let portrait = photo.portrait {
+            // Passing nil distinguishes a real mask hit from the keep-current blank-tap fallback.
+            guard let selectedID = portrait.selectedPerson(at: point, currentID: nil) else {
+                showToast("点击人物切换；当前人物保持清晰")
+                return
+            }
+            var next = recipe
+            next.selectedPersonID = selectedID
+            next.focusPoint = point
+            selectionHighlightPending = true
+            if next == recipe { schedulePreview(delay: 0) } else { recipe = next }
+            focusPulse += 1
+            UISelectionFeedbackGenerator().selectionChanged()
+            showToast(selectionDescription)
+            return
+        }
         if !isUsingLocal, case .layered(let scene) = photo.analysis, scene.map.layer(at: point) == .unknown {
             print("[Focus] 未标记区域 normalized=\(point)；拒绝把 unknown 当成 background")
             showToast("此处尚未标记远近，点上方状态条或调整 → 分层校正")
@@ -215,6 +266,15 @@ final class EditorModel: ObservableObject {
         // Intentionally omit cachedAnalysis. This also repairs v1-v3/invalid cached drafts.
         let data = photo.sourceData
         beginImport(title: photo.title, restored: recipe) { data }
+    }
+
+    func setDepthModel(_ choice: DepthModelChoice) {
+        guard let photo, controlsEnabled, !hasNativeDepth, choice != recipe.depthModel else { return }
+        var next = recipe
+        next.depthModel = choice
+        let data = photo.sourceData
+        // Keep this analysis's person IDs while only recalculating the depth model.
+        beginImport(title: photo.title, restored: next, cachedPortrait: photo.portrait) { data }
     }
 
     func commitLayers(_ map: SceneLayerMap, for sourceID: UUID) {
@@ -244,13 +304,17 @@ final class EditorModel: ObservableObject {
         var next = recipe
         next.crop = crop
         let rect = crop.unitRect(imageWidth: photo.original.width, imageHeight: photo.original.height)
-        if rect.localPoint(from: next.focusPoint) == nil { next.focusPoint = rect.center }
+        if !isUsingPortrait, rect.localPoint(from: next.focusPoint) == nil { next.focusPoint = rect.center }
         recipe = next
     }
 
     func reset() {
         var next = EditRecipe()
-        next.focusPoint = .center
+        next.depthModel = recipe.depthModel
+        if let portrait = photo?.portrait {
+            next = portrait.restoringSelection(in: next, cacheReused: true)
+            selectionHighlightPending = true
+        }
         recipe = next
         compareOriginal = false
         showMask = false
@@ -285,6 +349,21 @@ final class EditorModel: ObservableObject {
         previewImage = UIImage(cgImage: result.rendered)
         originalImage = UIImage(cgImage: result.original)
         maskImage = UIImage(cgImage: result.mask)
+        if selectionHighlightPending, isUsingPortrait, let outline = result.selectionOutline {
+            clearSelectionOutline()
+            selectionOutline = UIImage(cgImage: outline)
+            selectionOutlineTask = Task {
+                try? await Task.sleep(nanoseconds: 900_000_000)
+                guard !Task.isCancelled else { return }
+                selectionOutline = nil
+            }
+        }
+        selectionHighlightPending = false
+    }
+
+    private func clearSelectionOutline() {
+        selectionOutlineTask?.cancel()
+        selectionOutline = nil
     }
 
     private func scheduleDraft() {

@@ -38,6 +38,19 @@ struct PortraitAnalysis: Codable, Equatable, Sendable {
             .max(by: { $0.mask.value(at: point) < $1.mask.value(at: point) }) { return hit.id }
         return person(id: currentID)?.id
     }
+    func restoringSelection(in recipe: EditRecipe, cacheReused: Bool) -> EditRecipe {
+        var result = recipe
+        let id: UInt8?
+        if recipe.selectedPersonID != nil {
+            if cacheReused, let person = person(id: recipe.selectedPersonID) { id = person.id }
+            else { id = selectedPerson(at: recipe.focusPoint, currentID: nil) }
+        } else { id = nil }
+        result.selectedPersonID = id ?? primaryPerson?.id
+        if recipe.focusMode == .automatic, let selected = person(id: result.selectedPersonID), selected.mask.value(at: result.focusPoint) < 64 {
+            result.focusPoint = anchor(for: selected.id) ?? result.focusPoint
+        }
+        return result
+    }
     var primaryPerson: SubjectMask? {
         segmentation.subjects.max { a, b in
             a.mask.bytes.reduce(UInt64(0)) { $0 + UInt64($1) } < b.mask.bytes.reduce(UInt64(0)) { $0 + UInt64($1) }

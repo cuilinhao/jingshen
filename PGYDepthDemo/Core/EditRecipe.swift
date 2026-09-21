@@ -71,6 +71,7 @@ enum PhotoStyle: String, Codable, CaseIterable, Identifiable, Sendable {
 
 struct EditRecipe: Codable, Equatable, Sendable {
     var schemaVersion = 5
+    var depthModel: DepthModelChoice = .v3
     var selectedPersonID: UInt8? = nil
     var focusPoint = UnitPoint2D(x: 0.48, y: 0.56)
     var aperture: Double = 1.8
@@ -88,7 +89,7 @@ struct EditRecipe: Codable, Equatable, Sendable {
     init() {}
 
     private enum CodingKeys: String, CodingKey {
-        case schemaVersion, selectedPersonID, focusPoint, aperture, depthEnabled, effectStrength, focusTolerance
+        case schemaVersion, depthModel, selectedPersonID, focusPoint, aperture, depthEnabled, effectStrength, focusTolerance
         case exposure, crop, style, focusMode, localRadius, edgeFeather
     }
     init(from decoder: Decoder) throws {
@@ -98,6 +99,7 @@ struct EditRecipe: Codable, Equatable, Sendable {
         guard (1...5).contains(version) else {
             throw DecodingError.dataCorruptedError(forKey: .schemaVersion, in: box, debugDescription: "不支持的编辑配方版本")
         }
+        depthModel = try box.decodeIfPresent(DepthModelChoice.self, forKey: .depthModel) ?? .v3
         selectedPersonID = version >= 5 ? try box.decodeIfPresent(UInt8.self, forKey: .selectedPersonID) : nil
         focusPoint = try box.decodeIfPresent(UnitPoint2D.self, forKey: .focusPoint) ?? focusPoint
         aperture = try box.decodeIfPresent(Double.self, forKey: .aperture) ?? aperture

@@ -1,39 +1,89 @@
 {
-  "repository": "apple/coreml-depth-anything-v2-small",
-  "revision": "cfef6f6f2a70783dedc0bfae40cecbc2052285d3",
-  "package": "DepthAnythingV2SmallF16.mlpackage",
-  "model": {
-    "path": "Data/com.apple.CoreML/model.mlmodel",
-    "bytes": 399433,
-    "sha256": "44ac97a3efcfd52113183fb2862ff59cd0368e9ec2e30a90a54980dd11407042"
-  },
-  "weights": {
-    "path": "Data/com.apple.CoreML/weights/weight.bin",
-    "bytes": 49419072,
-    "sha256": "fa60d9b6a155734f59029ebb882fd54e549bfaee3539c1a9cbd2cbbab64a0fed"
-  },
-  "provenance": "https://huggingface.co/apple/coreml-depth-anything-v2-small/commit/cfef6f6f2a70783dedc0bfae40cecbc2052285d3",
-  "manifest": {
-    "path": "Manifest.json",
-    "bytes": 617,
-    "sha256": "2883ae290c48fe916dc5ececac03a7d847fa277165a49ef5652fa1d2b9cb55f7"
-  },
-  "totalBytes": 49819122,
+  "repository": "mlboydaisuke/coreml-zoo",
+  "revision": "a3d12de43e1b6131cd05cdd9027e0c4978d436e5",
+  "package": "DepthAnythingV3_base_504.mlpackage",
+  "archiveSHA256": "cd96d12b7d14fb92c312ad1efe771eb1732680578e11bf6b76ab63f4c5d6c51b",
   "actualInterface": {
     "input": {
       "name": "image",
-      "width": 518,
-      "height": 392,
+      "width": 504,
+      "height": 504,
       "type": "RGB image"
     },
-    "output": {
-      "name": "depth",
-      "width": 518,
-      "height": 392,
-      "type": "GRAYSCALE_FLOAT16 image"
-    },
-    "specVersion": 8,
-    "opset": "CoreML7"
+    "outputs": {
+      "depth": {
+        "shape": [
+          1,
+          504,
+          504
+        ],
+        "type": "FLOAT16 multiArray"
+      },
+      "confidence": {
+        "shape": [
+          1,
+          504,
+          504
+        ],
+        "type": "FLOAT16 multiArray"
+      }
+    }
   },
-  "delivery": "All three files physically bundled; no download build/runtime steps."
+  "files": [
+    {
+      "path": "Data/com.apple.CoreML/model.mlmodel",
+      "bytes": 317533,
+      "sha256": "1e7e0943bae1c2cd8c58c6d8968f57f7a451b34f152104f80101f1aea535c233"
+    },
+    {
+      "path": "Data/com.apple.CoreML/weights/weight.bin",
+      "bytes": 233223744,
+      "sha256": "7823e9552eef8dff710bb9c51f7b5b7cdbc4c7bd7e06b1a434369f5e8bef1c8b"
+    },
+    {
+      "path": "Manifest.json",
+      "bytes": 617,
+      "sha256": "20b752a53baf0102afce370e2b39288a8d98ebe24c095e987e90fc61542e58a7"
+    }
+  ],
+  "comparisonModel": {
+    "repository": "apple/coreml-depth-anything-v2-small",
+    "revision": "cfef6f6f2a70783dedc0bfae40cecbc2052285d3",
+    "package": "DepthAnythingV2SmallF16.mlpackage",
+    "model": {
+      "path": "Data/com.apple.CoreML/model.mlmodel",
+      "bytes": 399433,
+      "sha256": "44ac97a3efcfd52113183fb2862ff59cd0368e9ec2e30a90a54980dd11407042"
+    },
+    "weights": {
+      "path": "Data/com.apple.CoreML/weights/weight.bin",
+      "bytes": 49419072,
+      "sha256": "fa60d9b6a155734f59029ebb882fd54e549bfaee3539c1a9cbd2cbbab64a0fed"
+    },
+    "provenance": "https://huggingface.co/apple/coreml-depth-anything-v2-small/commit/cfef6f6f2a70783dedc0bfae40cecbc2052285d3",
+    "manifest": {
+      "path": "Manifest.json",
+      "bytes": 617,
+      "sha256": "2883ae290c48fe916dc5ececac03a7d847fa277165a49ef5652fa1d2b9cb55f7"
+    },
+    "totalBytes": 49819122,
+    "actualInterface": {
+      "input": {
+        "name": "image",
+        "width": 518,
+        "height": 392,
+        "type": "RGB image"
+      },
+      "output": {
+        "name": "depth",
+        "width": 518,
+        "height": 392,
+        "type": "GRAYSCALE_FLOAT16 image"
+      },
+      "specVersion": 8,
+      "opset": "CoreML7"
+    },
+    "delivery": "All three files physically bundled; no download build/runtime steps."
+  },
+  "totalBytes": 233541894
 }
