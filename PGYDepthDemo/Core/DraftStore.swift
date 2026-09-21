@@ -43,13 +43,13 @@ actor DraftStore {
         guard UUID(uuidString: id) != nil else { throw DraftDataError.incompatible }
         let folder = root.appendingPathComponent(id, isDirectory: true)
         let metadata = try JSONDecoder().decode(Metadata.self, from: read(folder.appendingPathComponent("recipe.json"), maximumBytes: 1024 * 1024))
-        guard (1...2).contains(metadata.version) else { throw DraftDataError.incompatible }
+        guard (1...4).contains(metadata.version) else { throw DraftDataError.incompatible }
         let source = try read(folder.appendingPathComponent("source.data"), maximumBytes: 100 * 1024 * 1024)
         guard !source.isEmpty, metadata.sourceByteCount == nil || metadata.sourceByteCount == source.count else {
             throw DraftDataError.invalidSource
         }
         var analysis: PhotoAnalysis?
-        if metadata.version == 2 {
+        if metadata.version >= 2 {
             do {
                 analysis = try PropertyListDecoder().decode(PhotoAnalysis.self,
                     from: read(folder.appendingPathComponent("analysis.plist"), maximumBytes: 80 * 1024 * 1024))
@@ -57,7 +57,7 @@ actor DraftStore {
                 print("[Draft] 分析缓存不可用，将根据原图重新识别：\(error.localizedDescription)")
             }
         } else {
-            // v1's origin=ai depth.json has no trusted model provenance. Reanalyze the source.
+            // v1's origin=ai depth.json is NOT a native depth map. Discard it and run the bundled estimator.
             print("[Draft] 迁移旧版草稿：保留原图和参数，不复用旧外部模型的深度缓存")
         }
         return SavedDraft(sourceData: source, title: metadata.title, recipe: metadata.recipe,
@@ -73,7 +73,7 @@ actor DraftStore {
         try fm.createDirectory(at: folder, withIntermediateDirectories: true)
         do {
             var recipe = draft.recipe; recipe.sanitize()
-            let metadata = Metadata(version: 2, title: draft.title, recipe: recipe,
+            let metadata = Metadata(version: 4, title: draft.title, recipe: recipe,
                                     sourceByteCount: draft.sourceData.count, imageSize: draft.imageSize)
             let json = JSONEncoder(); json.outputFormatting = [.prettyPrinted, .sortedKeys]
             try draft.sourceData.write(to: folder.appendingPathComponent("source.data"), options: .atomic)
@@ -93,7 +93,9 @@ actor DraftStore {
                 try? fm.removeItem(at: child)
             }
         }
-        print("[Draft] 已保存原图 + 带来源的景深分析缓存 + 编辑参数")
+        let source = draft.analysis?.sourceDescription ?? "无可用分析缓存，下次重新计算"
+        let depthInfo = draft.analysis?.continuousDepth.map { "，深度 \($0.width)×\($0.height)" } ?? ""
+        print("[Draft] v4 已保存原图及编辑参数；分析来源=\(source)\(depthInfo)")
     }
 
     private func read(_ url: URL, maximumBytes: Int) throws -> Data {

@@ -85,25 +85,3 @@ struct DepthField: Codable, Equatable, Sendable {
         values.map { UInt8((min(1, max(0, transform($0))) * 255).rounded()) }
     }
 }
-
-/// Model-relative inverse depth, deliberately kept distinct from camera depth metadata.
-struct DepthEstimate: Codable, Equatable, Sendable {
-    static let currentModelIdentifier = "depth-anything-v2-small-f16/full-frame-v2"
-    let field: DepthField
-    let modelIdentifier: String
-
-    init(field: DepthField, modelIdentifier: String = currentModelIdentifier) {
-        self.field = field
-        self.modelIdentifier = modelIdentifier
-    }
-}
-
-enum DepthFocus {
-    /// A small median neighborhood suppresses isolated prediction errors without crossing
-    /// large object boundaries. Coordinates always refer to the complete upright photo.
-    static func focus(in field: DepthField, at point: UnitPoint2D) -> Float {
-        let shortEdge = min(field.width, field.height)
-        let radius = shortEdge < 3 ? 0 : min(3, max(1, shortEdge / 128))
-        return field.sample(at: point, radius: radius)
-    }
-}

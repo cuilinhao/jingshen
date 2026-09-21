@@ -19,7 +19,7 @@ final class EditorModel: ObservableObject {
             scheduleDraft()
         }
     }
-    @Published private(set) var previewImage: UIImage? = UIImage(named: "DemoSample.jpg")
+    @Published private(set) var previewImage: UIImage? = UIImage(named: "ReferencePhoto.png")
     @Published private(set) var originalImage: UIImage?
     @Published private(set) var maskImage: UIImage?
     @Published private(set) var photo: PhotoSession?
@@ -45,47 +45,53 @@ final class EditorModel: ObservableObject {
     private var started = false
 
     var controlsEnabled: Bool { photo != nil && !isPreparing && !isExporting }
-    var isUsingLocal: Bool { recipe.focusMode == .local || photo?.analysis.isFallback == true }
+    var isUsingLocal: Bool { recipe.focusMode == .local }
+    var layeredScene: LayeredScene? {
+        guard let photo, case .layered(let scene) = photo.analysis else { return nil }
+        return scene
+    }
     var banner: String {
-        guard let photo else { return "AI 景深模型已内置，照片在本机处理" }
+        if isPreparing { return "正在生成离线自动深度，请稍候…" }
+        guard let photo else { return "v4 内置完整模型 · 本机自动深度" }
         if recipe.focusMode == .local { return "局部虚化模式，启用圆形清晰选区" }
         switch photo.analysis {
         case .native: return "该图像包含景深数据，启用原生景深"
-        case .estimated: return "AI 景深 · 本机处理 · 模型已内置"
-        case .subjects: return "旧版主体虚化 · 可重新分析景深"
-        case .localFallback: return "景深分析不可用，当前使用局部虚化"
+        case .estimated: return "已生成离线自动深度，启用景深虚化"
+        case .layered(let scene):
+            if scene.map.provenance == .reference { return "人工分层样例 · 同一景深层一起清晰" }
+            if scene.map.knownLayers.isEmpty { return "未建立景深分层 · 点击此处标记" }
+            return "景深分层虚化 · 同层清晰 · 可点击校正"
+        case .subjects, .localFallback: return "请先确认景深分层"
         }
     }
     var diagnosticCaption: String {
-        guard let analysis = photo?.analysis, !isUsingLocal else {
-            return "虚化蒙版 · 白色虚化 / 黑色清晰"
-        }
-        switch analysis {
-        case .native: return "原生相对深度 · 亮近暗远"
-        case .estimated: return "AI 估计相对深度 · 亮近暗远"
-        case .subjects, .localFallback: return "虚化蒙版 · 白色虚化 / 黑色清晰"
-        }
+        photo?.analysis.continuousDepth != nil && !isUsingLocal
+        ? "相对深度 · 亮近暗远 · 非测距" : "虚化蒙版 · 白色虚化 / 黑色清晰"
     }
     var selectionDescription: String {
         guard let photo else { return "尚未加载照片" }
         if isUsingLocal { return "圆形选区内清晰，周围虚化" }
         switch photo.analysis {
-        case .native(let field):
-            return String(format: "原生相对深度 %.3f · 同层保持清晰", field.sample(at: recipe.focusPoint))
-        case .estimated(let estimate):
-            return String(format: "AI 相对深度 %.3f · 同层保持清晰", DepthFocus.focus(in: estimate.field, at: recipe.focusPoint))
-        case .subjects(let subjects):
-            return subjects.instance(at: recipe.focusPoint) == 0 ? "背景清晰 · 前景主体虚化" : "选中主体清晰 · 其他区域虚化"
-        case .localFallback: return "局部虚化（景深分析不可用）"
+        case .native(let field): return String(format: "原生相对深度 %.3f · 同范围清晰", field.sample(at: recipe.focusPoint))
+        case .estimated(let estimated):
+            return String(format: "相对深度 %.3f · 清晰范围 ±%.2f", estimated.field.sample(at: recipe.focusPoint), recipe.focusTolerance)
+        case .layered(let scene):
+            let layer = scene.map.layer(at: recipe.focusPoint)
+            if layer == .unknown { return "此处未标记景深，请先进行分层校正" }
+            return "\(layer.title)整层清晰 · 其他已标记层虚化"
+        case .subjects, .localFallback: return "尚未确认景深，不把未知区域当成远景"
         }
     }
     var focusInCrop: UnitPoint2D? {
         guard let photo else { return nil }
+        if !isUsingLocal, case .layered(let scene) = photo.analysis, scene.map.layer(at: recipe.focusPoint) == .unknown { return nil }
         return recipe.crop.unitRect(imageWidth: photo.original.width, imageHeight: photo.original.height)
             .localPoint(from: recipe.focusPoint)
     }
 
     func start() async {
+        // TestAction alone sets this flag; avoid unrelated automatic UI inference during tests.
+        guard ProcessInfo.processInfo.environment["PGY_SKIP_UI_STARTUP_FOR_TESTS"] != "1" else { return }
         guard !started else { return }
         started = true
         let token = importGeneration
@@ -107,11 +113,15 @@ final class EditorModel: ObservableObject {
     }
 
     func loadSample() {
-        guard let url = Bundle.main.url(forResource: "DemoSample", withExtension: "jpg") else {
-            errorMessage = "工程内缺少 DemoSample.jpg，请检查 Copy Bundle Resources。"
-            return
+        let pipeline = self.pipeline
+        // The bundled original uses exactly the same estimator as a file/photo import.
+        // No hand-authored mask or precomputed prediction is injected here.
+        beginImport(title: "yuntu0920 · 自动深度原图") {
+            guard let url = Bundle.main.url(forResource: "ReferencePhoto", withExtension: "png") else {
+                throw ImagingError.unreadableImage
+            }
+            return try await pipeline.readFile(url)
         }
-        importFile(url, title: "录屏裁切样片")
     }
 
     func importPickedPhoto(_ item: PhotosPickerItem) {
@@ -143,6 +153,8 @@ final class EditorModel: ObservableObject {
         saveTask?.cancel()
         renderGeneration += 1
         isPreparing = true
+        errorMessage = nil
+        toastTask?.cancel(); toast = nil
         isRendering = false
         compareOriginal = false
         showMask = false
@@ -151,7 +163,8 @@ final class EditorModel: ObservableObject {
                 let data = try await load()
                 try Task.checkCancellation()
                 let prepared = try await pipeline.prepare(data: data, title: title,
-                                                          cachedAnalysis: cachedAnalysis, cachedImageSize: cachedImageSize)
+                                                          cachedAnalysis: cachedAnalysis,
+                                                          cachedImageSize: cachedImageSize)
                 var initial = restored
                 initial.sanitize()
                 let crop = initial.crop.unitRect(imageWidth: prepared.original.width, imageHeight: prepared.original.height)
@@ -184,7 +197,13 @@ final class EditorModel: ObservableObject {
     func focus(at pointInDisplayedCrop: UnitPoint2D) {
         guard let photo, controlsEnabled else { return }
         let crop = recipe.crop.unitRect(imageWidth: photo.original.width, imageHeight: photo.original.height)
-        recipe.focusPoint = crop.originalPoint(from: pointInDisplayedCrop)
+        let point = crop.originalPoint(from: pointInDisplayedCrop)
+        if !isUsingLocal, case .layered(let scene) = photo.analysis, scene.map.layer(at: point) == .unknown {
+            print("[Focus] 未标记区域 normalized=\(point)；拒绝把 unknown 当成 background")
+            showToast("此处尚未标记远近，点上方状态条或调整 → 分层校正")
+            return
+        }
+        recipe.focusPoint = point
         focusPulse += 1
         UISelectionFeedbackGenerator().selectionChanged()
         print("[Focus] normalized=\(recipe.focusPoint)，\(selectionDescription)")
@@ -193,8 +212,26 @@ final class EditorModel: ObservableObject {
 
     func retryAnalysis() {
         guard let photo, controlsEnabled else { return }
-        var next = recipe; next.focusMode = .automatic
-        beginImport(title: photo.title, restored: next) { photo.sourceData }
+        // Intentionally omit cachedAnalysis. This also repairs v1-v3/invalid cached drafts.
+        let data = photo.sourceData
+        beginImport(title: photo.title, restored: recipe) { data }
+    }
+
+    func commitLayers(_ map: SceneLayerMap, for sourceID: UUID) {
+        guard let photo, photo.id == sourceID, controlsEnabled, case .layered(let scene) = photo.analysis else {
+            showToast("照片已更换，未把旧选区应用到新照片")
+            return
+        }
+        self.photo = photo.replacingAnalysis(.layered(LayeredScene(map: map, subjects: scene.subjects, notice: scene.notice)))
+        // Updating the map changes session ID even when the focus point is unchanged.
+        // Re-render and re-save explicitly; a recipe didSet alone is NOT enough.
+        if map.layer(at: recipe.focusPoint) == .unknown,
+           let layer = map.knownLayers.last, let point = map.firstPoint(in: layer) {
+            recipe.focusPoint = point
+        }
+        schedulePreview(delay: 0); scheduleDraft()
+        print("[Layers] 已应用分层 known=\(map.knownLayers.map(\.title)) coverage=\(map.assignedFraction)，缓存已失效")
+        showToast("分层已更新；同一层的所有区域一起清晰")
     }
 
     func setAperture(_ value: Double) {

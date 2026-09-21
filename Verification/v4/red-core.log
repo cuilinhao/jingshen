@@ -1,0 +1,158 @@
+[0/1] Planning build
+Building for debugging...
+[0/10] Write sources
+[1/10] Write swift-version--1BA0962812E73E12.txt
+error: emit-module command failed with exit code 1 (use -v to see invocation)
+[3/11] Emitting module DepthCoreTests
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:21:39: error: cannot find type 'InferredDepth' in scope
+19 |         return try DepthField(width: 40, height: 20, values: values)
+20 |     }
+21 |     private func inferred() throws -> InferredDepth {
+   |                                       `- error: cannot find type 'InferredDepth' in scope
+22 |         InferredDepth(field: try field(), sourceSHA256: digest, imageSize: size)
+23 |     }
+[4/11] Compiling DepthCoreTests AutomaticDepthTests.swift
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:21:39: error: cannot find type 'InferredDepth' in scope
+19 |         return try DepthField(width: 40, height: 20, values: values)
+20 |     }
+21 |     private func inferred() throws -> InferredDepth {
+   |                                       `- error: cannot find type 'InferredDepth' in scope
+22 |         InferredDepth(field: try field(), sourceSHA256: digest, imageSize: size)
+23 |     }
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:27:24: error: cannot find 'AutomaticDepthCache' in scope
+25 |         let d = try inferred()
+26 |         XCTAssertTrue(d.matches(sourceSHA256: digest, imageSize: size))
+27 |         XCTAssertEqual(AutomaticDepthCache.reusable(.estimated(d), sourceSHA256: digest, imageSize: size), d)
+   |                        `- error: cannot find 'AutomaticDepthCache' in scope
+28 |     }
+29 |     func testDifferentPhotoSameDimensionsMustNotReuseDepth() throws {
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:27:54: error: cannot infer contextual base in reference to member 'estimated'
+25 |         let d = try inferred()
+26 |         XCTAssertTrue(d.matches(sourceSHA256: digest, imageSize: size))
+27 |         XCTAssertEqual(AutomaticDepthCache.reusable(.estimated(d), sourceSHA256: digest, imageSize: size), d)
+   |                                                      `- error: cannot infer contextual base in reference to member 'estimated'
+28 |     }
+29 |     func testDifferentPhotoSameDimensionsMustNotReuseDepth() throws {
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:37:21: error: cannot find 'InferredDepth' in scope
+35 |         d.modelID = "old-model"
+36 |         XCTAssertFalse(d.matches(sourceSHA256: digest, imageSize: size))
+37 |         d.modelID = InferredDepth.currentModelID; d.preprocessingID = "old-letterbox"
+   |                     `- error: cannot find 'InferredDepth' in scope
+38 |         XCTAssertFalse(d.matches(sourceSHA256: digest, imageSize: size))
+39 |     }
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:42:22: error: cannot find 'AutomaticDepthCache' in scope
+40 |     func testV3BlankLayerCacheNeverSkipsInference() throws {
+41 |         let scene = LayeredScene(map: try .blank(width: 40, height: 20), subjects: nil, notice: nil)
+42 |         XCTAssertNil(AutomaticDepthCache.reusable(.layered(scene), sourceSHA256: digest, imageSize: size))
+   |                      `- error: cannot find 'AutomaticDepthCache' in scope
+43 |         XCTAssertNil(AutomaticDepthCache.reusable(.localFallback(reason: "old"), sourceSHA256: digest, imageSize: size))
+44 |         XCTAssertNil(AutomaticDepthCache.reusable(nil, sourceSHA256: digest, imageSize: size))
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:42:52: error: cannot infer contextual base in reference to member 'layered'
+40 |     func testV3BlankLayerCacheNeverSkipsInference() throws {
+41 |         let scene = LayeredScene(map: try .blank(width: 40, height: 20), subjects: nil, notice: nil)
+42 |         XCTAssertNil(AutomaticDepthCache.reusable(.layered(scene), sourceSHA256: digest, imageSize: size))
+   |                                                    `- error: cannot infer contextual base in reference to member 'layered'
+43 |         XCTAssertNil(AutomaticDepthCache.reusable(.localFallback(reason: "old"), sourceSHA256: digest, imageSize: size))
+44 |         XCTAssertNil(AutomaticDepthCache.reusable(nil, sourceSHA256: digest, imageSize: size))
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:43:22: error: cannot find 'AutomaticDepthCache' in scope
+41 |         let scene = LayeredScene(map: try .blank(width: 40, height: 20), subjects: nil, notice: nil)
+42 |         XCTAssertNil(AutomaticDepthCache.reusable(.layered(scene), sourceSHA256: digest, imageSize: size))
+43 |         XCTAssertNil(AutomaticDepthCache.reusable(.localFallback(reason: "old"), sourceSHA256: digest, imageSize: size))
+   |                      `- error: cannot find 'AutomaticDepthCache' in scope
+44 |         XCTAssertNil(AutomaticDepthCache.reusable(nil, sourceSHA256: digest, imageSize: size))
+45 |     }
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:43:52: error: cannot infer contextual base in reference to member 'localFallback'
+41 |         let scene = LayeredScene(map: try .blank(width: 40, height: 20), subjects: nil, notice: nil)
+42 |         XCTAssertNil(AutomaticDepthCache.reusable(.layered(scene), sourceSHA256: digest, imageSize: size))
+43 |         XCTAssertNil(AutomaticDepthCache.reusable(.localFallback(reason: "old"), sourceSHA256: digest, imageSize: size))
+   |                                                    `- error: cannot infer contextual base in reference to member 'localFallback'
+44 |         XCTAssertNil(AutomaticDepthCache.reusable(nil, sourceSHA256: digest, imageSize: size))
+45 |     }
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:44:22: error: cannot find 'AutomaticDepthCache' in scope
+42 |         XCTAssertNil(AutomaticDepthCache.reusable(.layered(scene), sourceSHA256: digest, imageSize: size))
+43 |         XCTAssertNil(AutomaticDepthCache.reusable(.localFallback(reason: "old"), sourceSHA256: digest, imageSize: size))
+44 |         XCTAssertNil(AutomaticDepthCache.reusable(nil, sourceSHA256: digest, imageSize: size))
+   |                      `- error: cannot find 'AutomaticDepthCache' in scope
+45 |     }
+46 |     func testRealDepthRangeKeepsSeparatedNearObjectsSharp() throws {
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:44:51: error: 'nil' requires a contextual type
+42 |         XCTAssertNil(AutomaticDepthCache.reusable(.layered(scene), sourceSHA256: digest, imageSize: size))
+43 |         XCTAssertNil(AutomaticDepthCache.reusable(.localFallback(reason: "old"), sourceSHA256: digest, imageSize: size))
+44 |         XCTAssertNil(AutomaticDepthCache.reusable(nil, sourceSHA256: digest, imageSize: size))
+   |                                                   `- error: 'nil' requires a contextual type
+45 |     }
+46 |     func testRealDepthRangeKeepsSeparatedNearObjectsSharp() throws {
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:48:58: error: type 'PhotoAnalysis' has no member 'estimated'
+46 |     func testRealDepthRangeKeepsSeparatedNearObjectsSharp() throws {
+47 |         var r = EditRecipe(); r.focusPoint = .init(x: 0.63, y: 0.5); r.focusTolerance = 0.22
+48 |         let masks = try FocusMaskBuilder.make(analysis: .estimated(inferred()), recipe: r, imageSize: size)
+   |                                                          `- error: type 'PhotoAnalysis' has no member 'estimated'
+49 |         XCTAssertEqual(masks.blur.value(at: .init(x: 0.1, y: 0.5)), 0, "monitor in same focus range")
+50 |         XCTAssertEqual(masks.blur.value(at: .init(x: 0.9, y: 0.5)), 0, "toy in same focus range")
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:49:46: error: cannot infer contextual base in reference to member 'init'
+47 |         var r = EditRecipe(); r.focusPoint = .init(x: 0.63, y: 0.5); r.focusTolerance = 0.22
+48 |         let masks = try FocusMaskBuilder.make(analysis: .estimated(inferred()), recipe: r, imageSize: size)
+49 |         XCTAssertEqual(masks.blur.value(at: .init(x: 0.1, y: 0.5)), 0, "monitor in same focus range")
+   |                                              `- error: cannot infer contextual base in reference to member 'init'
+50 |         XCTAssertEqual(masks.blur.value(at: .init(x: 0.9, y: 0.5)), 0, "toy in same focus range")
+51 |         XCTAssertGreaterThan(masks.blur.value(at: .init(x: 0.38, y: 0.5)), 200, "far cabinet blurs")
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:50:46: error: cannot infer contextual base in reference to member 'init'
+48 |         let masks = try FocusMaskBuilder.make(analysis: .estimated(inferred()), recipe: r, imageSize: size)
+49 |         XCTAssertEqual(masks.blur.value(at: .init(x: 0.1, y: 0.5)), 0, "monitor in same focus range")
+50 |         XCTAssertEqual(masks.blur.value(at: .init(x: 0.9, y: 0.5)), 0, "toy in same focus range")
+   |                                              `- error: cannot infer contextual base in reference to member 'init'
+51 |         XCTAssertGreaterThan(masks.blur.value(at: .init(x: 0.38, y: 0.5)), 200, "far cabinet blurs")
+52 |         XCTAssertEqual(masks.protection?.value(at: .init(x: 0.1, y: 0.5)), 255)
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:51:52: error: cannot infer contextual base in reference to member 'init'
+49 |         XCTAssertEqual(masks.blur.value(at: .init(x: 0.1, y: 0.5)), 0, "monitor in same focus range")
+50 |         XCTAssertEqual(masks.blur.value(at: .init(x: 0.9, y: 0.5)), 0, "toy in same focus range")
+51 |         XCTAssertGreaterThan(masks.blur.value(at: .init(x: 0.38, y: 0.5)), 200, "far cabinet blurs")
+   |                                                    `- error: cannot infer contextual base in reference to member 'init'
+52 |         XCTAssertEqual(masks.protection?.value(at: .init(x: 0.1, y: 0.5)), 255)
+53 |     }
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:52:53: error: cannot infer contextual base in reference to member 'init'
+50 |         XCTAssertEqual(masks.blur.value(at: .init(x: 0.9, y: 0.5)), 0, "toy in same focus range")
+51 |         XCTAssertGreaterThan(masks.blur.value(at: .init(x: 0.38, y: 0.5)), 200, "far cabinet blurs")
+52 |         XCTAssertEqual(masks.protection?.value(at: .init(x: 0.1, y: 0.5)), 255)
+   |                                                     `- error: cannot infer contextual base in reference to member 'init'
+53 |     }
+54 |     func testSelectingFarDepthChangesMaskAndBlursAllNearObjects() throws {
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:56:58: error: type 'PhotoAnalysis' has no member 'estimated'
+54 |     func testSelectingFarDepthChangesMaskAndBlursAllNearObjects() throws {
+55 |         var r = EditRecipe(); r.focusPoint = .init(x: 0.38, y: 0.5)
+56 |         let masks = try FocusMaskBuilder.make(analysis: .estimated(inferred()), recipe: r, imageSize: size)
+   |                                                          `- error: type 'PhotoAnalysis' has no member 'estimated'
+57 |         XCTAssertEqual(masks.blur.value(at: r.focusPoint), 0)
+58 |         for x in [0.1, 0.63, 0.9] {
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:59:56: error: cannot infer contextual base in reference to member 'init'
+57 |         XCTAssertEqual(masks.blur.value(at: r.focusPoint), 0)
+58 |         for x in [0.1, 0.63, 0.9] {
+59 |             XCTAssertGreaterThan(masks.blur.value(at: .init(x: x, y: 0.5)), 180)
+   |                                                        `- error: cannot infer contextual base in reference to member 'init'
+60 |         }
+61 |         XCTAssertNotNil(masks.nearDefocus)
+
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:70:31: error: type 'PhotoAnalysis' has no member 'estimated'
+68 |     }
+69 |     func testTypedEstimatedDepthRoundTrip() throws {
+70 |         let d = PhotoAnalysis.estimated(try inferred())
+   |                               `- error: type 'PhotoAnalysis' has no member 'estimated'
+71 |         let e = PropertyListEncoder(); e.outputFormat = .binary
+72 |         XCTAssertEqual(try PropertyListDecoder().decode(PhotoAnalysis.self, from: e.encode(d)), d)
+error: fatalError

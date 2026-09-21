@@ -70,13 +70,12 @@ enum PhotoStyle: String, Codable, CaseIterable, Identifiable, Sendable {
 }
 
 struct EditRecipe: Codable, Equatable, Sendable {
-    var schemaVersion = 2
+    var schemaVersion = 4
     var focusPoint = UnitPoint2D(x: 0.48, y: 0.56)
     var aperture: Double = 1.8
     var depthEnabled = true
     var effectStrength: Double = 1
-    var focusTolerance: Double = 0.035
-    var estimatedFocusTolerance: Double = 0.18
+    var focusTolerance: Double = 0.22
     var exposure: Double = 0
     var crop: CropRatio = .original
     var style: PhotoStyle = .original
@@ -89,21 +88,20 @@ struct EditRecipe: Codable, Equatable, Sendable {
 
     private enum CodingKeys: String, CodingKey {
         case schemaVersion, focusPoint, aperture, depthEnabled, effectStrength, focusTolerance
-        case exposure, crop, style, focusMode, localRadius, edgeFeather, estimatedFocusTolerance
+        case exposure, crop, style, focusMode, localRadius, edgeFeather
     }
     init(from decoder: Decoder) throws {
         self.init()
         let box = try decoder.container(keyedBy: CodingKeys.self)
         let version = try box.decodeIfPresent(Int.self, forKey: .schemaVersion) ?? 1
-        guard (1...2).contains(version) else {
+        guard (1...4).contains(version) else {
             throw DecodingError.dataCorruptedError(forKey: .schemaVersion, in: box, debugDescription: "不支持的编辑配方版本")
         }
         focusPoint = try box.decodeIfPresent(UnitPoint2D.self, forKey: .focusPoint) ?? focusPoint
         aperture = try box.decodeIfPresent(Double.self, forKey: .aperture) ?? aperture
         depthEnabled = try box.decodeIfPresent(Bool.self, forKey: .depthEnabled) ?? depthEnabled
         effectStrength = try box.decodeIfPresent(Double.self, forKey: .effectStrength) ?? effectStrength
-        focusTolerance = try box.decodeIfPresent(Double.self, forKey: .focusTolerance) ?? focusTolerance
-        estimatedFocusTolerance = try box.decodeIfPresent(Double.self, forKey: .estimatedFocusTolerance) ?? estimatedFocusTolerance
+        focusTolerance = version < 4 ? 0.22 : (try box.decodeIfPresent(Double.self, forKey: .focusTolerance) ?? focusTolerance)
         exposure = try box.decodeIfPresent(Double.self, forKey: .exposure) ?? exposure
         crop = try box.decodeIfPresent(CropRatio.self, forKey: .crop) ?? crop
         style = try box.decodeIfPresent(PhotoStyle.self, forKey: .style) ?? style
@@ -114,14 +112,13 @@ struct EditRecipe: Codable, Equatable, Sendable {
     }
 
     mutating func sanitize() {
-        schemaVersion = 2
+        schemaVersion = 4
         focusPoint = focusPoint.clamped
         localRadius = localRadius.isFinite ? min(0.7, max(0.08, localRadius)) : 0.24
         edgeFeather = edgeFeather.isFinite ? min(6, max(0, edgeFeather)) : 1.2
         aperture = Aperture.clamp(aperture)
         effectStrength = effectStrength.isFinite ? min(1.5, max(0, effectStrength)) : 1
-        focusTolerance = focusTolerance.isFinite ? min(0.2, max(0.01, focusTolerance)) : 0.035
-        estimatedFocusTolerance = estimatedFocusTolerance.isFinite ? min(0.30, max(0.02, estimatedFocusTolerance)) : 0.18
+        focusTolerance = focusTolerance.isFinite ? min(0.4, max(0.01, focusTolerance)) : 0.22
         exposure = exposure.isFinite ? min(1.5, max(-1.5, exposure)) : 0
     }
 }

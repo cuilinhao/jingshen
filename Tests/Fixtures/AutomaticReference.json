@@ -1,0 +1,12 @@
+{
+  "kind": "independent CPU MLProgram reference evaluation (NOT Core ML, NOT human labels)",
+  "image": "ReferencePhoto.png",
+  "imageSHA256": "cdfb137ade19cf1d504552ccade442d651b13254d3c8b39cf0f658880bcaeeca",
+  "weightsSHA256": "fa60d9b6a155734f59029ebb882fd54e549bfaee3539c1a9cbd2cbbab64a0fed",
+  "width": 518,
+  "height": 392,
+  "format": "float32 little-endian, visual top row first",
+  "predictionSHA256": "5c8411233d7d692da113633a5a39f27802619d0f288db60140ff0189bee4d460",
+  "preprocessing": "full image resized to 518x392, RGB uint8; graph owns RGB normalization",
+  "limits": "FP16 boundary rounding emulated; backend fusion/resize differ from Apple. Test artifact only, never loaded by App."
+}

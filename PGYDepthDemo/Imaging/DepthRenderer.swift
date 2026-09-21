@@ -2,7 +2,7 @@ import Foundation
 import CoreImage
 import CoreGraphics
 
-/// Shared Core Image renderer for typed depth and legacy/manual selection paths.
+/// Shared Core Image renderer. Predicted relative depth and native depth remain explicitly typed.
 /// This does not reconstruct occluded backgrounds or recover details missing from the input.
 final class DepthRenderer {
     private let context: CIContext
@@ -11,7 +11,6 @@ final class DepthRenderer {
         let point: UnitPoint2D
         let mode: FocusMode
         let tolerance: Double
-        let estimatedTolerance: Double
         let radius: Double
         let imageSize: PixelSize
     }
@@ -22,7 +21,7 @@ final class DepthRenderer {
     private func masks(photoID: UUID, analysis: PhotoAnalysis, recipe: EditRecipe,
                        sourceSize: PixelSize) throws -> FocusMaskSet {
         let key = MaskKey(photoID: photoID, point: recipe.focusPoint, mode: recipe.focusMode,
-                          tolerance: recipe.focusTolerance, estimatedTolerance: recipe.estimatedFocusTolerance, radius: recipe.localRadius, imageSize: sourceSize)
+                          tolerance: recipe.focusTolerance, radius: recipe.localRadius, imageSize: sourceSize)
         if key == cachedKey, let cachedMasks { return cachedMasks }
         let result = try FocusMaskBuilder.make(analysis: analysis, recipe: recipe, imageSize: sourceSize)
         cachedKey = key; cachedMasks = result
@@ -36,31 +35,37 @@ final class DepthRenderer {
             var safe = recipe; safe.sanitize()
             let input = CIImage(cgImage: image), extent = CIImage(cgImage: image).extent
             let pixelScale = Double(max(image.width, image.height)) / 1024
-            // Relative model depth saturates more often than native disparity. Keep its
-            // default blur moderate so near/far detail is softened rather than erased.
-            let radiusAt1024 = analysis.isEstimated && safe.focusMode == .automatic ? 16.0 : 32.0
-            let maxRadius = radiusAt1024 * Aperture.strength(safe.aperture) * safe.effectStrength * pixelScale
+            let maxRadius = 32 * Aperture.strength(safe.aperture) * safe.effectStrength * pixelScale
             var result = input
             if safe.depthEnabled, maxRadius > 0.15 {
                 let selections = try masks(photoID: photoID, analysis: analysis, recipe: safe, sourceSize: sourceSize)
-                var mask = try maskImage(selections.blur, extent: extent, feather: safe.edgeFeather * pixelScale)
-                if let near = selections.nearDefocus {
-                    // Defocused foreground must blur on both sides of its silhouette. A mask
-                    // restricted to the original silhouette leaves a sharp step, and overlaying
-                    // a second blurred foreground retains that step underneath the new alpha.
-                    // Expand the blur support before a SINGLE gather from the source image.
-                    // This uses visible neighboring colors, not reconstructed hidden background.
-                    let nearImage = try maskImage(near, extent: extent, feather: 0)
-                    let support = nearImage.clampedToExtent()
-                        .applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: maxRadius * 1.5])
-                        .applyingFilter("CIGaussianBlur", parameters: [kCIInputRadiusKey: maxRadius * 0.35])
-                        .cropped(to: extent)
-                    mask = mask.applyingFilter("CIMaximumCompositing", parameters: [kCIInputBackgroundImageKey: support])
-                }
+                let mask = try maskImage(selections.blur, extent: extent, feather: safe.edgeFeather * pixelScale)
                 result = input.clampedToExtent().applyingFilter("CIMaskedVariableBlur", parameters: [
                     "inputMask": mask.clampedToExtent(), "inputRadius": maxRadius
                 ]).cropped(to: extent)
                 try Task.checkCancellation()
+
+                // When the background is selected, the foreground should diffuse beyond its old
+                // silhouette. Blur the premultiplied foreground RGB+alpha before compositing.
+                // This remains an approximation; it is not hidden-background reconstruction.
+                if let near = selections.nearDefocus {
+                    let nearImage = try maskImage(near, extent: extent, feather: safe.edgeFeather * pixelScale)
+                    let clear = CIImage(color: .clear).cropped(to: extent)
+                    let layer = input.applyingFilter("CIBlendWithMask", parameters: [
+                        kCIInputBackgroundImageKey: clear, "inputMaskImage": nearImage
+                    ])
+                    let expanded = layer.applyingFilter("CIGaussianBlur", parameters: [kCIInputRadiusKey: maxRadius * 0.65])
+                        .cropped(to: extent)
+                    result = expanded.composited(over: result).cropped(to: extent)
+                }
+                // Reinsert the clear depth interval (and explicit legacy mask protections) after diffusion.
+                // This protects same-layer objects from a neighbouring defocused foreground.
+                if let protection = selections.protection {
+                    let sharp = try maskImage(protection, extent: extent, feather: safe.edgeFeather * pixelScale)
+                    result = input.applyingFilter("CIBlendWithMask", parameters: [
+                        kCIInputBackgroundImageKey: result, "inputMaskImage": sharp
+                    ]).cropped(to: extent)
+                }
             }
             if abs(safe.exposure) > 0.001 {
                 result = result.applyingFilter("CIExposureAdjust", parameters: [kCIInputEVKey: safe.exposure])
@@ -88,16 +93,16 @@ final class DepthRenderer {
         try ImageSupport.cgImage(ImageSupport.cropped(CIImage(cgImage: image), ratio: crop, originalSize: sourceSize), context: context)
     }
 
-    /// Native/estimated: show relative depth. Subject/local: show the blur-control mask.
+    /// Predicted/native: relative disparity. Explicit local/legacy: actual blur-control mask.
     func maskPreview(image: CGImage, photoID: UUID, analysis: PhotoAnalysis,
                      sourceSize: PixelSize, recipe: EditRecipe) throws -> CGImage {
         let field: GrayMask
-        if let depth = analysis.depthField, recipe.focusMode == .automatic {
+        if let depth = analysis.continuousDepth, recipe.focusMode == .automatic {
             field = try GrayMask(width: depth.width, height: depth.height, bytes: Data(depth.bytes()))
         } else {
             field = try masks(photoID: photoID, analysis: analysis, recipe: recipe, sourceSize: sourceSize).blur
         }
-        let isDepthMap = analysis.depthField != nil && recipe.focusMode == .automatic
+        let isDepthMap = analysis.continuousDepth != nil && recipe.focusMode == .automatic
         let feather = isDepthMap ? 0 : recipe.edgeFeather * Double(max(image.width, image.height)) / 1024
         let input = try maskImage(field, extent: CIImage(cgImage: image).extent, feather: feather)
         return try ImageSupport.cgImage(ImageSupport.cropped(input, ratio: recipe.crop, originalSize: sourceSize), context: context)

@@ -1,6 +1,7 @@
 import Foundation
 import CoreImage
 import CoreGraphics
+import CryptoKit
 
 /// CGImage is immutable here. Analysis data is immutable and scoped to this photo ID.
 struct PhotoSession: @unchecked Sendable {
@@ -12,6 +13,11 @@ struct PhotoSession: @unchecked Sendable {
     let analysis: PhotoAnalysis
     let notice: String?
     var sourceSize: PixelSize { PixelSize(width: original.width, height: original.height) }
+    func replacingAnalysis(_ analysis: PhotoAnalysis) -> PhotoSession {
+        // New identity invalidates BOTH renderer and auxiliary caches after any layer edit.
+        PhotoSession(id: UUID(), sourceData: sourceData, title: title, original: original,
+                     preview: preview, analysis: analysis, notice: nil)
+    }
     func draft(recipe: EditRecipe) -> SavedDraft {
         SavedDraft(sourceData: sourceData, title: title, recipe: recipe, analysis: analysis, imageSize: sourceSize)
     }
@@ -36,7 +42,6 @@ actor PhotoPipeline {
         let focus: UnitPoint2D
         let mode: FocusMode
         let tolerance: Double
-        let estimatedTolerance: Double
         let radius: Double
         let feather: Double
         let crop: CropRatio
@@ -49,7 +54,7 @@ actor PhotoPipeline {
                                           .workingColorSpace: ImageSupport.colorSpace,
                                           .outputColorSpace: ImageSupport.colorSpace])
         self.context = context
-        self.depthEstimator = depthEstimator ?? CoreMLDepthEstimator()
+        self.depthEstimator = depthEstimator ?? OfflineDepthEstimator(context: context)
         renderer = DepthRenderer(context: context)
     }
 
@@ -59,36 +64,28 @@ actor PhotoPipeline {
             try Task.checkCancellation()
             let decoded = try PhotoLoader.decode(data, context: context)
             let size = PixelSize(width: decoded.image.width, height: decoded.image.height)
+            let digest = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
             let analysis: PhotoAnalysis
             var notice: String?
-            // The source's oriented native depth is authoritative, even when a draft
-            // contains a matching AI estimate. Cache reuse is only for photos without it,
-            // and requires matching source dimensions. DraftStore commits the source,
-            // analysis and recipe together so stale spatial data can be discarded.
             if let native = decoded.nativeDepth {
+                // Re-read authoritative camera metadata. Never trust a v1 AI cache tagged native.
                 analysis = .native(native)
-            } else if let cachedAnalysis, cachedImageSize == size, cachedAnalysis.supportsAutomaticDepthCache {
-                analysis = cachedAnalysis
-                print("[Depth] 恢复当前版本景深缓存，不重复推理")
+            } else if cachedImageSize == size,
+                      let cached = AutomaticDepthCache.reusable(cachedAnalysis, sourceSHA256: digest, imageSize: size) {
+                analysis = .estimated(cached)
+                print("[Depth] 恢复已校验的自动深度缓存；source SHA256、模型版本、预处理及尺寸均一致")
             } else {
-                do {
-                    analysis = .estimated(try depthEstimator.estimate(decoded.image))
-                } catch is CancellationError {
-                    throw CancellationError()
-                } catch {
-                    try Task.checkCancellation()
-                    // Not a fatal import error, not a downloaded resource, not pretend depth.
-                    let reason = "本机景深分析未完成：\(error.localizedDescription)"
-                    analysis = .localFallback(reason: reason)
-                    notice = "景深分析失败，已使用局部虚化；可重试景深分析"
-                    print("[Depth] \(reason)；明确切换为圆形局部虚化")
+                if cachedAnalysis != nil {
+                    print("[Depth] 旧/失效分析缓存不含当前有效自动深度；保留原图和编辑参数，重新本地推理")
                 }
-            }
-            if case .subjects(let s) = analysis, s.groupedSubjectCount > 0 {
-                notice = "主体较多，其中 \(s.groupedSubjectCount) 个合并为一组"
+                let field = try depthEstimator.estimate(decoded.image)
+                try Task.checkCancellation()
+                analysis = .estimated(InferredDepth(field: field, sourceSHA256: digest, imageSize: size))
+                notice = "离线自动深度已生成，点击照片选择清晰景深范围"
             }
             try Task.checkCancellation()
             let preview = try ImageSupport.resized(decoded.image, longestEdge: 1024, context: context)
+            // No intermediate blank-layer PhotoSession is ever returned as ready.
             return PhotoSession(id: UUID(), sourceData: data, title: title, original: decoded.image,
                                 preview: preview, analysis: analysis, notice: notice)
         }
@@ -100,7 +97,7 @@ actor PhotoPipeline {
             let rendered = try renderer.render(image: photo.preview, photoID: photo.id, analysis: photo.analysis,
                                                sourceSize: photo.sourceSize, recipe: recipe)
             let key = PreviewAuxiliaryKey(id: photo.id, focus: recipe.focusPoint, mode: recipe.focusMode,
-                                          tolerance: recipe.focusTolerance, estimatedTolerance: recipe.estimatedFocusTolerance, radius: recipe.localRadius,
+                                          tolerance: recipe.focusTolerance, radius: recipe.localRadius,
                                           feather: recipe.edgeFeather, crop: recipe.crop)
             let original: CGImage, mask: CGImage
             if auxiliaryKey == key, let images = auxiliaryImages {

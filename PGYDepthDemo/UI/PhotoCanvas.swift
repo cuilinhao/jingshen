@@ -33,7 +33,6 @@ struct PhotoCanvas: View {
                     .simultaneousGesture(LongPressGesture(minimumDuration: 0.25)
                         .updating($holdingOriginal) { current, state, _ in state = current })
                     .accessibilityLabel("照片预览，点击选择焦点，长按比较原图")
-                    .accessibilityIdentifier("photoCanvas")
                 if let point = model.focusInCrop, !showingOriginal, !model.showMask, !model.isPreparing {
                     FocusReticle(pulse: model.focusPulse)
                         .position(x: rect.x + point.x * rect.width, y: rect.y + point.y * rect.height)
@@ -45,16 +44,15 @@ struct PhotoCanvas: View {
                         .background(.black.opacity(0.6), in: Capsule())
                         .padding(.top, 55).padding(.leading, 10)
                         .allowsHitTesting(false)
-                        .accessibilityIdentifier("depthDiagnosticCaption")
                 }
                 if model.isPreparing || model.isExporting {
                     Color.black.opacity(0.28)
                     VStack(spacing: 12) {
                         ProgressView().tint(DepthTheme.accent)
-                        Text(model.isExporting ? "正在导出…" : "正在分析景深…")
+                        Text(model.isExporting ? "正在导出…" : "正在生成自动深度…")
                             .font(.system(size: 14, weight: .medium))
                         if model.isPreparing {
-                            Text("模型已内置，照片在本机处理")
+                            Text("照片在本机处理，不会上传")
                                 .font(.system(size: 11)).foregroundStyle(.white.opacity(0.55))
                         }
                     }

@@ -8,35 +8,48 @@
 
 /* Begin PBXBuildFile section */
 		00694448F828D7C21AC6AFD6 /* PGYDepthDemo/UI/ReferenceControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC25714D7F275ADB9F5EF4B /* PGYDepthDemo/UI/ReferenceControls.swift */; };
+		0818DA54BC561824AF24692F /* PGYDepthDemo/Resources/ReferencePhoto.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E7B1DDFFD9620669FE97B /* PGYDepthDemo/Resources/ReferencePhoto.png */; };
+		09B0AF2B5F371E7B11BF156E /* Tests/DepthCoreTests/AutomaticDepthReferenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23053BA9103A22D6D431595B /* Tests/DepthCoreTests/AutomaticDepthReferenceTests.swift */; };
+		0AB060A176FCFFBF1E43EA32 /* Tests/DepthCoreTests/SceneLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B62F45C1AB54F57EB47AC57 /* Tests/DepthCoreTests/SceneLayerTests.swift */; };
 		0AD6ABDA1B1D24AB455AAB5B /* PGYDepthDemo/Core/DraftStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C27E6AA253F02296512C87 /* PGYDepthDemo/Core/DraftStore.swift */; };
+		0BBD343A34F89D3F4FFFDBA7 /* PGYDepthDemo/Core/InferredDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B444C1D3BC9D42E4881C32 /* PGYDepthDemo/Core/InferredDepth.swift */; };
+		1459B37E144B9A1F20B304CF /* Tests/DepthCoreTests/ReferenceSceneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783620D0A9B5C08AB8E6E8F4 /* Tests/DepthCoreTests/ReferenceSceneTests.swift */; };
+		2A29A8C7E653D4DBCA757D07 /* PGYDepthDemo/UI/LayerEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2363CBAB8F7D6A61D03A841 /* PGYDepthDemo/UI/LayerEditorView.swift */; };
 		322042D878B8BB65BD326D05 /* PGYDepthDemo/Imaging/NativeSubjectSegmenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0482D5492045B513253899 /* PGYDepthDemo/Imaging/NativeSubjectSegmenter.swift */; };
 		36B331B3E766D04AAB11013F /* PGYDepthDemo/UI/DepthEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44D0F0889ECBC3C6F0B7AC6 /* PGYDepthDemo/UI/DepthEditorView.swift */; };
+		388CEBA65F01473492717E7F /* PGYDepthDemo/Imaging/LayerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17286080BFC8E6A0D5126909 /* PGYDepthDemo/Imaging/LayerOverlay.swift */; };
 		468C4E1EA43080D4270CD53C /* PGYDepthDemo/Imaging/DepthRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E04897177096851D8FE9F35 /* PGYDepthDemo/Imaging/DepthRenderer.swift */; };
 		4DC04B1012CFBB8C459E7AB3 /* PGYDepthDemo/App/PGYDepthDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 599DCA26DC389E7EC1D5D468 /* PGYDepthDemo/App/PGYDepthDemoApp.swift */; };
 		5458371C670E275C1715A570 /* PGYDepthDemo/UI/EditorPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE31F2DA4F38AA6EFCEB6806 /* PGYDepthDemo/UI/EditorPanel.swift */; };
 		5854CDEE270C3BBA7044435D /* PGYDepthDemo/Core/EditRecipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1F5367EFBF19A3F22FAF57 /* PGYDepthDemo/Core/EditRecipe.swift */; };
+		5FD44A720CC59C5836132F95 /* PGYDepthDemo/State/LayerEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 959C89D15F3308736F693F58 /* PGYDepthDemo/State/LayerEditorModel.swift */; };
+		625A9FDF7EE4D38F2C909F68 /* Tests/Fixtures/ReferenceLayers.json in Resources */ = {isa = PBXBuildFile; fileRef = D09BC193AFEF8AB741F53515 /* Tests/Fixtures/ReferenceLayers.json */; };
+		63FD85D64FFA95F10BBA1050 /* PGYDepthDemo/Imaging/OfflineDepthEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B88D528A146A797610E076 /* PGYDepthDemo/Imaging/OfflineDepthEstimator.swift */; };
 		65593D177715FA5CD739FA7A /* PGYDepthDemo/State/EditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A0095C16D09A6992C4534D /* PGYDepthDemo/State/EditorModel.swift */; };
+		6B00C7F6BAB8320932B55F23 /* PGYDepthDemo/Resources/Models/DepthAnythingV2SmallF16.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = ADA00C0CA61D66D19103BCA7 /* PGYDepthDemo/Resources/Models/DepthAnythingV2SmallF16.mlpackage */; };
 		7072E384B5829D4867024236 /* Tests/IOS/ImagingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C0345464CE7EDAC9B2119FA /* Tests/IOS/ImagingTests.swift */; };
 		781C382D6CB5E746D0C1A1E1 /* Tests/DepthCoreTests/SubjectMaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3717FB8D91C26FA7C660DF /* Tests/DepthCoreTests/SubjectMaskTests.swift */; };
+		7A89BF9D4E0E909EC74A5984 /* Tests/DepthCoreTests/LayerRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7A94155BEC7FFBEAD8546A /* Tests/DepthCoreTests/LayerRegressionTests.swift */; };
 		7D385C39C0888DDF671A905A /* PGYDepthDemo/Core/DepthField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2015F6614F0C718480A07F0F /* PGYDepthDemo/Core/DepthField.swift */; };
 		85ACFFD750A1F58C31770A29 /* PGYDepthDemo/Core/ImageGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A25599954E1A6270DC9CF13 /* PGYDepthDemo/Core/ImageGeometry.swift */; };
 		8D0675BAA2B49F4DE255FC36 /* PGYDepthDemo/Imaging/ImageSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFC8B567BAE23C84A832BC8 /* PGYDepthDemo/Imaging/ImageSupport.swift */; };
+		8F662BDA42B940A5C936BF62 /* PGYDepthDemo/Core/SceneLayers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F3F86BD30B28F818016228 /* PGYDepthDemo/Core/SceneLayers.swift */; };
 		90C7DA61816622A5DEC48B86 /* Tests/DepthCoreTests/DraftStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26CB7841AE1D91A07BC586F /* Tests/DepthCoreTests/DraftStoreTests.swift */; };
+		946CBCBBD86B8A0D463C5F66 /* PGYDepthDemo/Resources/Apache-2.0.txt in Resources */ = {isa = PBXBuildFile; fileRef = E499EACA301647D4A134B2C2 /* PGYDepthDemo/Resources/Apache-2.0.txt */; };
 		97982B602F2977C6843FE1E1 /* PGYDepthDemo/Imaging/PhotoPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCDE047781498271DFE3F6E8 /* PGYDepthDemo/Imaging/PhotoPipeline.swift */; };
 		9B324D754744AEA7780FE8F5 /* PGYDepthDemo/Resources/PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0AF2650F7F3108D6E801BB76 /* PGYDepthDemo/Resources/PrivacyInfo.xcprivacy */; };
+		A0FD69ABAF129BB140E7A283 /* Tests/DepthCoreTests/AutomaticDepthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43636CD4F562D685873A3915 /* Tests/DepthCoreTests/AutomaticDepthTests.swift */; };
 		A196E7A8CEA19E9C05F81C79 /* PGYDepthDemo/Core/SubjectMasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16BB2713E53DC98DBA91D0D /* PGYDepthDemo/Core/SubjectMasks.swift */; };
+		A30C021BBF48AFB1FD251A78 /* PGYDepthDemo/Resources/ModelInfo.json in Resources */ = {isa = PBXBuildFile; fileRef = 42FC43CB06AF79BE44C1A1CB /* PGYDepthDemo/Resources/ModelInfo.json */; };
 		A3B536CEC5AE3A4A3167642D /* PGYDepthDemo/Resources/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E0EB8D64FC4C63976C2293E /* PGYDepthDemo/Resources/Assets.xcassets */; };
 		A6B3D1BE4F5F9FBAC1B123A4 /* Tests/DepthCoreTests/DepthCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEDB1E87BD929B97AA60721 /* Tests/DepthCoreTests/DepthCoreTests.swift */; };
-		AA038E78BCD2C81118D67847 /* PGYDepthDemo/Resources/DemoSample.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 893B4AEF2982E8F2E18292F5 /* PGYDepthDemo/Resources/DemoSample.jpg */; };
+		AE77BC712D42DF74CC7FF76F /* Tests/Fixtures/AutomaticReference.json in Resources */ = {isa = PBXBuildFile; fileRef = DD2AE742B3F8993F1368EFB3 /* Tests/Fixtures/AutomaticReference.json */; };
 		BBF5C1C11EFDDB0441CB08EB /* PGYDepthDemo/Imaging/PixelBufferReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABDB83D8BAD8839EE45E2E2F /* PGYDepthDemo/Imaging/PixelBufferReader.swift */; };
 		BF4F181ECAE5110420FA7C1A /* PGYDepthDemo/UI/PhotoCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059B2AB4904EA3BC1510A526 /* PGYDepthDemo/UI/PhotoCanvas.swift */; };
+		C6EA71B140FBFACE48DD7EA3 /* Tests/IOS/CoreMLSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6CC23D3EEEC3E84260DD6C /* Tests/IOS/CoreMLSmokeTests.swift */; };
 		DADAB82BBFDE72F52D3EE11F /* PGYDepthDemo/Imaging/PhotoLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FA114F8EFAD8CDA2BC1DBD /* PGYDepthDemo/Imaging/PhotoLoader.swift */; };
-		087819D5E67A60C96D8E7B41 /* PGYDepthDemo/Imaging/CoreMLDepthEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C002BA4B6301EFECFB30F8; };
-		EAF8A8CA5B888A795030CE94 /* PGYDepthDemo/Resources/DepthAnythingV2SmallF16.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 40ED01A64A8CD6FBD46A8E13; };
-		8B850B30C2755A10E8043D9A /* Tests/Fixtures/FocusScene.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B687EAE294162CA17AF02E; };
-		CAD5BECD13E79A9A25902C87 /* Tests/IOS/DepthEdgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF37498EC33B74789EF076CC; };
-		6C23562AE5DACA0436573FE8 /* Tests/IOS/NativeDepthPriorityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 934D6E1DC59A5C12C5D9F185; };
-		21C36E969AF860BB5CABB3DB /* Docs/DepthAnythingV2-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = EC78D780AD7BF2B53255E05E; };
+		E0CE9343BBFFF169E3BCA18A /* Tests/Fixtures/AutomaticReference.f32 in Resources */ = {isa = PBXBuildFile; fileRef = 9583C047CE64A1BD1AFD7B19 /* Tests/Fixtures/AutomaticReference.f32 */; };
+		F9A1B4CDBE9212DD620DD297 /* PGYDepthDemo/UI/LayerDrawingCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A165AB7CB62347783BD6AFF /* PGYDepthDemo/UI/LayerDrawingCanvas.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,39 +65,52 @@
 /* Begin PBXFileReference section */
 		059B2AB4904EA3BC1510A526 /* PGYDepthDemo/UI/PhotoCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/UI/PhotoCanvas.swift; sourceTree = "<group>"; };
 		0AF2650F7F3108D6E801BB76 /* PGYDepthDemo/Resources/PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PGYDepthDemo/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		17286080BFC8E6A0D5126909 /* PGYDepthDemo/Imaging/LayerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/LayerOverlay.swift; sourceTree = "<group>"; };
 		1A1F5367EFBF19A3F22FAF57 /* PGYDepthDemo/Core/EditRecipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Core/EditRecipe.swift; sourceTree = "<group>"; };
 		1EEDB1E87BD929B97AA60721 /* Tests/DepthCoreTests/DepthCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/DepthCoreTests/DepthCoreTests.swift; sourceTree = "<group>"; };
 		2015F6614F0C718480A07F0F /* PGYDepthDemo/Core/DepthField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Core/DepthField.swift; sourceTree = "<group>"; };
+		23053BA9103A22D6D431595B /* Tests/DepthCoreTests/AutomaticDepthReferenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/DepthCoreTests/AutomaticDepthReferenceTests.swift; sourceTree = "<group>"; };
+		32F3F86BD30B28F818016228 /* PGYDepthDemo/Core/SceneLayers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Core/SceneLayers.swift; sourceTree = "<group>"; };
+		36B444C1D3BC9D42E4881C32 /* PGYDepthDemo/Core/InferredDepth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Core/InferredDepth.swift; sourceTree = "<group>"; };
+		3A165AB7CB62347783BD6AFF /* PGYDepthDemo/UI/LayerDrawingCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/UI/LayerDrawingCanvas.swift; sourceTree = "<group>"; };
 		3A25599954E1A6270DC9CF13 /* PGYDepthDemo/Core/ImageGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Core/ImageGeometry.swift; sourceTree = "<group>"; };
 		3E04897177096851D8FE9F35 /* PGYDepthDemo/Imaging/DepthRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/DepthRenderer.swift; sourceTree = "<group>"; };
 		40C27E6AA253F02296512C87 /* PGYDepthDemo/Core/DraftStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Core/DraftStore.swift; sourceTree = "<group>"; };
+		42FC43CB06AF79BE44C1A1CB /* PGYDepthDemo/Resources/ModelInfo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PGYDepthDemo/Resources/ModelInfo.json; sourceTree = "<group>"; };
+		43636CD4F562D685873A3915 /* Tests/DepthCoreTests/AutomaticDepthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/DepthCoreTests/AutomaticDepthTests.swift; sourceTree = "<group>"; };
 		4E0EB8D64FC4C63976C2293E /* PGYDepthDemo/Resources/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = PGYDepthDemo/Resources/Assets.xcassets; sourceTree = "<group>"; };
 		51A714F4FDBC7A83BF87E146 /* Docs/TEST_PLAN.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Docs/TEST_PLAN.md; sourceTree = "<group>"; };
 		599DCA26DC389E7EC1D5D468 /* PGYDepthDemo/App/PGYDepthDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/App/PGYDepthDemoApp.swift; sourceTree = "<group>"; };
 		5A0482D5492045B513253899 /* PGYDepthDemo/Imaging/NativeSubjectSegmenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/NativeSubjectSegmenter.swift; sourceTree = "<group>"; };
+		5F6CC23D3EEEC3E84260DD6C /* Tests/IOS/CoreMLSmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/IOS/CoreMLSmokeTests.swift; sourceTree = "<group>"; };
+		6B62F45C1AB54F57EB47AC57 /* Tests/DepthCoreTests/SceneLayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/DepthCoreTests/SceneLayerTests.swift; sourceTree = "<group>"; };
+		783620D0A9B5C08AB8E6E8F4 /* Tests/DepthCoreTests/ReferenceSceneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/DepthCoreTests/ReferenceSceneTests.swift; sourceTree = "<group>"; };
 		7CC25714D7F275ADB9F5EF4B /* PGYDepthDemo/UI/ReferenceControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/UI/ReferenceControls.swift; sourceTree = "<group>"; };
-		893B4AEF2982E8F2E18292F5 /* PGYDepthDemo/Resources/DemoSample.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PGYDepthDemo/Resources/DemoSample.jpg; sourceTree = "<group>"; };
 		8BCD5BC4CDFDF0918087C782 /* PGYDepthDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PGYDepthDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9583C047CE64A1BD1AFD7B19 /* Tests/Fixtures/AutomaticReference.f32 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tests/Fixtures/AutomaticReference.f32; sourceTree = "<group>"; };
+		959C89D15F3308736F693F58 /* PGYDepthDemo/State/LayerEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/State/LayerEditorModel.swift; sourceTree = "<group>"; };
 		9C0345464CE7EDAC9B2119FA /* Tests/IOS/ImagingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/IOS/ImagingTests.swift; sourceTree = "<group>"; };
 		A16BB2713E53DC98DBA91D0D /* PGYDepthDemo/Core/SubjectMasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Core/SubjectMasks.swift; sourceTree = "<group>"; };
 		AA4ACA445B3FBAF47CDE31AC /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		ABDB83D8BAD8839EE45E2E2F /* PGYDepthDemo/Imaging/PixelBufferReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/PixelBufferReader.swift; sourceTree = "<group>"; };
+		ADA00C0CA61D66D19103BCA7 /* PGYDepthDemo/Resources/Models/DepthAnythingV2SmallF16.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = PGYDepthDemo/Resources/Models/DepthAnythingV2SmallF16.mlpackage; sourceTree = "<group>"; };
+		B6B88D528A146A797610E076 /* PGYDepthDemo/Imaging/OfflineDepthEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/OfflineDepthEstimator.swift; sourceTree = "<group>"; };
 		C44D0F0889ECBC3C6F0B7AC6 /* PGYDepthDemo/UI/DepthEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/UI/DepthEditorView.swift; sourceTree = "<group>"; };
 		CC3717FB8D91C26FA7C660DF /* Tests/DepthCoreTests/SubjectMaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/DepthCoreTests/SubjectMaskTests.swift; sourceTree = "<group>"; };
 		CCDE047781498271DFE3F6E8 /* PGYDepthDemo/Imaging/PhotoPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/PhotoPipeline.swift; sourceTree = "<group>"; };
+		D09BC193AFEF8AB741F53515 /* Tests/Fixtures/ReferenceLayers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Tests/Fixtures/ReferenceLayers.json; sourceTree = "<group>"; };
+		D2363CBAB8F7D6A61D03A841 /* PGYDepthDemo/UI/LayerEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/UI/LayerEditorView.swift; sourceTree = "<group>"; };
+		DD2AE742B3F8993F1368EFB3 /* Tests/Fixtures/AutomaticReference.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Tests/Fixtures/AutomaticReference.json; sourceTree = "<group>"; };
 		DE31F2DA4F38AA6EFCEB6806 /* PGYDepthDemo/UI/EditorPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/UI/EditorPanel.swift; sourceTree = "<group>"; };
 		DEFC8B567BAE23C84A832BC8 /* PGYDepthDemo/Imaging/ImageSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/ImageSupport.swift; sourceTree = "<group>"; };
 		E26CB7841AE1D91A07BC586F /* Tests/DepthCoreTests/DraftStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/DepthCoreTests/DraftStoreTests.swift; sourceTree = "<group>"; };
+		E499EACA301647D4A134B2C2 /* PGYDepthDemo/Resources/Apache-2.0.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "PGYDepthDemo/Resources/Apache-2.0.txt"; sourceTree = "<group>"; };
+		E56E7B1DDFFD9620669FE97B /* PGYDepthDemo/Resources/ReferencePhoto.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PGYDepthDemo/Resources/ReferencePhoto.png; sourceTree = "<group>"; };
 		ED736F39B485F0B4AD799429 /* PGYDepthDemo/Resources/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PGYDepthDemo/Resources/Info.plist; sourceTree = "<group>"; };
 		F219C0274590DA45E4BEF1EA /* PGYDepthDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PGYDepthDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2A0095C16D09A6992C4534D /* PGYDepthDemo/State/EditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/State/EditorModel.swift; sourceTree = "<group>"; };
 		F7FA114F8EFAD8CDA2BC1DBD /* PGYDepthDemo/Imaging/PhotoLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/PhotoLoader.swift; sourceTree = "<group>"; };
-		F3C002BA4B6301EFECFB30F8 /* PGYDepthDemo/Imaging/CoreMLDepthEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGYDepthDemo/Imaging/CoreMLDepthEstimator.swift; sourceTree = "<group>"; };
-		40ED01A64A8CD6FBD46A8E13 /* PGYDepthDemo/Resources/DepthAnythingV2SmallF16.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = PGYDepthDemo/Resources/DepthAnythingV2SmallF16.mlpackage; sourceTree = "<group>"; };
-		28B687EAE294162CA17AF02E /* Tests/Fixtures/FocusScene.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tests/Fixtures/FocusScene.png; sourceTree = "<group>"; };
-		FF37498EC33B74789EF076CC /* Tests/IOS/DepthEdgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/IOS/DepthEdgeTests.swift; sourceTree = "<group>"; };
-		934D6E1DC59A5C12C5D9F185 /* Tests/IOS/NativeDepthPriorityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/IOS/NativeDepthPriorityTests.swift; sourceTree = "<group>"; };
-		EC78D780AD7BF2B53255E05E /* Docs/DepthAnythingV2-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Docs/DepthAnythingV2-LICENSE.txt; sourceTree = "<group>"; };
+		FA7A94155BEC7FFBEAD8546A /* Tests/DepthCoreTests/LayerRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/DepthCoreTests/LayerRegressionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,7 +134,6 @@
 		1BDBD24583AAF7F81F76B976 /* Swift Sources */ = {
 			isa = PBXGroup;
 			children = (
-				F3C002BA4B6301EFECFB30F8 /* PGYDepthDemo/Imaging/CoreMLDepthEstimator.swift */,
 				599DCA26DC389E7EC1D5D468 /* PGYDepthDemo/App/PGYDepthDemoApp.swift */,
 				2015F6614F0C718480A07F0F /* PGYDepthDemo/Core/DepthField.swift */,
 				40C27E6AA253F02296512C87 /* PGYDepthDemo/Core/DraftStore.swift */,
@@ -126,6 +151,13 @@
 				DE31F2DA4F38AA6EFCEB6806 /* PGYDepthDemo/UI/EditorPanel.swift */,
 				059B2AB4904EA3BC1510A526 /* PGYDepthDemo/UI/PhotoCanvas.swift */,
 				7CC25714D7F275ADB9F5EF4B /* PGYDepthDemo/UI/ReferenceControls.swift */,
+				959C89D15F3308736F693F58 /* PGYDepthDemo/State/LayerEditorModel.swift */,
+				17286080BFC8E6A0D5126909 /* PGYDepthDemo/Imaging/LayerOverlay.swift */,
+				32F3F86BD30B28F818016228 /* PGYDepthDemo/Core/SceneLayers.swift */,
+				D2363CBAB8F7D6A61D03A841 /* PGYDepthDemo/UI/LayerEditorView.swift */,
+				3A165AB7CB62347783BD6AFF /* PGYDepthDemo/UI/LayerDrawingCanvas.swift */,
+				B6B88D528A146A797610E076 /* PGYDepthDemo/Imaging/OfflineDepthEstimator.swift */,
+				36B444C1D3BC9D42E4881C32 /* PGYDepthDemo/Core/InferredDepth.swift */,
 			);
 			name = "Swift Sources";
 			sourceTree = "<group>";
@@ -133,12 +165,13 @@
 		27EDA01F986DA5EFCB134E3D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				EC78D780AD7BF2B53255E05E /* Docs/DepthAnythingV2-LICENSE.txt */,
-				40ED01A64A8CD6FBD46A8E13 /* PGYDepthDemo/Resources/DepthAnythingV2SmallF16.mlpackage */,
-				893B4AEF2982E8F2E18292F5 /* PGYDepthDemo/Resources/DemoSample.jpg */,
 				4E0EB8D64FC4C63976C2293E /* PGYDepthDemo/Resources/Assets.xcassets */,
 				0AF2650F7F3108D6E801BB76 /* PGYDepthDemo/Resources/PrivacyInfo.xcprivacy */,
 				ED736F39B485F0B4AD799429 /* PGYDepthDemo/Resources/Info.plist */,
+				E56E7B1DDFFD9620669FE97B /* PGYDepthDemo/Resources/ReferencePhoto.png */,
+				ADA00C0CA61D66D19103BCA7 /* PGYDepthDemo/Resources/Models/DepthAnythingV2SmallF16.mlpackage */,
+				E499EACA301647D4A134B2C2 /* PGYDepthDemo/Resources/Apache-2.0.txt */,
+				42FC43CB06AF79BE44C1A1CB /* PGYDepthDemo/Resources/ModelInfo.json */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -146,13 +179,19 @@
 		BFC937463906E5DB7A02A37C /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				934D6E1DC59A5C12C5D9F185 /* Tests/IOS/NativeDepthPriorityTests.swift */,
-				FF37498EC33B74789EF076CC /* Tests/IOS/DepthEdgeTests.swift */,
-				28B687EAE294162CA17AF02E /* Tests/Fixtures/FocusScene.png */,
 				1EEDB1E87BD929B97AA60721 /* Tests/DepthCoreTests/DepthCoreTests.swift */,
 				E26CB7841AE1D91A07BC586F /* Tests/DepthCoreTests/DraftStoreTests.swift */,
 				CC3717FB8D91C26FA7C660DF /* Tests/DepthCoreTests/SubjectMaskTests.swift */,
 				9C0345464CE7EDAC9B2119FA /* Tests/IOS/ImagingTests.swift */,
+				783620D0A9B5C08AB8E6E8F4 /* Tests/DepthCoreTests/ReferenceSceneTests.swift */,
+				6B62F45C1AB54F57EB47AC57 /* Tests/DepthCoreTests/SceneLayerTests.swift */,
+				FA7A94155BEC7FFBEAD8546A /* Tests/DepthCoreTests/LayerRegressionTests.swift */,
+				D09BC193AFEF8AB741F53515 /* Tests/Fixtures/ReferenceLayers.json */,
+				23053BA9103A22D6D431595B /* Tests/DepthCoreTests/AutomaticDepthReferenceTests.swift */,
+				43636CD4F562D685873A3915 /* Tests/DepthCoreTests/AutomaticDepthTests.swift */,
+				5F6CC23D3EEEC3E84260DD6C /* Tests/IOS/CoreMLSmokeTests.swift */,
+				9583C047CE64A1BD1AFD7B19 /* Tests/Fixtures/AutomaticReference.f32 */,
+				DD2AE742B3F8993F1368EFB3 /* Tests/Fixtures/AutomaticReference.json */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
@@ -260,10 +299,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21C36E969AF860BB5CABB3DB /* Docs/DepthAnythingV2-LICENSE.txt in Resources */,
-				AA038E78BCD2C81118D67847 /* PGYDepthDemo/Resources/DemoSample.jpg in Resources */,
 				A3B536CEC5AE3A4A3167642D /* PGYDepthDemo/Resources/Assets.xcassets in Resources */,
 				9B324D754744AEA7780FE8F5 /* PGYDepthDemo/Resources/PrivacyInfo.xcprivacy in Resources */,
+				0818DA54BC561824AF24692F /* PGYDepthDemo/Resources/ReferencePhoto.png in Resources */,
+				946CBCBBD86B8A0D463C5F66 /* PGYDepthDemo/Resources/Apache-2.0.txt in Resources */,
+				A30C021BBF48AFB1FD251A78 /* PGYDepthDemo/Resources/ModelInfo.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,7 +311,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B850B30C2755A10E8043D9A /* Tests/Fixtures/FocusScene.png in Resources */,
+				625A9FDF7EE4D38F2C909F68 /* Tests/Fixtures/ReferenceLayers.json in Resources */,
+				E0CE9343BBFFF169E3BCA18A /* Tests/Fixtures/AutomaticReference.f32 in Resources */,
+				AE77BC712D42DF74CC7FF76F /* Tests/Fixtures/AutomaticReference.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,8 +324,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EAF8A8CA5B888A795030CE94 /* PGYDepthDemo/Resources/DepthAnythingV2SmallF16.mlpackage in Sources */,
-				087819D5E67A60C96D8E7B41 /* PGYDepthDemo/Imaging/CoreMLDepthEstimator.swift in Sources */,
 				4DC04B1012CFBB8C459E7AB3 /* PGYDepthDemo/App/PGYDepthDemoApp.swift in Sources */,
 				7D385C39C0888DDF671A905A /* PGYDepthDemo/Core/DepthField.swift in Sources */,
 				0AD6ABDA1B1D24AB455AAB5B /* PGYDepthDemo/Core/DraftStore.swift in Sources */,
@@ -301,6 +341,14 @@
 				5458371C670E275C1715A570 /* PGYDepthDemo/UI/EditorPanel.swift in Sources */,
 				BF4F181ECAE5110420FA7C1A /* PGYDepthDemo/UI/PhotoCanvas.swift in Sources */,
 				00694448F828D7C21AC6AFD6 /* PGYDepthDemo/UI/ReferenceControls.swift in Sources */,
+				5FD44A720CC59C5836132F95 /* PGYDepthDemo/State/LayerEditorModel.swift in Sources */,
+				388CEBA65F01473492717E7F /* PGYDepthDemo/Imaging/LayerOverlay.swift in Sources */,
+				8F662BDA42B940A5C936BF62 /* PGYDepthDemo/Core/SceneLayers.swift in Sources */,
+				2A29A8C7E653D4DBCA757D07 /* PGYDepthDemo/UI/LayerEditorView.swift in Sources */,
+				F9A1B4CDBE9212DD620DD297 /* PGYDepthDemo/UI/LayerDrawingCanvas.swift in Sources */,
+				63FD85D64FFA95F10BBA1050 /* PGYDepthDemo/Imaging/OfflineDepthEstimator.swift in Sources */,
+				0BBD343A34F89D3F4FFFDBA7 /* PGYDepthDemo/Core/InferredDepth.swift in Sources */,
+				6B00C7F6BAB8320932B55F23 /* PGYDepthDemo/Resources/Models/DepthAnythingV2SmallF16.mlpackage in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,12 +356,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6C23562AE5DACA0436573FE8 /* Tests/IOS/NativeDepthPriorityTests.swift in Sources */,
-				CAD5BECD13E79A9A25902C87 /* Tests/IOS/DepthEdgeTests.swift in Sources */,
 				A6B3D1BE4F5F9FBAC1B123A4 /* Tests/DepthCoreTests/DepthCoreTests.swift in Sources */,
 				90C7DA61816622A5DEC48B86 /* Tests/DepthCoreTests/DraftStoreTests.swift in Sources */,
 				781C382D6CB5E746D0C1A1E1 /* Tests/DepthCoreTests/SubjectMaskTests.swift in Sources */,
 				7072E384B5829D4867024236 /* Tests/IOS/ImagingTests.swift in Sources */,
+				1459B37E144B9A1F20B304CF /* Tests/DepthCoreTests/ReferenceSceneTests.swift in Sources */,
+				0AB060A176FCFFBF1E43EA32 /* Tests/DepthCoreTests/SceneLayerTests.swift in Sources */,
+				7A89BF9D4E0E909EC74A5984 /* Tests/DepthCoreTests/LayerRegressionTests.swift in Sources */,
+				09B0AF2B5F371E7B11BF156E /* Tests/DepthCoreTests/AutomaticDepthReferenceTests.swift in Sources */,
+				A0FD69ABAF129BB140E7A283 /* Tests/DepthCoreTests/AutomaticDepthTests.swift in Sources */,
+				C6EA71B140FBFACE48DD7EA3 /* Tests/IOS/CoreMLSmokeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -374,7 +426,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				COREML_CODEGEN_LANGUAGE = Swift;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = RUCPUS7G68;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PGYDepthDemo/Resources/Info.plist;
@@ -382,7 +435,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pgy.depthdemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -439,7 +492,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				COREML_CODEGEN_LANGUAGE = Swift;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = RUCPUS7G68;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PGYDepthDemo/Resources/Info.plist;
@@ -447,7 +501,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pgy.depthdemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

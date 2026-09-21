@@ -2,18 +2,10 @@ import XCTest
 import CoreImage
 import CoreVideo
 import ImageIO
-import UIKit
 @testable import PGYDepthDemo
 
 /// Apple SDK tests included for Command-U. These are NOT claimed as executed on Linux.
 final class ImagingTests: XCTestCase {
-    func testInvalidModelPredictionsDoNotBecomeSuccessfulFlatDepth() throws {
-        for values: [Float] in [[0, 0, 0, 0], [.nan, 1, 2, 3], [1, .infinity, 2, 3]] {
-            XCTAssertThrowsError(try CoreMLDepthEstimator.normalizedPrediction(width: 2, height: 2, values: values))
-        }
-        let valid = try CoreMLDepthEstimator.normalizedPrediction(width: 2, height: 2, values: [1, 2, 3, 4])
-        XCTAssertLessThan(valid.values[0], valid.values[3])
-    }
     private func checker(_ side: Int = 128) throws -> CGImage {
         var data = [UInt8](repeating: 0, count: side * side)
         for y in 0..<side { for x in 0..<side { data[y * side + x] = ((x / 2 + y / 2) % 2 == 0) ? 0 : 255 } }
@@ -64,7 +56,7 @@ final class ImagingTests: XCTestCase {
     }
     func testEnabledLocalBlurReducesHighFrequencyDetail() throws {
         let context = CIContext(), source = try checker()
-        var recipe = EditRecipe(); recipe.aperture = 1.4; recipe.focusPoint = .center; recipe.localRadius = 0.12
+        var recipe = EditRecipe(); recipe.focusMode = .local; recipe.aperture = 1.4; recipe.focusPoint = .center; recipe.localRadius = 0.12
         let output = try render(source, recipe: recipe, context: context)
         func variation(_ bytes: [UInt8]) -> Double {
             let values = stride(from: 0, to: bytes.count, by: 4).map { Double(bytes[$0]) }
@@ -101,119 +93,95 @@ final class ImagingTests: XCTestCase {
         CVPixelBufferUnlockBaseAddress(buffer, [])
         XCTAssertEqual(Array(try PixelBufferReader.coverage(buffer).bytes), [0,128,255,0,0,255])
     }
-    func testFailedSystemRecognitionStillPreparesAndExportsPhoto() async throws {
+    func testOrdinaryImportPreparesRealTypedDepthBeforeExport() async throws {
         let data = try ImageSupport.jpegData(checker())
-        let pipeline = PhotoPipeline(depthEstimator: FailingDepthEstimator())
-        let photo = try await pipeline.prepare(data: data, title: "offline fixture")
-        XCTAssertTrue(photo.analysis.isFallback); XCTAssertNotNil(photo.notice)
+        let estimator = CountingDepthEstimator()
+        let pipeline = PhotoPipeline(depthEstimator: estimator)
+        let photo = try await pipeline.prepare(data: data, title: "ordinary image")
+        guard case .estimated(let depth) = photo.analysis else { return XCTFail("Must infer instead of blank layers") }
+        XCTAssertEqual(estimator.calls, 1); XCTAssertEqual(depth.sourceSHA256.count, 64)
+        XCTAssertNotNil(photo.analysis.continuousDepth)
         let preview = try await pipeline.preview(photo: photo, recipe: EditRecipe())
         let export = try await pipeline.export(photo: photo, recipe: EditRecipe())
         XCTAssertEqual(preview.rendered.width, 128); XCTAssertEqual(export.image.width, 128)
         XCTAssertFalse(export.jpeg.isEmpty)
+        XCTAssertEqual(estimator.calls, 1, "Rendering must not repeat inference")
     }
-    func testLegacySubjectCacheIsReplacedByEstimatedDepth() async throws {
-        let label = try GrayMask(width: 2, height: 2, bytes: Data([0,1,0,1]))
-        let mask = try GrayMask(width: 2, height: 2, bytes: Data([0,255,0,255]))
-        let subjects = try SubjectSegmentation(labels: label, subjects: [SubjectMask(id: 1, mask: mask)])
-        let field = try DepthField(width: 2, height: 2, values: [0.1,0.8,0.1,0.8])
-        let pipeline = PhotoPipeline(depthEstimator: FixedDepthEstimator(field: field))
-        let photo = try await pipeline.prepare(data: ImageSupport.jpegData(checker()), title: "cached",
-                            cachedAnalysis: .subjects(subjects), cachedImageSize: PixelSize(width: 128, height: 128))
-        XCTAssertEqual(photo.analysis, .estimated(DepthEstimate(field: field))); XCTAssertNil(photo.notice)
+    func testValidAutomaticCacheBypassesEstimator() async throws {
+        let data = try ImageSupport.jpegData(checker())
+        let estimator = CountingDepthEstimator(), pipeline = PhotoPipeline(depthEstimator: CountingDepthEstimator())
+        let first = try await pipeline.prepare(data: data, title: "first")
+        let secondPipeline = PhotoPipeline(depthEstimator: estimator)
+        let second = try await secondPipeline.prepare(data: data, title: "restored", cachedAnalysis: first.analysis, cachedImageSize: first.sourceSize)
+        XCTAssertEqual(estimator.calls, 0)
+        XCTAssertEqual(first.analysis, second.analysis)
     }
-    func testWrongSizeCacheIsIgnored() async throws {
+    func testV3BlankCacheRecomputedInsteadOfReturningUnknown() async throws {
+        let estimator = CountingDepthEstimator()
+        let blank = try SceneLayerMap.blank(width: 128, height: 128)
+        let actual = PhotoPipeline(depthEstimator: estimator)
+        let photo = try await actual.prepare(data: ImageSupport.jpegData(checker()), title: "v3 draft",
+            cachedAnalysis: .layered(.init(map: blank, subjects: nil, notice: nil)), cachedImageSize: .init(width: 128, height: 128))
+        XCTAssertEqual(estimator.calls, 1)
+        guard case .estimated = photo.analysis else { return XCTFail("Old unknown state leaked") }
+    }
+    func testWrongImageSameDimensionsCacheIsNotReused() async throws {
+        let estimator = CountingDepthEstimator(), pipeline = PhotoPipeline(depthEstimator: CountingDepthEstimator())
+        let first = try await pipeline.prepare(data: ImageSupport.jpegData(checker()), title: "A")
+        let different = try ImageSupport.grayImage(width: 128, height: 128, bytes: [UInt8](repeating: 120, count: 128*128))
+        let actual = PhotoPipeline(depthEstimator: estimator)
+        let second = try await actual.prepare(data: ImageSupport.jpegData(different), title: "B", cachedAnalysis: first.analysis, cachedImageSize: first.sourceSize)
+        XCTAssertEqual(estimator.calls, 1)
+        guard case .estimated(let a) = first.analysis, case .estimated(let b) = second.analysis else { return XCTFail() }
+        XCTAssertNotEqual(a.sourceSHA256, b.sourceSHA256)
+    }
+    func testInferenceFailureDoesNotReturnFakeReadyPhoto() async throws {
         let pipeline = PhotoPipeline(depthEstimator: FailingDepthEstimator())
-        let depth = try DepthField(width: 2, height: 2, values: [0,1,0,1])
-        let photo = try await pipeline.prepare(data: ImageSupport.jpegData(checker()), title: "wrong size",
-                         cachedAnalysis: .native(depth), cachedImageSize: PixelSize(width: 33, height: 44))
-        XCTAssertTrue(photo.analysis.isFallback)
+        do {
+            _ = try await pipeline.prepare(data: ImageSupport.jpegData(checker()), title: "failure")
+            XCTFail("Inference failure must not return empty layers or circular fallback")
+        } catch OfflineDepthError.invalidDepth { /* expected */ }
     }
-    func testCurrentEstimatedCacheBypassesModel() async throws {
-        let field = try DepthField(width: 2, height: 2, values: [0.1,0.8,0.1,0.8])
-        let analysis = PhotoAnalysis.estimated(DepthEstimate(field: field))
-        let pipeline = PhotoPipeline(depthEstimator: FailingDepthEstimator())
-        let photo = try await pipeline.prepare(data: ImageSupport.jpegData(checker()), title: "cached depth",
-                          cachedAnalysis: analysis, cachedImageSize: PixelSize(width: 128, height: 128))
-        XCTAssertEqual(photo.analysis, analysis)
-    }
-
-    func testBundledModelSeparatesUserPhotoFocusPlanes() async throws {
-        let url = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "FocusScene", withExtension: "png"))
-        let pipeline = PhotoPipeline()
-        let photo = try await pipeline.prepare(data: Data(contentsOf: url), title: "FocusScene")
-        guard case .estimated(let estimate) = photo.analysis else {
-            return XCTFail("Expected bundled depth model, got \(photo.analysis.sourceDescription): \(photo.notice ?? "")")
-        }
-        let bottle = UnitPoint2D(x: 0.457, y: 0.715)
-        let monitor = UnitPoint2D(x: 0.15, y: 0.45)
-        let cabinet = UnitPoint2D(x: 0.826, y: 0.568)
-        XCTAssertGreaterThan(DepthFocus.focus(in: estimate.field, at: bottle), DepthFocus.focus(in: estimate.field, at: cabinet) + 0.35)
-        var recipe = EditRecipe(); recipe.aperture = 2.1; recipe.focusPoint = bottle
-        let nearMasks = try FocusMaskBuilder.make(analysis: photo.analysis, recipe: recipe, imageSize: photo.sourceSize)
-        XCTAssertEqual(nearMasks.blur.value(at: bottle), 0)
-        XCTAssertLessThan(nearMasks.blur.value(at: monitor), 15, "Same clear depth band must preserve monitor")
-        XCTAssertGreaterThan(nearMasks.blur.value(at: cabinet), 220)
-        let near = try await pipeline.preview(photo: photo, recipe: recipe)
-        try saveEvidence(near.rendered, name: "near-focus")
-        try saveEvidence(near.mask, name: "estimated-depth")
-        let nearExport = try await pipeline.export(photo: photo, recipe: recipe)
-        try saveEvidence(nearExport.image, name: "near-export")
-        XCTAssertEqual(nearExport.image.width, photo.original.width)
-        XCTAssertEqual(nearExport.image.height, photo.original.height)
+    func testDepthChangeInvalidatesBothRenderAndDiagnosticCache() async throws {
+        let pipeline = PhotoPipeline(depthEstimator: CountingDepthEstimator())
+        let photo = try await pipeline.prepare(data: ImageSupport.jpegData(checker()), title: "cache")
+        let d = try DepthField(width: 4, height: 2, values: [0.2,0.8,0.2,0.8,0.2,0.8,0.2,0.8])
+        let changed = photo.replacingAnalysis(.native(d))
+        XCTAssertNotEqual(photo.id, changed.id)
+        var r = EditRecipe(); r.focusPoint = .init(x: 0.4, y: 0.5); r.aperture = 1.4
+        let a = try await pipeline.preview(photo: photo, recipe: r)
+        let b = try await pipeline.preview(photo: changed, recipe: r)
         let context = CIContext()
-        let reducedExport = try ImageSupport.resized(nearExport.image, longestEdge: 1024, context: context)
-        let previewBytes = rgba(near.rendered, context: context)
-        let exportBytes = rgba(reducedExport, context: context)
-        XCTAssertEqual(previewBytes.count, exportBytes.count)
-        let meanDifference = zip(previewBytes, exportBytes).reduce(0.0) { $0 + abs(Double($1.0) - Double($1.1)) } / Double(previewBytes.count)
-        XCTAssertLessThan(meanDifference, 8, "Preview/export must use the same aligned focal region")
-        var noBlur = recipe; noBlur.aperture = 16
-        let noBlurResult = try await pipeline.preview(photo: photo, recipe: noBlur)
-        XCTAssertEqual(rgba(noBlurResult.rendered, context: context), rgba(noBlurResult.original, context: context))
-        noBlur.aperture = 2.1; noBlur.depthEnabled = false
-        let disabled = try await pipeline.preview(photo: photo, recipe: noBlur)
-        XCTAssertEqual(rgba(disabled.rendered, context: context), rgba(disabled.original, context: context))
-        var narrow = recipe; narrow.estimatedFocusTolerance = 0.02
-        let narrowResult = try await pipeline.preview(photo: photo, recipe: narrow)
-        XCTAssertNotEqual(rgba(narrowResult.rendered, context: context), previewBytes)
-        let restoredBand = try await pipeline.preview(photo: photo, recipe: recipe)
-        XCTAssertEqual(rgba(restoredBand.rendered, context: context), previewBytes, "Changing clear band must invalidate the mask cache")
-        recipe.focusPoint = cabinet
-        let farMasks = try FocusMaskBuilder.make(analysis: photo.analysis, recipe: recipe, imageSize: photo.sourceSize)
-        XCTAssertEqual(farMasks.blur.value(at: cabinet), 0)
-        XCTAssertGreaterThan(farMasks.blur.value(at: bottle), 220)
-        XCTAssertGreaterThan(farMasks.blur.value(at: monitor), 200)
-        let far = try await pipeline.preview(photo: photo, recipe: recipe)
-        try saveEvidence(far.rendered, name: "far-focus")
-        let farExport = try await pipeline.export(photo: photo, recipe: recipe)
-        try saveEvidence(farExport.image, name: "far-export")
-        XCTAssertNotEqual(nearMasks.blur, farMasks.blur)
-        // Cached model depth must survive draft round-trip without re-running inference.
-        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        defer { try? FileManager.default.removeItem(at: root) }
-        let store = DraftStore(root: root)
-        try await store.save(photo.draft(recipe: recipe))
-        let saved = try await store.load()
-        XCTAssertEqual(saved?.analysis, photo.analysis)
+        XCTAssertNotEqual(rgba(a.mask, context: context), rgba(b.mask, context: context))
     }
-
-    private func saveEvidence(_ image: CGImage, name: String) throws {
-        let attachment = XCTAttachment(image: UIImage(cgImage: image))
-        attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
-        let folder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("DepthVerification", isDirectory: true)
-        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        let destination = try XCTUnwrap(CGImageDestinationCreateWithURL(folder.appendingPathComponent(name + ".png") as CFURL,
-                                                                     "public.png" as CFString, 1, nil))
-        CGImageDestinationAddImage(destination, image, nil)
-        XCTAssertTrue(CGImageDestinationFinalize(destination))
+    func testLayeredRenderPreservesSameLayerInteriors() throws {
+        let context = CIContext(),source = try checker(256)
+        let labels = try GrayMask(width:4,height:1,bytes:Data([3,3,1,3]))
+        let map = try SceneLayerMap(labels:labels,provenance:.user)
+        var r = EditRecipe();r.focusPoint = .init(x:0.35,y:0.5);r.aperture = 1.4;r.edgeFeather = 0
+        let result = try DepthRenderer(context:context).render(image:source,photoID:UUID(),
+                    analysis:.layered(.init(map:map,subjects:nil,notice:nil)),sourceSize:.init(width:256,height:256),recipe:r)
+        let input = rgba(source,context:context), output = rgba(result,context:context)
+        // Far from label boundaries: both separated near groups must retain original details.
+        for x in [10,30,80,240] {
+            for y in 32..<224 { for c in 0..<3 {
+                let index = (y*256+x)*4+c
+                XCTAssertEqual(output[index],input[index])
+            } }
+        }
     }
 }
 
+/// Test doubles only. The separate CoreMLSmokeTests use the actual bundled model.
+private final class CountingDepthEstimator: DepthEstimating {
+    private(set) var calls = 0
+    func estimate(_ image: CGImage) throws -> DepthField {
+        calls += 1
+        var values = [Float](repeating: 0.2, count: 40*20)
+        for y in 0..<20 { for x in 20..<40 { values[y*40+x] = 0.85 } }
+        return try DepthField(width: 40, height: 20, values: values)
+    }
+}
 private struct FailingDepthEstimator: DepthEstimating {
-    func estimate(_ source: CGImage) throws -> DepthEstimate { throw ImagingError.cannotRender }
-}
-private struct FixedDepthEstimator: DepthEstimating {
-    let field: DepthField
-    func estimate(_ source: CGImage) throws -> DepthEstimate { DepthEstimate(field: field) }
+    func estimate(_ image: CGImage) throws -> DepthField { throw OfflineDepthError.invalidDepth }
 }

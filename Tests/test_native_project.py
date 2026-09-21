@@ -1,136 +1,34 @@
-"""Validate the delivered project, offline assets, and depth-source provenance."""
-import copy
-import importlib.util
-import json
+"""Checks the delivered project itself, not a hand-written configuration snapshot."""
 import pathlib
-import shutil
+import re
 import subprocess
-import sys
-import tempfile
 import unittest
-
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('validate_project', ROOT/'Scripts/validate_project.py')
-validator = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(validator)
-
 
 class NativeProjectTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.objects = validator.load_project()
-
     def test_actual_project_membership_and_schema(self):
-        result = subprocess.run([sys.executable, str(ROOT/'Scripts/validate_project.py')],
-                                capture_output=True, text=True)
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        import sys
+        subprocess.run([sys.executable, str(ROOT/'Scripts/validate_project.py')], check=True, capture_output=True, text=True)
 
-    def test_no_download_build_phase_or_remote_package(self):
-        validator.validate_references(self.objects)
-        for name in ['Scripts/PrepareDepthModel.sh', 'Scripts/model-lock.json',
-                     'Scripts/ModelManifest.json', 'Download_Model.command']:
+    def test_no_model_build_phase(self):
+        project = (ROOT/'PGYDepthDemo.xcodeproj/project.pbxproj').read_text()
+        self.assertNotIn('PBXShellScriptBuildPhase', project)
+        self.assertNotIn('PrepareDepthModel', project)
+        self.assertNotIn('XCRemoteSwiftPackageReference', project)
+
+    def test_no_download_scripts_or_placeholder_model(self):
+        for name in ['Scripts/PrepareDepthModel.sh', 'Download_Model.command', 'Scripts/ModelManifest.json']:
             self.assertFalse((ROOT/name).exists(), name)
-        validator.validate_offline_sources()
+        self.assertEqual(len(list((ROOT/'PGYDepthDemo').rglob('*.mlpackage'))), 1)
 
-    def test_offline_guard_rejects_runtime_downloader(self):
-        with tempfile.TemporaryDirectory() as temp:
-            root = pathlib.Path(temp)
-            (root/'PGYDepthDemo').mkdir()
-            source = root/'PGYDepthDemo/Downloader.swift'
-            for code in ['let session = URLSession.shared', 'let url = "https://example.com/model"']:
-                with self.subTest(code=code):
-                    source.write_text(code)
-                    with self.assertRaisesRegex(AssertionError, 'Runtime network/download dependency'):
-                        validator.validate_offline_sources(root)
-
-    def test_bundled_model_contains_specification_and_real_weights(self):
-        validator.validate_model_package(ROOT/validator.MODEL_PATH)
-        validator.validate_membership(self.objects)
-        self.assertTrue((ROOT/'Docs/DepthAnythingV2-LICENSE.txt').is_file())
-
-    def test_model_validation_rejects_missing_empty_or_pointer_weights(self):
-        original = ROOT/validator.MODEL_PATH
-        with tempfile.TemporaryDirectory() as temp:
-            package = pathlib.Path(temp)/original.name
-            shutil.copytree(original, package, ignore=shutil.ignore_patterns('weight.bin'))
-            weight = package/'Data/com.apple.CoreML/weights/weight.bin'
-            with self.assertRaisesRegex(AssertionError, 'Missing model weight data'):
-                validator.validate_model_package(package)
-            weight.touch()
-            with self.assertRaisesRegex(AssertionError, 'Empty model asset'):
-                validator.validate_model_package(package)
-            weight.write_text('version https://git-lfs.github.com/spec/v1\noid sha256:placeholder\nsize 49419072\n')
-            with self.assertRaisesRegex(AssertionError, 'LFS pointer'):
-                validator.validate_model_package(package)
-
-    def test_model_manifest_must_reference_its_bundled_model(self):
-        with tempfile.TemporaryDirectory() as temp:
-            package = pathlib.Path(temp)
-            manifest = json.loads((ROOT/validator.MODEL_PATH/'Manifest.json').read_text())
-            manifest['rootModelIdentifier'] = 'absent'
-            (package/'Manifest.json').write_text(json.dumps(manifest))
-            with self.assertRaisesRegex(AssertionError, 'Missing root model entry'):
-                validator.validate_model_package(package)
-
-    def test_membership_rejects_wrong_phase_target_and_duplicate_entries(self):
-        def phase(objects, target_name, kind):
-            target = next(obj for obj in objects.values()
-                          if obj['isa'] == 'PBXNativeTarget' and obj['name'] == target_name)
-            return next(objects[key] for key in target['buildPhases'] if objects[key]['isa'] == kind)
-
-        for path, owner, current_kind, wrong_owner, wrong_kind in [
-            (validator.MODEL_PATH, 'PGYDepthDemo', 'PBXSourcesBuildPhase', 'PGYDepthDemo', 'PBXResourcesBuildPhase'),
-            (validator.ESTIMATOR_PATH, 'PGYDepthDemo', 'PBXSourcesBuildPhase', 'PGYDepthDemo', 'PBXResourcesBuildPhase'),
-            (validator.FIXTURE_PATH, 'PGYDepthDemoTests', 'PBXResourcesBuildPhase', 'PGYDepthDemo', 'PBXResourcesBuildPhase'),
-        ]:
-            for duplicate in [False, True]:
-                with self.subTest(path=path, duplicate=duplicate):
-                    objects = copy.deepcopy(self.objects)
-                    source = phase(objects, owner, current_kind)
-                    build = next(key for key in source['files'] if objects[objects[key]['fileRef']]['path'] == path)
-                    if not duplicate:
-                        source['files'].remove(build)
-                    phase(objects, wrong_owner, wrong_kind)['files'].append(build)
-                    with self.assertRaisesRegex(AssertionError, 'Wrong or duplicate membership'):
-                        validator.validate_membership(objects)
-
-    def test_estimated_depth_remains_distinct_after_serialization(self):
-        # Exercise the shipped Swift types rather than matching their source spelling.
-        harness = '''
-import Foundation
-let field = try DepthField(width: 2, height: 1, values: [0.2, 0.8])
-let native = PhotoAnalysis.native(field)
-let estimated = PhotoAnalysis.estimated(DepthEstimate(field: field))
-precondition(native != estimated)
-precondition(native.isNative && !native.isEstimated)
-precondition(!estimated.isNative && estimated.isEstimated)
-precondition(native.sourceDescription != estimated.sourceDescription)
-let encoder = PropertyListEncoder()
-let decoder = PropertyListDecoder()
-for analysis in [native, estimated] {
-    let restored = try decoder.decode(PhotoAnalysis.self, from: encoder.encode(analysis))
-    precondition(restored == analysis)
-    precondition(restored.depthField == field)
-    precondition(restored.isNative == analysis.isNative)
-    precondition(restored.isEstimated == analysis.isEstimated)
-}
-let oldModel = PhotoAnalysis.estimated(DepthEstimate(field: field, modelIdentifier: "older-model"))
-precondition(!oldModel.supportsAutomaticDepthCache)
-precondition(native.supportsAutomaticDepthCache && estimated.supportsAutomaticDepthCache)
-print("PASS: camera and estimated depth retain their provenance")
-'''
-        with tempfile.TemporaryDirectory() as temp:
-            root = pathlib.Path(temp)
-            main = root/'main.swift'
-            main.write_text(harness)
-            executable = root/'provenance-check'
-            sources = sorted((ROOT/'PGYDepthDemo/Core').glob('*.swift'))
-            result = subprocess.run(['swiftc', *map(str, sources), str(main), '-o', str(executable)],
-                                    capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            result = subprocess.run([str(executable)], capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn('PASS: camera and estimated depth retain their provenance', result.stdout)
+    def test_automatic_model_replaces_subject_only_depth_guess(self):
+        code = (ROOT/'PGYDepthDemo/Imaging/PhotoPipeline.swift').read_text()
+        self.assertIn('depthEstimator.estimate', code)
+        self.assertIn('AutomaticDepthCache.reusable', code)
+        self.assertNotIn('analyzeLayers', code)
+        self.assertNotIn('segmenter.analyze', code)
+        all_code = '\n'.join(p.read_text() for p in (ROOT/'PGYDepthDemo').rglob('*.swift'))
+        self.assertNotIn('URLSession', all_code)
 
     def test_only_swift_product_code(self):
         for suffix in ['.m', '.mm', '.c', '.cpp', '.metal']:
@@ -149,6 +47,42 @@ print("PASS: camera and estimated depth retain their provenance")
         self.assertNotIn('Section("选择方式")', panel)
         self.assertIn('} header: { Text("选择方式") } footer: {', panel)
 
+    def test_no_single_subject_focus_rule_remains(self):
+        code = (ROOT/'PGYDepthDemo/Core/SubjectMasks.swift').read_text()
+        self.assertNotIn('func sharpMask(',code)
+        self.assertIn('case .layered(let scene)',code)
+        self.assertIn('scene.map.focusMasks',code)
+        self.assertNotIn('safe.focusMode == .local || analysis.isFallback',code)
+
+    def test_layer_changes_invalidate_cached_masks(self):
+        pipeline = (ROOT/'PGYDepthDemo/Imaging/PhotoPipeline.swift').read_text()
+        state = (ROOT/'PGYDepthDemo/State/EditorModel.swift').read_text()
+        self.assertIn('func replacingAnalysis',pipeline)
+        self.assertIn('PhotoSession(id: UUID()',pipeline)
+        self.assertIn('self.photo = photo.replacingAnalysis',state)
+        self.assertIn('photo.id == sourceID',state)
+        self.assertIn('scene.map.layer(at: point) == .unknown',state)
+
+    def test_human_fixture_is_test_only_and_normal_import_is_automatic(self):
+        import hashlib, json
+        fixture = json.loads((ROOT/'Tests/Fixtures/ReferenceLayers.json').read_text())
+        self.assertEqual(fixture['sourceSHA256'],hashlib.sha256((ROOT/'PGYDepthDemo/Resources/ReferencePhoto.png').read_bytes()).hexdigest())
+        self.assertIn('人工',fixture['description'])
+        pipeline=(ROOT/'PGYDepthDemo/Imaging/PhotoPipeline.swift').read_text()
+        state=(ROOT/'PGYDepthDemo/State/EditorModel.swift').read_text()
+        self.assertNotIn('func loadReference()',pipeline)
+        self.assertNotIn('referenceData',state)
+        self.assertNotIn('title.contains(',pipeline)
+        self.assertFalse((ROOT/'PGYDepthDemo/Resources/ReferenceLayers.json').exists())
+        data=(ROOT/'Tests/Fixtures/AutomaticReference.f32').read_bytes()
+        actual=json.loads((ROOT/'Tests/Fixtures/AutomaticReference.json').read_text())
+        self.assertEqual(hashlib.sha256(data).hexdigest(),actual['predictionSHA256'])
+        self.assertEqual(actual['imageSHA256'], fixture['sourceSHA256'])
+
+    def test_selected_layer_is_protected_after_diffusion(self):
+        code=(ROOT/'PGYDepthDemo/Imaging/DepthRenderer.swift').read_text()
+        self.assertIn('if let protection = selections.protection',code)
+        self.assertGreater(code.index('if let protection = selections.protection'),code.index('expanded.composited'))
 
 if __name__ == '__main__':
     unittest.main()

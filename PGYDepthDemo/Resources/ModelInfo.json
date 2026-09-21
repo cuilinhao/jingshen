@@ -1,0 +1,39 @@
+{
+  "repository": "apple/coreml-depth-anything-v2-small",
+  "revision": "cfef6f6f2a70783dedc0bfae40cecbc2052285d3",
+  "package": "DepthAnythingV2SmallF16.mlpackage",
+  "model": {
+    "path": "Data/com.apple.CoreML/model.mlmodel",
+    "bytes": 399433,
+    "sha256": "44ac97a3efcfd52113183fb2862ff59cd0368e9ec2e30a90a54980dd11407042"
+  },
+  "weights": {
+    "path": "Data/com.apple.CoreML/weights/weight.bin",
+    "bytes": 49419072,
+    "sha256": "fa60d9b6a155734f59029ebb882fd54e549bfaee3539c1a9cbd2cbbab64a0fed"
+  },
+  "provenance": "https://huggingface.co/apple/coreml-depth-anything-v2-small/commit/cfef6f6f2a70783dedc0bfae40cecbc2052285d3",
+  "manifest": {
+    "path": "Manifest.json",
+    "bytes": 617,
+    "sha256": "2883ae290c48fe916dc5ececac03a7d847fa277165a49ef5652fa1d2b9cb55f7"
+  },
+  "totalBytes": 49819122,
+  "actualInterface": {
+    "input": {
+      "name": "image",
+      "width": 518,
+      "height": 392,
+      "type": "RGB image"
+    },
+    "output": {
+      "name": "depth",
+      "width": 518,
+      "height": 392,
+      "type": "GRAYSCALE_FLOAT16 image"
+    },
+    "specVersion": 8,
+    "opset": "CoreML7"
+  },
+  "delivery": "All three files physically bundled; no download build/runtime steps."
+}

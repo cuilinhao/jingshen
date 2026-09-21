@@ -56,7 +56,7 @@ enum PhotoLoader {
                 print("[Depth] 原生深度 \(raw.width)×\(raw.height)，已应用 EXIF \(orientation.rawValue)")
                 return result
             } catch {
-                print("[Depth] 原生辅助深度不可用，改用本机景深估计：\(error.localizedDescription)")
+                print("[Depth] 原生辅助深度不可用，改用内置模型自动深度：\(error.localizedDescription)")
             }
         }
         return nil

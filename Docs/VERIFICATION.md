@@ -1,53 +1,43 @@
-# 验证记录 · 2026-09-20
+# v4 交付验证记录
 
-本次以用户提供的 yuntu0920.png 为输入，对照 demo-01/02 与 xingtu-01/02 的前后景关系，使用提供的 DepthAnythingV2SmallF16 模型实现按深度对焦。
+环境：Linux x86_64，Swift 6.2.1。日期2026-09-20。**没有 Xcode、Apple iOS SDK、模拟器或 iPhone。**本记录严格区分资源 / 参考计算 / Swift测试 / 苹果运行时。
 
-## 已执行
+## 已实际执行
 
-环境：Apple Silicon Mac，Xcode 27；iPhone 18 Pro 模拟器，iOS 27.0。
+| 检查 | 结果及证据 |
+|---|---|
+| 上传模型完整性 | ZIP CRC、Manifest引用、399433字节的模型与49419072字节的权重真实存在且匹配固定SHA256；`Tests/test_offline_model_project.py` |
+| 实际模型接口检查 | protobuf spec8/CoreML7，输入RGB518×392，输出Float16灰度518×392；没有按网页中的近似尺寸猜测；`model-reference-final.log` |
+| 用户原图 + 真实模型权重参考计算 | 2459个操作（包含常量）完成；每个张量形状、有限性及权重偏移边界均检查；`model-reference-final.log` |
+| 参考计算重跑 | 完整原始输出与测试fixture逐字节相同，SHA256 `5c8411233d7d692da113633a5a39f27802619d0f288db60140ff0189bee4d460` |
+| 8个历史点击 | 全部有有效参考深度；柜子三点0.22–0.27，瓶子五点0.85–0.87；`actual-original-taps.log` |
+| 生产 Swift 对焦蒙版 | 瓶子对焦：显示器/瓶子/玩偶采样点blur0，柜子255；柜子对焦：近处采样237/255/255，柜子0；不是人工层图；同上 |
+| Swift XCTest 核心测试 | 75项通过、0失败；`core-final.log`。其中4项读取真实权重参考输出；其他包括历史兼容、坐标、缓存、范围、草稿等，不把历史人工层测试算作自动识别证据 |
+| 工程 / 模型资源回归 | 16项通过、0失败；`project-final.log` |
+| Xcode工程静态配置 | 实际OpenStep工程解析，116个对象引用，24个App Swift文件、10个测试Swift文件归属正确；完整模型唯一配置在Sources，测试预测/人工图仅在测试Bundle；`project-validation-final.log` |
+| Swift源码语法 | App+测试源码解析通过；`swift-parse-final.log`。**不是Apple SDK类型检查或编译** |
+| 模型与数据相互隔离 | 正常导入调用真实估计器，内置原图同路径；不存在loadReference/analyzeLayers的普通入口；旧无效缓存重新推理；静态检查与核心测试 |
 
-| 检查 | 结果 |
-| --- | --- |
-| Swift 核心测试 | 40 项，0 失败 |
-| Xcode 模拟器测试（包含核心测试） | 56 项，0 失败 |
-| Python 工程/离线配置测试 | 10 项，0 失败 |
-| 实际 pbxproj/资源归属检查 | 通过，模型在 App Sources 编译，样图只进入测试包 |
-| iPhone Release 无签名构建 | BUILD SUCCEEDED；不等同真机安装/运行 |
-| git diff --check | 通过 |
+以上日志均在 `Verification/v4/`。`red-*` 是先观察到的预期失败记录，不是当前最终结果；v3目录是历史记录。
 
-模拟器测试运行真实 Core ML 权重和 Core Image，不使用固定输出代替模型。实际测试渲染图包括 near-focus.png、far-focus.png、near-export.png、far-export.png、estimated-depth.png；XCTest 报告保留图片附件。
+## CPU参考计算到底验证了什么
 
-真实样图验证：点瓶子后，瓶子、显示器和附近桌面保持清晰，柜子虚化；点柜子后，柜子清晰，前景显示器、瓶子和桌面虚化。通过渲染图目视复查，主体分组导致的“点瓶子和柜子效果相同”已消除。默认 AI 虚化半径调至 1024 长边下 16 像素，再随光圈和效果强度缩放，以保留更适度的失焦形状。
+`Scripts/ReferenceCPU` 用公开MLProgram字段、上传模型原始权重和PyTorch数值算子解释此模型。FP16输出边界有模拟；该工具不是Core ML SDK，也不是所有MIL算子的完整实现。重跑证明该工具自身可重复，但没有证明与苹果后端逐位等价。
 
-自动断言还覆盖：切换清晰范围后缓存刷新、f16/关闭效果保留像素、预览与缩放导出的平均通道差小于 8/255、草稿类型与模型版本、失败回退、错误尺寸缓存拒绝、真实 JPEG 辅助视差与 EXIF 6 的方向/原生优先级。
+它能提供“这份真实权重对该原图生成了可区分远近的稠密场”的证据。生产Swift将其转换为虚化蒙版，8个点击可复核。它**不能**验证CoreImage到CVPixelBuffer的实际方向/颜色转换、Core ML调度、苹果原生滤镜、UI或iPhone性能。参考计算用Pillow缩放，iOS使用CoreImage；后端数值和插值可能有差异。
 
-## 测试发现并修复
+`Docs/AutomaticDepthValidation` 的图是参考深度与Swift蒙版可视化，**不是App运行截图**，也不是苹果原生渲染的画质证明。它们不进入App。模型文件未被改写；所有参考输出与人工测试数据只属于Tests/Docs。
 
-1. **模拟器 GPU 返回全零深度。**首轮真实样图测试有 5 个焦平面断言失败，定位到模拟器 MPSGraph 后端异常但请求仍返回输出。模拟器改用 CPU，并拒绝全零/非有限预测；模型缓存版本更新，避免恢复调试期间的无效结果。
-2. **失焦前景仍有硬剪影。**旧版整图模糊后再次叠加前景，合成白黑边缘的相邻像素跳变为 43/255。改为扩展前景的虚化支持范围并只模糊一次，模拟器测得跳变 5/255；远处聚焦条纹对比仍大于 240/255。
-3. **缓存可能覆盖原生深度。**恢复时先复用 AI 缓存，可能跳过本次已成功读取的原生辅助深度。改为原生深度优先；真实带 EXIF 旋转的 JPEG 辅助视差测试先红后绿。
-4. **模型构建归属。**集成中检查捕获了模型初始加入 Resources 的错误；最终模型由 Sources 编译为 mlmodelc，估计器加入 App Sources，用户样图只加入测试 Resources。
+## 没有执行，不能声称通过
 
-## 未完成的设备验收与画质边界
+Xcode类型检查、链接、模型原生编译、签名安装；真正的Core ML加载/预测；Core Image渲染/边缘效果；真机首次离线推理；真实相册权限、手势、任务取消、草稿恢复与导出；耗时/内存/流畅度；UI逐像素还原。
 
-- 已完成的是模拟器内自动运行、真实推理和渲染检查。当前 Xcode 27 的 Device Hub 无法由桌面自动化工具取得可操作窗口，尝试返回 timeoutReached，未宣称完成逐项手势/系统相册权限/分享面板人工验收。
-- 真机签名安装、`.all` 推理路径、断网首次安装、速度/内存/耗电/散热尚未实测。工程不含网络下载路径，不能据此冒充物理断网测试。
-- 已覆盖真实用户竖图与 EXIF 6 原生深度；尚未穷举所有 EXIF 镜像和不同长宽比的模型表现。
-- 参考醒图照片是屏幕翻拍，带反光和透视；本次验证焦平面行为，不宣称逐像素一致。细线、透明物体和遮挡边缘仍有单目估计误差。
-- 前景扩散会影响轮廓附近可见背景，不重建被遮挡内容；Core Image 可变模糊与醒图专有散景形状可能不同。
+附19项 Apple SDK 图像/流水线/模型测试，**均尚未在当前环境运行**。其中 `CoreMLSmokeTests` 必须真正从Bundle加载编译模型并走普通原图导入，不能以测试桩替换；模型缺失会失败，不会跳过。需在Mac按⌘U执行后查看输出附件，再按TEST_PLAN真机验收。
 
-## 复验命令
+当前环境没有可用的独立代码审查代理。已进行源码自查与上述自动检查，未声称独立审计。
 
-```sh
-swift test
-python3 -m unittest discover -s Tests -p test_native_project.py -v
-python3 Scripts/validate_project.py
-xcodebuild -project PGYDepthDemo.xcodeproj -scheme PGYDepthDemo \
-  -destination 'platform=iOS Simulator,name=iPhone 18 Pro' \
-  test CODE_SIGNING_ALLOWED=NO
-xcodebuild -project PGYDepthDemo.xcodeproj -scheme PGYDepthDemo \
-  -configuration Release -destination 'generic/platform=iOS' \
-  build CODE_SIGNING_ALLOWED=NO
-```
+## 审查结果与保留边界
 
-选择本机已安装的模拟器型号/系统版本。应用运行与测试都无需下载模型。
+已修复v3根因：普通输入不再发布空unknown层，也不把未识别主体当远景。缓存来源明确、与原图绑定；相对深度和原生深度分型；先验证有效数据再进入可编辑状态；光圈/焦点不重复推理；旧图测试蒙版不进入App。
+
+同景深范围保护是对模型预测的连续距离区间，不是保证所有语义主体总在同一层。透明/反光/遮挡仍可能估错，低分辨率深度放大会影响轮廓。没有光学标定、失焦细节恢复或遮挡补全。此前“人工校正”的旧类型仅用于兼容和测试，不作为本版自动链路。
