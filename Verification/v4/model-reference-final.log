@@ -1,0 +1,8 @@
+specVersion: 8
+input image featuretype {4: [b'\x08\x86\x04\x10\x88\x03\x18\x14']}
+output depth featuretype {4: [b'\x08\x86\x04\x10\x88\x03\x18(']}
+metadata: {1: ["b'Depth Anything V2 is a state-of-the-art deep learning model for depth estimation.'"], 2: ["b'2.0'"], 3: ["b'Original Paper: Lihe Yang et al. (Depth Anything V2)'"], 4: ["b'Apache 2'"], 100: ["b'\\n#com.apple.coreml.model.preview.type\\x12\\x0fdepthEstimation'", "b'\\n4com.apple.developer.machine-learning.models.category\\x12\\x05image'", "b'\\n0com.apple.developer.machine-learning.models.name\\x12!DepthAnythingV2SmallF16.mlpackage'", "b'\\n3com.apple.developer.machine-learning.models.version\\x12\\x032.0'", "b'\\n8com.apple.developer.machine-learning.models.release-date\\x12\\x072024-06'"]}
+function inputs: [('image', {'dtype': 11, 'shape': [1, 3, 392, 518]})] opset CoreML7
+counts: Counter({'const': 1694, 'slice_by_index': 220, 'einsum': 144, 'conv': 103, 'mul': 73, 'softmax': 72, 'add': 35, 'layer_norm': 28, 'transpose': 23, 'relu': 16, 'concat': 14, 'gelu': 12, 'reshape': 6, 'upsample_bilinear': 6, 'squeeze': 5, 'expand_dims': 2, 'conv_transpose': 2, 'cast': 1, 'sub': 1, 'reduce_max': 1, 'real_div': 1})
+block outputs ['depth']
+Reference graph executed 2459 ops; depth (392, 518) range 0.00994110107421875 1.0 seconds 4.876

@@ -1,0 +1,34 @@
+[0/1] Planning build
+Building for debugging...
+[0/10] Write sources
+[1/10] Write swift-version--1BA0962812E73E12.txt
+[3/11] Compiling DepthCoreTests LayerRegressionTests.swift
+[4/11] Emitting module DepthCoreTests
+[5/12] /mnt/data/layer_fix/PGYDepthDemo_NativeVision/.build/x86_64-unknown-linux-gnu/debug/DepthCorePackageDiscoveredTests.derived/all-discovered-tests.swift
+[6/13] Write sources
+[7/13] Wrapping AST for DepthCoreTests for debugging
+[9/16] Compiling DepthCorePackageDiscoveredTests all-discovered-tests.swift
+[10/16] Emitting module DepthCorePackageDiscoveredTests
+[11/16] Compiling DepthCorePackageDiscoveredTests DepthCoreTests.swift
+[12/17] /mnt/data/layer_fix/PGYDepthDemo_NativeVision/.build/x86_64-unknown-linux-gnu/debug/DepthCorePackageTests.derived/runner.swift
+[13/18] Write sources
+[14/18] Wrapping AST for DepthCorePackageDiscoveredTests for debugging
+[16/20] Emitting module DepthCorePackageTests
+[17/20] Compiling DepthCorePackageTests runner.swift
+[18/20] Write Objects.LinkFileList
+[19/20] Linking DepthCorePackageTests.xctest
+Build complete! (1.27s)
+Test Suite 'Selected tests' started at 2026-09-20 10:09:17.574
+Test Suite 'LayerRegressionTests' started at 2026-09-20 10:09:17.576
+Test Case 'LayerRegressionTests.testUnassignedPixelsAreNotAssumedToBeFarBackground' started at 2026-09-20 10:09:17.576
+/mnt/data/layer_fix/PGYDepthDemo_NativeVision/Tests/DepthCoreTests/LayerRegressionTests.swift:17: error: LayerRegressionTests.testUnassignedPixelsAreNotAssumedToBeFarBackground : XCTAssertEqual failed: ("[255, 0, 0]") is not equal to ("[0, 0, 0]") - Unassigned bottle tap must not claim background and blur monitor
+/mnt/data/layer_fix/PGYDepthDemo_NativeVision/Tests/DepthCoreTests/LayerRegressionTests.swift:19: error: LayerRegressionTests.testUnassignedPixelsAreNotAssumedToBeFarBackground : XCTAssertNil failed: "GrayMask(width: 3, height: 1, bytes: 3 bytes)" - 
+Test Case 'LayerRegressionTests.testUnassignedPixelsAreNotAssumedToBeFarBackground' failed (0.002 seconds)
+Test Suite 'LayerRegressionTests' failed at 2026-09-20 10:09:17.577
+	 Executed 1 test, with 2 failures (0 unexpected) in 0.002 (0.002) seconds
+Test Suite 'Selected tests' failed at 2026-09-20 10:09:17.577
+	 Executed 1 test, with 2 failures (0 unexpected) in 0.002 (0.002) seconds
+◇ Test run started.
+↳ Testing Library Version: 6.2.1 (c9d57c83568b06d)
+↳ Target Platform: x86_64-unknown-linux-gnu
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.

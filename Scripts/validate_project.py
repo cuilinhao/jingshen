@@ -25,7 +25,11 @@ counts={}
 for target_name,folder in [('PGYDepthDemo','PGYDepthDemo'),('PGYDepthDemoTests','Tests')]:
     target=next(v for v in objects.values() if v['isa']=='PBXNativeTarget' and v['name']==target_name)
     phase=next(objects[k] for k in target['buildPhases'] if objects[k]['isa']=='PBXSourcesBuildPhase')
-    paths=[objects[objects[k]['fileRef']]['path'] for k in phase['files']]
+    all_paths=[objects[objects[k]['fileRef']]['path'] for k in phase['files']]
+    paths=[p for p in all_paths if p.endswith('.swift')]
+    extras=[p for p in all_paths if not p.endswith('.swift')]
+    expected=['PGYDepthDemo/Resources/Models/DepthAnythingV2SmallF16.mlpackage'] if target_name=='PGYDepthDemo' else []
+    assert extras==expected, (target_name,extras)
     actual={str(p.relative_to(ROOT)) for p in (ROOT/folder).rglob('*.swift')}
     assert set(paths)==actual, (target_name,set(paths)^actual)
     assert len(paths)==len(set(paths)), 'Duplicate Compile Sources entry'
@@ -50,4 +54,14 @@ for guard in ['token == importGeneration','token == renderGeneration','self.phot
     assert guard in state
 print(f'PASS: actual .pbxproj parsed; {len(objects)} object references; {counts}; resources, scheme, plist, script syntax.')
 print('PASS: no Run Script build phase; no remote package reference; original latest-request-wins guards retained.')
-print('NOT RUN HERE: Apple SDK typecheck/link/sign, native Vision request, Core Image render, iPhone UI or offline first launch.')
+print('NOT RUN HERE: Apple SDK typecheck/link/sign, native Core ML prediction, Core Image render, iPhone UI or offline first launch.')
+
+app=next(v for v in objects.values() if v['isa']=='PBXNativeTarget' and v['name']=='PGYDepthDemo')
+phase=next(objects[k] for k in app['buildPhases'] if objects[k]['isa']=='PBXResourcesBuildPhase')
+resources=[objects[objects[k]['fileRef']]['path'] for k in phase['files']]
+assert all(not p.startswith('Tests/') for p in resources), 'No human or precomputed test map in App'
+assert all(not p.endswith('.mlpackage') for p in resources), 'Compile model, do not raw-copy it'
+assert 'PGYDepthDemo/Resources/Apache-2.0.txt' in resources
+model=next(v for v in objects.values() if v['isa']=='PBXFileReference' and v.get('path','').endswith('.mlpackage'))
+assert model['lastKnownFileType']=='folder.mlpackage'
+print('PASS: complete model is configured for native compilation in Sources (compilation NOT run here); no test maps in App Resources.')

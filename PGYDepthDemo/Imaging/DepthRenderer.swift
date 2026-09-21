@@ -2,7 +2,7 @@ import Foundation
 import CoreImage
 import CoreGraphics
 
-/// Shared Core Image renderer. Subject segmentation and native depth remain distinct data paths.
+/// Shared Core Image renderer. Predicted relative depth and native depth remain explicitly typed.
 /// This does not reconstruct occluded backgrounds or recover details missing from the input.
 final class DepthRenderer {
     private let context: CIContext
@@ -58,6 +58,14 @@ final class DepthRenderer {
                         .cropped(to: extent)
                     result = expanded.composited(over: result).cropped(to: extent)
                 }
+                // Reinsert the clear depth interval (and explicit legacy mask protections) after diffusion.
+                // This protects same-layer objects from a neighbouring defocused foreground.
+                if let protection = selections.protection {
+                    let sharp = try maskImage(protection, extent: extent, feather: safe.edgeFeather * pixelScale)
+                    result = input.applyingFilter("CIBlendWithMask", parameters: [
+                        kCIInputBackgroundImageKey: result, "inputMaskImage": sharp
+                    ]).cropped(to: extent)
+                }
             }
             if abs(safe.exposure) > 0.001 {
                 result = result.applyingFilter("CIExposureAdjust", parameters: [kCIInputEVKey: safe.exposure])
@@ -85,17 +93,17 @@ final class DepthRenderer {
         try ImageSupport.cgImage(ImageSupport.cropped(CIImage(cgImage: image), ratio: crop, originalSize: sourceSize), context: context)
     }
 
-    /// Native: show relative disparity. Subject/local: show the actual blur-control mask.
+    /// Predicted/native: relative disparity. Explicit local/legacy: actual blur-control mask.
     func maskPreview(image: CGImage, photoID: UUID, analysis: PhotoAnalysis,
                      sourceSize: PixelSize, recipe: EditRecipe) throws -> CGImage {
         let field: GrayMask
-        if case .native(let depth) = analysis, recipe.focusMode == .automatic {
+        if let depth = analysis.continuousDepth, recipe.focusMode == .automatic {
             field = try GrayMask(width: depth.width, height: depth.height, bytes: Data(depth.bytes()))
         } else {
             field = try masks(photoID: photoID, analysis: analysis, recipe: recipe, sourceSize: sourceSize).blur
         }
-        let isNativeMap = analysis.isNative && recipe.focusMode == .automatic
-        let feather = isNativeMap ? 0 : recipe.edgeFeather * Double(max(image.width, image.height)) / 1024
+        let isDepthMap = analysis.continuousDepth != nil && recipe.focusMode == .automatic
+        let feather = isDepthMap ? 0 : recipe.edgeFeather * Double(max(image.width, image.height)) / 1024
         let input = try maskImage(field, extent: CIImage(cgImage: image).extent, feather: feather)
         return try ImageSupport.cgImage(ImageSupport.cropped(input, ratio: recipe.crop, originalSize: sourceSize), context: context)
     }

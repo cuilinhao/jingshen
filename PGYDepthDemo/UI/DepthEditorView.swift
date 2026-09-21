@@ -43,7 +43,7 @@ struct DepthEditorView: View {
         .confirmationDialog("更换照片", isPresented: $showImportMenu, titleVisibility: .visible) {
             Button("从相册导入") { showPhotoPicker = true }
             Button("从文件导入") { showFilePicker = true }
-            Button("打开录屏样片") { model.loadSample() }
+            Button("打开原图并自动计算深度") { model.loadSample() }
             Button("取消", role: .cancel) {}
         } message: { Text("当前照片会自动保存为可编辑草稿；Demo 仅保留最近一张照片。") }
         .confirmationDialog("导出照片", isPresented: $showExportMenu, titleVisibility: .visible) {
@@ -89,13 +89,13 @@ struct DepthEditorView: View {
                 Button { model.showMask.toggle() } label: {
                     Label(model.showMask ? "关闭蒙版预览" : "查看深度 / 虚化蒙版", systemImage: "square.3.layers.3d")
                 }.disabled(!model.controlsEnabled)
-                Button { model.retryAnalysis() } label: { Label("重新识别主体", systemImage: "arrow.clockwise") }
+                Button { model.retryAnalysis() } label: { Label("重新计算自动深度", systemImage: "arrow.clockwise") }
                     .disabled(!model.controlsEnabled)
                 Button { model.saveDraft() } label: { Label("保存可编辑草稿", systemImage: "square.and.arrow.down") }
                     .disabled(!model.controlsEnabled)
                 Button { model.reset() } label: { Label("重置编辑", systemImage: "arrow.counterclockwise") }
                     .disabled(!model.controlsEnabled)
-                Button { model.loadSample() } label: { Label("打开录屏样片", systemImage: "photo.on.rectangle") }
+                Button { model.loadSample() } label: { Label("打开原图并自动计算深度", systemImage: "photo.on.rectangle") }
                 Divider()
                 Button { activeSheet = .about } label: { Label("实现说明 / 离线说明", systemImage: "info.circle") }
             } label: {
@@ -121,6 +121,10 @@ struct DepthEditorView: View {
                 Spacer(minLength: 0)
                 Text(model.banner).font(.system(size: 11.2, weight: .semibold))
                     .foregroundStyle(DepthTheme.muted).lineLimit(1).minimumScaleFactor(0.8)
+                    .contentShape(Rectangle())
+                    .onTapGesture { activeSheet = .about }
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityHint("查看深度来源与离线模型信息")
                 DepthToggle(enabled: $model.recipe.depthEnabled)
                     .disabled(!model.controlsEnabled)
             }

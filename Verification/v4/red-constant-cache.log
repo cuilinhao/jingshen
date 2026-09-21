@@ -1,0 +1,33 @@
+Building for debugging...
+[0/3] Write sources
+[1/3] Write swift-version--1BA0962812E73E12.txt
+[3/5] Emitting module DepthCoreTests
+[4/5] Compiling DepthCoreTests AutomaticDepthTests.swift
+[5/6] Compiling DepthCoreTests AutomaticDepthReferenceTests.swift
+[6/13] /mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/.build/x86_64-unknown-linux-gnu/debug/DepthCorePackageDiscoveredTests.derived/all-discovered-tests.swift
+[7/14] Write sources
+[8/14] Wrapping AST for DepthCoreTests for debugging
+[10/17] Compiling DepthCorePackageDiscoveredTests all-discovered-tests.swift
+[11/17] Emitting module DepthCorePackageDiscoveredTests
+[12/17] Compiling DepthCorePackageDiscoveredTests DepthCoreTests.swift
+[13/18] /mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/.build/x86_64-unknown-linux-gnu/debug/DepthCorePackageTests.derived/runner.swift
+[14/19] Write sources
+[15/19] Wrapping AST for DepthCorePackageDiscoveredTests for debugging
+[17/21] Emitting module DepthCorePackageTests
+[18/21] Compiling DepthCorePackageTests runner.swift
+[19/21] Write Objects.LinkFileList
+[20/21] Linking DepthCorePackageTests.xctest
+Build complete! (8.41s)
+Test Suite 'Selected tests' started at 2026-09-20 11:43:49.942
+Test Suite 'AutomaticDepthTests' started at 2026-09-20 11:43:49.954
+Test Case 'AutomaticDepthTests.testConstantInferredCacheDoesNotPretendToHaveDepth' started at 2026-09-20 11:43:49.954
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/Tests/DepthCoreTests/AutomaticDepthTests.swift:72: error: AutomaticDepthTests.testConstantInferredCacheDoesNotPretendToHaveDepth : XCTAssertNil failed: "InferredDepth(modelID: "DepthAnythingV2SmallF16-fa60d9b6a155734f", preprocessingID: "rgb255-scaleFill518x392-p01p99-v1", sourceSHA256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", imageSize: DepthCore.PixelSize(width: 1060, height: 1410), field: DepthCore.DepthField(width: 4, height: 4, values: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]))" - 
+Test Case 'AutomaticDepthTests.testConstantInferredCacheDoesNotPretendToHaveDepth' failed (0.01 seconds)
+Test Suite 'AutomaticDepthTests' failed at 2026-09-20 11:43:49.966
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.01 (0.01) seconds
+Test Suite 'Selected tests' failed at 2026-09-20 11:43:49.966
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.01 (0.01) seconds
+◇ Test run started.
+↳ Testing Library Version: 6.2.1 (c9d57c83568b06d)
+↳ Target Platform: x86_64-unknown-linux-gnu
+✔ Test run with 0 tests in 0 suites passed after 0.002 seconds.

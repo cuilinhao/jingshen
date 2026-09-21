@@ -1,56 +1,43 @@
-# 原生主体虚化版 v2 · 交付验证记录
+# v4 交付验证记录
 
-日期：2026-09-20。环境：Linux x86_64、Swift 6.2.1；App 项目使用 Swift 5 语言模式，最低 iOS 17。
-
-**此环境没有 Xcode、Apple iOS SDK、iOS 模拟器或 iPhone。下面的“通过”不代表通过了 Xcode 编译或真机验收。**
+环境：Linux x86_64，Swift 6.2.1。日期2026-09-20。**没有 Xcode、Apple iOS SDK、模拟器或 iPhone。**本记录严格区分资源 / 参考计算 / Swift测试 / 苹果运行时。
 
 ## 已实际执行
 
-| 检查 | 实际结果 | 证据 |
-|---|---|---|
-| Swift 核心、主体选择、局部蒙版、配方测试 | 28 项通过 | `Verification/core-native-final.log` |
-| Swift 草稿持久化与旧版迁移测试 | 7 项通过；与上行合计 35 项，0 失败 | 同上 |
-| 工程静态回归检查 | 6 项通过，0 失败 | `Verification/project-tests-final.log` |
-| 实际 `.pbxproj` OpenStep 解析与引用完整性 | 78 个对象；17 个 App Swift 源码文件、4 个测试文件归属一致 | `Verification/project-validation-native.log` |
-| 无外部模型依赖检查 | 无下载 Run Script、无远程 Package 引用、无外部模型文件或加载代码 | 同上及工程回归检查 |
-| 所有 App Swift 文件与 iOS 图像测试的语法解析 | 通过 `swiftc -frontend -parse`；不是 Apple SDK 类型检查 | `Verification/swift-parse-native.log` |
-| 资源、共享 Scheme、权限与隐私清单、Bash 语法 | 通过静态检查 | `Verification/project-validation-native.log` |
-| 录屏布局保留 | 对照固定几何数值和光圈刻度实现；不是运行后像素比对 | 工程回归检查中的 UI 项 |
+| 检查 | 结果及证据 |
+|---|---|
+| 上传模型完整性 | ZIP CRC、Manifest引用、399433字节的模型与49419072字节的权重真实存在且匹配固定SHA256；`Tests/test_offline_model_project.py` |
+| 实际模型接口检查 | protobuf spec8/CoreML7，输入RGB518×392，输出Float16灰度518×392；没有按网页中的近似尺寸猜测；`model-reference-final.log` |
+| 用户原图 + 真实模型权重参考计算 | 2459个操作（包含常量）完成；每个张量形状、有限性及权重偏移边界均检查；`model-reference-final.log` |
+| 参考计算重跑 | 完整原始输出与测试fixture逐字节相同，SHA256 `5c8411233d7d692da113633a5a39f27802619d0f288db60140ff0189bee4d460` |
+| 8个历史点击 | 全部有有效参考深度；柜子三点0.22–0.27，瓶子五点0.85–0.87；`actual-original-taps.log` |
+| 生产 Swift 对焦蒙版 | 瓶子对焦：显示器/瓶子/玩偶采样点blur0，柜子255；柜子对焦：近处采样237/255/255，柜子0；不是人工层图；同上 |
+| Swift XCTest 核心测试 | 75项通过、0失败；`core-final.log`。其中4项读取真实权重参考输出；其他包括历史兼容、坐标、缓存、范围、草稿等，不把历史人工层测试算作自动识别证据 |
+| 工程 / 模型资源回归 | 16项通过、0失败；`project-final.log` |
+| Xcode工程静态配置 | 实际OpenStep工程解析，116个对象引用，24个App Swift文件、10个测试Swift文件归属正确；完整模型唯一配置在Sources，测试预测/人工图仅在测试Bundle；`project-validation-final.log` |
+| Swift源码语法 | App+测试源码解析通过；`swift-parse-final.log`。**不是Apple SDK类型检查或编译** |
+| 模型与数据相互隔离 | 正常导入调用真实估计器，内置原图同路径；不存在loadReference/analyzeLayers的普通入口；旧无效缓存重新推理；静态检查与核心测试 |
 
-6 项工程回归是 Python 标准库测试，读取实际工程与源码。它们没有用假 Vision 结果来冒充真实识别验证。核心测试使用明确构造的标签、蒙版、深度、配方和临时文件夹，验证数学与持久化行为。
+以上日志均在 `Verification/v4/`。`red-*` 是先观察到的预期失败记录，不是当前最终结果；v3目录是历史记录。
 
-## 本轮审查中修正
+## CPU参考计算到底验证了什么
 
-删除旧模型下载构建阶段，同时删除运行时加载路径，避免“能构建但仍找模型”。将原生深度、主体标签/软蒙版、局部选区分别建模；主体编号不会被用作距离。
+`Scripts/ReferenceCPU` 用公开MLProgram字段、上传模型原始权重和PyTorch数值算子解释此模型。FP16输出边界有模拟；该工具不是Core ML SDK，也不是所有MIL算子的完整实现。重跑证明该工具自身可重复，但没有证明与苹果后端逐位等价。
 
-更新旧草稿迁移：保留原图和编辑参数，丢弃旧外部模型的深度缓存并重新分析。损坏分析缓存不会丢弃原图；导入和渲染保留版本号与取消保护。
+它能提供“这份真实权重对该原图生成了可区分远近的稠密场”的证据。生产Swift将其转换为虚化蒙版，8个点击可复核。它**不能**验证CoreImage到CVPixelBuffer的实际方向/颜色转换、Core ML调度、苹果原生滤镜、UI或iPhone性能。参考计算用Pillow缩放，iOS使用CoreImage；后端数值和插值可能有差异。
 
-补充沙盒文件和用户授权文件大小读取的隐私理由，并调整带标题与 footer 的 SwiftUI Section 为明确的 `content:header:footer:` 初始化写法。相应静态回归先观察到失败，再修改并重新执行通过。
+`Docs/AutomaticDepthValidation` 的图是参考深度与Swift蒙版可视化，**不是App运行截图**，也不是苹果原生渲染的画质证明。它们不进入App。模型文件未被改写；所有参考输出与人工测试数据只属于Tests/Docs。
 
-这些是本次实现者的源码自查，不是独立审计或另一个审查者的验收。
+## 没有执行，不能声称通过
 
-## 已提供、但未执行的 Apple SDK 测试
+Xcode类型检查、链接、模型原生编译、签名安装；真正的Core ML加载/预测；Core Image渲染/边缘效果；真机首次离线推理；真实相册权限、手势、任务取消、草稿恢复与导出；耗时/内存/流畅度；UI逐像素还原。
 
-`Tests/IOS/ImagingTests.swift` 共 11 项，需要在 Mac 上用 Xcode 的 ⌘U 执行。覆盖灰度图方向、裁切坐标、Core Image 参数、关闭效果/f16 的像素结果、局部虚化、带行填充的 PixelBuffer、浮点软蒙版，以及分析失败回退/缓存复用/尺寸不匹配场景。
+附19项 Apple SDK 图像/流水线/模型测试，**均尚未在当前环境运行**。其中 `CoreMLSmokeTests` 必须真正从Bundle加载编译模型并走普通原图导入，不能以测试桩替换；模型缺失会失败，不会跳过。需在Mac按⌘U执行后查看输出附件，再按TEST_PLAN真机验收。
 
-其中分析失败与缓存测试使用可控的分析器替身，只验证调度与回退；即使这些测试在 Mac 上通过，也不能替代真实 `VNGenerateForegroundInstanceMaskRequest` 的照片验收。
+当前环境没有可用的独立代码审查代理。已进行源码自查与上述自动检查，未声称独立审计。
 
-## 仍待 Mac / iPhone 验证
+## 审查结果与保留边界
 
-尚未进行 Xcode 类型检查、链接、签名、安装或运行；真实 Vision 主体分割、Core Image 输出画质、相册权限、导出分享、杀进程恢复、连续拖动性能与内存均未在设备上执行。
+已修复v3根因：普通输入不再发布空unknown层，也不把未识别主体当远景。缓存来源明确、与原图绑定；相对深度和原生深度分型；先验证有效数据再进入可编辑状态；光圈/焦点不重复推理；旧图测试蒙版不进入App。
 
-“Mac 断网构建”与“全新安装 App 后，断网首次识别本地照片”是两项独立的待验收测试。工程没有自定义联网步骤、模型权重或请求，但不能以静态检查推断每台设备上的系统 Vision 都必定成功。识别失败会明确使用局部虚化，不会以此冒充主体识别通过。
-
-`Docs/VideoReference.png` 是用户录屏参考帧，不是新 App 运行截图。主页面沿用参考布局和刻度交互，但尚未逐像素验证；未展示过的展开面板是 Demo 补充设计。
-
-## 在 Mac 上复验
-
-解压到新文件夹，打开 `PGYDepthDemo.xcodeproj`，选择 PGYDepthDemo Scheme 与设备，⌘R 构建运行，⌘U 运行测试。无需先执行脚本或下载模型。
-
-可选的编译检查命令：
-
-```bash
-bash Scripts/Verify_on_Mac.sh
-```
-
-该脚本需要已安装完整 Xcode，执行不签名的模拟器 SDK 构建，输出 `Verification/mac-build.log`。它不进行模型下载，不代表真机 UI 验收。功能与离线验收步骤见 `Docs/TEST_PLAN.md`。
+同景深范围保护是对模型预测的连续距离区间，不是保证所有语义主体总在同一层。透明/反光/遮挡仍可能估错，低分辨率深度放大会影响轮廓。没有光学标定、失焦细节恢复或遮挡补全。此前“人工校正”的旧类型仅用于兼容和测试，不作为本版自动链路。

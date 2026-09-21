@@ -74,6 +74,11 @@ struct SubjectSegmentation: Codable, Equatable, Sendable {
                       groupedSubjectCount: box.decodeIfPresent(Int.self, forKey: .groupedSubjectCount) ?? 0)
     }
     func instance(at point: UnitPoint2D) -> UInt8 { labels.value(at: point) }
+    func subject(at point: UnitPoint2D) -> SubjectMask? {
+        // Use the same high-resolution coverage that will be assigned; no low-res-label mismatch.
+        subjects.filter { $0.mask.value(at: point) >= 128 }
+            .max { $0.mask.value(at: point) < $1.mask.value(at: point) }
+    }
 
     func allForegroundMask() throws -> GrayMask {
         guard let first = subjects.first else { throw MaskDataError.inconsistentSubjects }
@@ -85,31 +90,38 @@ struct SubjectSegmentation: Codable, Equatable, Sendable {
         }
         return try GrayMask(width: first.mask.width, height: first.mask.height, bytes: Data(combined))
     }
-    func sharpMask(at point: UnitPoint2D) throws -> GrayMask {
-        let id = instance(at: point)
-        if id == 0 { return try allForegroundMask().inverted() }
-        guard let subject = subjects.first(where: { $0.id == id }) else { throw MaskDataError.inconsistentSubjects }
-        return subject.mask
-    }
+
 }
 
 enum FocusMode: String, Codable, CaseIterable, Identifiable, Sendable {
     case automatic, local
     var id: Self { self }
-    var title: String { self == .automatic ? "自动主体 / 原生深度" : "局部虚化（圆形选区）" }
+    var title: String { self == .automatic ? "自动景深（内置模型 / 原生深度）" : "局部虚化（圆形选区）" }
 }
 
 /// Never encode subject IDs as continuous disparity. Each rendering path stays explicitly typed.
 enum PhotoAnalysis: Codable, Equatable, Sendable {
     case native(DepthField)
+    case estimated(InferredDepth)
+    case layered(LayeredScene)
+    // Legacy cases are decoded for migration only; they never imply depth.
     case subjects(SubjectSegmentation)
     case localFallback(reason: String)
 
     var sourceDescription: String {
         switch self {
         case .native: return "照片自带深度"
+        case .estimated: return "内置模型自动深度（离线）"
+        case .layered(let scene): return scene.map.provenance.title
         case .subjects: return "苹果 Vision 主体分割"
         case .localFallback: return "局部虚化（非深度识别）"
+        }
+    }
+    var continuousDepth: DepthField? {
+        switch self {
+        case .native(let field): return field
+        case .estimated(let value): return value.field
+        default: return nil
         }
     }
     var isNative: Bool { if case .native = self { return true }; return false }
@@ -119,6 +131,10 @@ enum PhotoAnalysis: Codable, Equatable, Sendable {
 struct FocusMaskSet: Equatable, Sendable {
     let blur: GrayMask
     let nearDefocus: GrayMask?
+    let protection: GrayMask?
+    init(blur: GrayMask, nearDefocus: GrayMask?, protection: GrayMask? = nil) {
+        self.blur = blur; self.nearDefocus = nearDefocus; self.protection = protection
+    }
 }
 
 enum LocalFocusMask {
@@ -149,7 +165,7 @@ enum LocalFocusMask {
 enum FocusMaskBuilder {
     static func make(analysis: PhotoAnalysis, recipe: EditRecipe, imageSize: PixelSize) throws -> FocusMaskSet {
         var safe = recipe; safe.sanitize()
-        if safe.focusMode == .local || analysis.isFallback {
+        if safe.focusMode == .local {
             let size = ImageGeometry.outputSize(width: imageSize.width, height: imageSize.height, longestEdge: 512)
             return try FocusMaskSet(blur: LocalFocusMask.make(width: size.width, height: size.height,
                                                              imageSize: imageSize, center: safe.focusPoint, radius: safe.localRadius),
@@ -157,23 +173,17 @@ enum FocusMaskBuilder {
         }
         switch analysis {
         case .native(let depth):
-            let focus = depth.sample(at: safe.focusPoint)
-            let tolerance = Float(safe.focusTolerance)
-            let blur = try GrayMask(width: depth.width, height: depth.height,
-                                    bytes: Data(depth.bytes { DepthMath.blurAmount(depth: $0, focus: focus, tolerance: tolerance) }))
-            let near = try GrayMask(width: depth.width, height: depth.height,
-                                    bytes: Data(depth.bytes { DepthMath.smoothstep(tolerance + 0.04, tolerance + 0.30, $0 - focus) }))
-            return FocusMaskSet(blur: blur, nearDefocus: near.bytes.contains(where: { $0 > 20 }) ? near : nil)
+            return try ContinuousFocusMasks.make(depth: depth, point: safe.focusPoint, tolerance: safe.focusTolerance)
+        case .estimated(let value):
+            return try ContinuousFocusMasks.make(depth: value.field, point: safe.focusPoint, tolerance: safe.focusTolerance)
+        case .layered(let scene):
+            return try scene.map.focusMasks(at: safe.focusPoint, tolerance: safe.focusTolerance)
         case .subjects(let segmentation):
-            let blur = try segmentation.sharpMask(at: safe.focusPoint).inverted()
-            // Only background selection tells us that the segmented foreground should diffuse.
-            // The order of two foreground subject labels tells us NOTHING about their distance.
-            return FocusMaskSet(blur: blur, nearDefocus: segmentation.instance(at: safe.focusPoint) == 0 ? blur : nil)
+            // Old draft without confirmed depths. No instance is assumed near OR far.
+            return try FocusMaskSet(blur: GrayMask(width: segmentation.labels.width, height: segmentation.labels.height,
+                                                  bytes: Data(repeating: 0, count: segmentation.labels.bytes.count)), nearDefocus: nil)
         case .localFallback:
-            let size = ImageGeometry.outputSize(width: imageSize.width, height: imageSize.height, longestEdge: 512)
-            return try FocusMaskSet(blur: LocalFocusMask.make(width: size.width, height: size.height,
-                                                             imageSize: imageSize, center: safe.focusPoint, radius: safe.localRadius),
-                                    nearDefocus: nil)
+            return try FocusMaskSet(blur: GrayMask(width: 1, height: 1, bytes: Data([0])), nearDefocus: nil)
         }
     }
 }

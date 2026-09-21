@@ -21,7 +21,7 @@ final class DraftStoreTests: XCTestCase {
         let value = try await store.load()
         XCTAssertNil(value)
     }
-    func testV2RoundTripStoresTypedAnalysisAndRecipe() async throws {
+    func testCurrentDraftRoundTripStoresTypedAnalysisAndRecipe() async throws {
         let root = try location(), store = DraftStore(root: root), input = sample()
         try await store.save(input)
         let result = try await store.load()
@@ -81,4 +81,19 @@ final class DraftStoreTests: XCTestCase {
         XCTAssertTrue(contents.contains("keep-me.txt"))
         XCTAssertEqual(contents.filter { UUID(uuidString: $0) != nil }.count, 1)
     }
+    func testV3DraftPersistsEditedLayersUnknownAndFocusTogether() async throws {
+        let root = try location(),store = DraftStore(root:root)
+        let labels = try GrayMask(width:4,height:1,bytes:Data([3,3,1,0]))
+        let scene = LayeredScene(map:try SceneLayerMap(labels:labels,provenance:.user),subjects:nil,notice:nil)
+        var recipe = EditRecipe();recipe.focusPoint = .init(x:1.0/3,y:0)
+        let input = SavedDraft(sourceData:Data([1,2,3]),title:"edited",recipe:recipe,analysis:.layered(scene),imageSize:.init(width:400,height:100))
+        try await store.save(input)
+        let loaded = try await store.load()
+        let output = try XCTUnwrap(loaded)
+        XCTAssertEqual(output.recipe.schemaVersion,4)
+        XCTAssertEqual(output.analysis,input.analysis)
+        let masks = try FocusMaskBuilder.make(analysis:try XCTUnwrap(output.analysis),recipe:output.recipe,imageSize:.init(width:400,height:100))
+        XCTAssertEqual(Array(masks.blur.bytes),[0,0,255,0])
+    }
+
 }

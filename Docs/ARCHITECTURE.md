@@ -1,42 +1,43 @@
-# 原生主体虚化架构
+# v4 架构与修复说明
 
-## 路径
+## 目标
+
+普通本地原图无需人工标记即可自动获得相对深度；点击选择清晰深度范围而非主体 ID。同深度范围可包含多个不相连区域。完整模型随工程交付；构建和 App 首次使用均不下载。UI 主布局不变。
+
+## 分析来源
+
+`PhotoAnalysis.native(DepthField)` 表示照片辅助数据；`estimated(InferredDepth)` 表示当前模型预测。旧 `subjects`、`layered`、`localFallback` 数据类型只为兼容迁移 / 历史测试保留，普通导入不会返回它们。旧人工校正 UI 源码保留但不在当前主界面暴露。
+
+`PhotoPipeline.prepare` 首先使用 ImageIO / AVDepthData 读取原生深度。无原生深度时校验 v4 缓存的 SHA256、尺寸、模型与预处理版本、深度变化；无有效缓存就调用 `OfflineDepthEstimator`。不创建 `SceneLayerMap.blank`，不按图片名称套测试蒙版。一次成功的 `PhotoSession` 必须在推理和有效性检查之后发布。
+
+`InferredDepth` 中保存 `sourceSHA256`、`imageSize`、`modelID`、`preprocessingID` 与深度场；模型本身留在 Bundle，不写入每张照片的草稿。`DraftStore` 原子提交原始数据、类型化分析与 v4 配方。旧缓存不适用时保留原图，重新推理。失败不会被隐藏为一张没有效果的图。
+
+## 模型合同
+
+对上传的 `model.mlmodel` 按公开 protobuf schema 实际读取：spec 8 / CoreML7，输入 `image` 为 RGB 518×392，输出 `depth` 为 GRAYSCALE_FLOAT16 518×392。MLProgram 已有 RGB255 的 mean/std 归一化，App 不再额外除以 255。
+
+模型通过 `folder.mlpackage` 文件引用加入 Xcode Sources 阶段，由原生工具本地编译为 `DepthAnythingV2SmallF16.mlmodelc`。App 只加载 Bundle 中的编译产物。没有 download 或 `MLModel.compileModel` 运行时逻辑；也没有裸拷贝原始包假装编译模型。
+
+输入先完成图片 EXIF 旋转 / 镜像和透明像素白底合成，再将全图缩放到模型实际尺寸；不裁掉照片内容、不塞黑边。输出按整张原图的归一化坐标映射回去。CVPixelBuffer 读取按 bytesPerRow，支持 Float16 / Float32；MLMultiArray 备用读取按 strides。验证输出尺寸、全体有限值、原始及归一化后的非恒定变化。
+
+真机 `.all`，模拟器 `.cpuOnly`；加速模型加载 / 推理失败时尝试本机 CPU。模型在串行 actor 持有，滑动不重复加载；同步推理中不能保证即时中断，但开始 / 结束及每个重步骤检查取消，UI 使用版本号防止旧结果覆盖新任务。
+
+## 对焦和渲染
+
+点击从屏幕 aspect-fit 可见图片逆映射经过裁切的原图坐标，然后取深度附近 5×5 中值。清晰半宽默认 0.22，可调 0.01…0.4。对任意像素 d 与焦点 df：
 
 ```text
-本地 JPEG / PNG / HEIC 数据
-  → PhotoLoader：EXIF 方向归一化，图像处理最长边≤2048，透明 PNG 合成白底
-  → 有可用原生深度：PhotoAnalysis.native(DepthField)
-  → 否则：NativeSubjectSegmenter → Vision 请求 → PhotoAnalysis.subjects(SubjectSegmentation)
-  → 系统请求失败/没有主体：PhotoAnalysis.localFallback(reason)
-  → 点击坐标逆映射到原图，生成虚化控制蒙版
-  → DepthRenderer → Core Image 可变模糊 / 前景扩散 / 色调 / 裁切
-  → 1024 预览或≤2048 JPEG 导出
+blur = smoothstep(width, width + 0.22, abs(d - df))
 ```
 
-没有服务器、模型下载、远程推理或额外模型文件。
+与屏幕距离无关，也与物体身份无关。前景扩散蒙版只作用于比焦点更近且需要虚化的区域；清晰范围保护蒙版在扩散后重新合成原始细节，避免同范围物体因相邻模糊而被一同污染。范围边缘做柔和过渡。这里是可调的摄影效果近似，不声称光学标定。
 
-## 数据含义
+Core Image `CIMaskedVariableBlur`、高斯前景扩散和 `CIBlendWithMask` 使用同一份深度 / 参数。预览最长边 1024，导出处理输入最长边 2048，半径按像素尺寸同步放大，始终从原始处理输入重建。
 
-`DepthField` 只存照片原生相对视差：0 远，1 近，不承诺实际米数。`SubjectSegmentation.labels` 只存系统主体编号：0 背景，非零为主体。编号的大小不代表远近；`subjects` 保存各主体的软覆盖蒙版。
+缓存键包括图片会话 ID、焦点、范围、模式、尺寸；预览辅助缓存还包含裁切等。照片 / 分析改变都会更换 ID；滑杆更新采用取消与最新版本令牌。主线程只管理交互，重处理在 actor。
 
-`FocusMaskBuilder` 分别处理原生深度、主体、明确的圆形局部模式。点击某主体时，对其软蒙版取反得到虚化蒙版；点背景时，前景蒙版最大值合并后作为虚化蒙版。只有明确前景相对背景的关系才触发前景扩散，不擅自排序两个主体的距离。
+## 验证边界
 
-`GrayMask` 使用连续字节 Data 保存，记录尺寸并校验数据长度。所有公共坐标统一为原图左上角归一化坐标；Vision PixelBuffer 按左上角逐行读取，尊重 bytesPerRow。只有 Core Image 裁切矩形转换到左下角坐标。
+真实权重的 CPU 参考解释器验证了 2459 个 MLProgram 操作的形状、权重偏移边界及各输出有限性。FP16 边界有模拟，但矩阵运算累加、融合和缩放算法与 Apple 后端不必逐位一致。它提供“模型对这张原图确实输出不同远近”的证据，不验证 iOS 的 Core ML 输入输出适配器。
 
-## 性能与并发
-
-PhotoPipeline actor 负责串行图像处理，主线程只管理 UI。导入生成主体蒙版一次；更改光圈不再调用 Vision。变更选中点、模式或清晰范围才更新基础蒙版；光圈改变只更新模糊程度。原图对比和诊断图也有与参数对应的缓存。
-
-每次导入/预览都有取消与版本校验，旧结果不会覆盖新照片或新参数。系统请求和一次 GPU 提交不能保证中途被打断；只能在开始前、阶段之间与结束后检查取消。性能需要真机测量，不提供预先帧率保证。
-
-## 持久化
-
-DraftStore 是 Foundation actor，可在 Linux 的 Swift 测试中实际验证。每次写入独立 UUID 快照目录，source.data、analysis.plist、recipe.json 全部写好后才原子替换 current.json 指针。成功提交后仅清理本功能的旧 UUID 目录。
-
-v2 使用二进制 plist 保存带类型的分析，不把标签当作浮点深度。v1 草稿保留原图和编辑参数；不信任旧外部模型的深度缓存，重新从原文件读取原生深度或调用系统识别。缓存损坏时保留原图与参数并重新分析。当前格式提供长度/维度一致性检查，不是加密归档或面向不可信远端文件的安全格式。
-
-## 接入正式项目
-
-业务代码仅 Swift，使用系统 SwiftUI、Vision、Core Image、ImageIO、AVFoundation、Photos/PhotosUI。可把 Core 和 Imaging 作为处理模块接入已有编辑 Recipe；录屏参考 UI 与处理引擎分离。
-
-第一版不做真实场景三维重建、失焦恢复、视频、实时相机、手工笔刷精修、多项目草稿列表或遮挡补全。要提高透明物体、发丝与背景遮挡处质量，需要独立实测和后续改进，不能由“无下载依赖”推导出“与参考软件同算法/同画质”。
+Apple 原生链路对应 `CoreMLSmokeTests`，尚需实际 Xcode / iPhone 执行。见 VERIFICATION 与 TEST_PLAN。

@@ -49,7 +49,7 @@ struct PhotoCanvas: View {
                     Color.black.opacity(0.28)
                     VStack(spacing: 12) {
                         ProgressView().tint(DepthTheme.accent)
-                        Text(model.isExporting ? "正在导出…" : "正在分析照片…")
+                        Text(model.isExporting ? "正在导出…" : "正在生成自动深度…")
                             .font(.system(size: 14, weight: .medium))
                         if model.isPreparing {
                             Text("照片在本机处理，不会上传")

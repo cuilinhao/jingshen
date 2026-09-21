@@ -1,0 +1,5 @@
+/mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/PGYDepthDemo.xcodeproj/project.pbxproj: OK
+PASS: actual .pbxproj parsed; 116 object references; {'PGYDepthDemo': 24, 'PGYDepthDemoTests': 10}; resources, scheme, plist, script syntax.
+PASS: no Run Script build phase; no remote package reference; original latest-request-wins guards retained.
+NOT RUN HERE: Apple SDK typecheck/link/sign, native Core ML prediction, Core Image render, iPhone UI or offline first launch.
+PASS: complete model is configured for native compilation in Sources (compilation NOT run here); no test maps in App Resources.

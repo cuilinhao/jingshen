@@ -1,0 +1,219 @@
+[0/1] Planning build
+Building for debugging...
+[0/10] Write sources
+[1/10] Write swift-version--1BA0962812E73E12.txt
+[3/12] Compiling DepthCoreTests ReferenceSceneTests.swift
+[4/12] Emitting module DepthCoreTests
+[5/12] Compiling DepthCoreTests AutomaticDepthReferenceTests.swift
+[6/13] /mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/.build/x86_64-unknown-linux-gnu/debug/DepthCorePackageDiscoveredTests.derived/all-discovered-tests.swift
+[7/14] Write sources
+[8/14] Wrapping AST for DepthCoreTests for debugging
+[10/17] Emitting module DepthCorePackageDiscoveredTests
+[11/17] Compiling DepthCorePackageDiscoveredTests all-discovered-tests.swift
+[12/17] Compiling DepthCorePackageDiscoveredTests DepthCoreTests.swift
+[13/18] /mnt/data/v4_work/PGYDepthDemo_OfflineDepth_v4/.build/x86_64-unknown-linux-gnu/debug/DepthCorePackageTests.derived/runner.swift
+[14/19] Write sources
+[15/19] Wrapping AST for DepthCorePackageDiscoveredTests for debugging
+[17/21] Emitting module DepthCorePackageTests
+[18/21] Compiling DepthCorePackageTests runner.swift
+[19/21] Write Objects.LinkFileList
+[20/21] Linking DepthCorePackageTests.xctest
+Build complete! (7.79s)
+Test Suite 'All tests' started at 2026-09-20 11:40:37.206
+Test Suite 'debug.xctest' started at 2026-09-20 11:40:37.217
+Test Suite 'AutomaticDepthReferenceTests' started at 2026-09-20 11:40:37.217
+Test Case 'AutomaticDepthReferenceTests.testActualBottleFocusKeepsMonitorBottleAndToyClear' started at 2026-09-20 11:40:37.217
+Test Case 'AutomaticDepthReferenceTests.testActualBottleFocusKeepsMonitorBottleAndToyClear' passed (0.574 seconds)
+Test Case 'AutomaticDepthReferenceTests.testActualCabinetFocusBlursAllThreeNearObjects' started at 2026-09-20 11:40:37.791
+Test Case 'AutomaticDepthReferenceTests.testActualCabinetFocusBlursAllThreeNearObjects' passed (0.59 seconds)
+Test Case 'AutomaticDepthReferenceTests.testActualReferenceHasDenseFiniteNonConstantDepth' started at 2026-09-20 11:40:38.382
+Test Case 'AutomaticDepthReferenceTests.testActualReferenceHasDenseFiniteNonConstantDepth' passed (0.747 seconds)
+Test Case 'AutomaticDepthReferenceTests.testEveryReportedTapNowSamplesMeasuredModelOutput' started at 2026-09-20 11:40:39.129
+[ReferenceCPU] actual original tap 1, depth=0.2730504
+[ReferenceCPU] actual original tap 2, depth=0.22184008
+[ReferenceCPU] actual original tap 3, depth=0.86045516
+[ReferenceCPU] actual original tap 4, depth=0.84676397
+[ReferenceCPU] actual original tap 5, depth=0.8525564
+[ReferenceCPU] actual original tap 6, depth=0.22881733
+[ReferenceCPU] actual original tap 7, depth=0.86730075
+[ReferenceCPU] actual original tap 8, depth=0.8599286
+Test Case 'AutomaticDepthReferenceTests.testEveryReportedTapNowSamplesMeasuredModelOutput' passed (0.518 seconds)
+Test Suite 'AutomaticDepthReferenceTests' passed at 2026-09-20 11:40:39.647
+	 Executed 4 tests, with 0 failures (0 unexpected) in 2.429 (2.429) seconds
+Test Suite 'AutomaticDepthTests' started at 2026-09-20 11:40:39.647
+Test Case 'AutomaticDepthTests.testAllPreviousEightTapCoordinatesHaveFiniteDepth' started at 2026-09-20 11:40:39.647
+Test Case 'AutomaticDepthTests.testAllPreviousEightTapCoordinatesHaveFiniteDepth' passed (0.001 seconds)
+Test Case 'AutomaticDepthTests.testDifferentDimensionsAndModelRevisionInvalidateCache' started at 2026-09-20 11:40:39.648
+Test Case 'AutomaticDepthTests.testDifferentDimensionsAndModelRevisionInvalidateCache' passed (0.101 seconds)
+Test Case 'AutomaticDepthTests.testDifferentPhotoSameDimensionsMustNotReuseDepth' started at 2026-09-20 11:40:39.749
+Test Case 'AutomaticDepthTests.testDifferentPhotoSameDimensionsMustNotReuseDepth' passed (0.001 seconds)
+Test Case 'AutomaticDepthTests.testRealDepthRangeKeepsSeparatedNearObjectsSharp' started at 2026-09-20 11:40:39.750
+Test Case 'AutomaticDepthTests.testRealDepthRangeKeepsSeparatedNearObjectsSharp' passed (0.001 seconds)
+Test Case 'AutomaticDepthTests.testSelectingFarDepthChangesMaskAndBlursAllNearObjects' started at 2026-09-20 11:40:39.751
+Test Case 'AutomaticDepthTests.testSelectingFarDepthChangesMaskAndBlursAllNearObjects' passed (0.001 seconds)
+Test Case 'AutomaticDepthTests.testTypedEstimatedDepthRoundTrip' started at 2026-09-20 11:40:39.752
+Test Case 'AutomaticDepthTests.testTypedEstimatedDepthRoundTrip' passed (0.009 seconds)
+Test Case 'AutomaticDepthTests.testV3BlankLayerCacheNeverSkipsInference' started at 2026-09-20 11:40:39.761
+Test Case 'AutomaticDepthTests.testV3BlankLayerCacheNeverSkipsInference' passed (0.001 seconds)
+Test Case 'AutomaticDepthTests.testV3RecipeMigratesFocusRangeButRetainsPhotoEdits' started at 2026-09-20 11:40:39.762
+Test Case 'AutomaticDepthTests.testV3RecipeMigratesFocusRangeButRetainsPhotoEdits' passed (0.003 seconds)
+Test Case 'AutomaticDepthTests.testV4RecipeRetainsExplicitNarrowRange' started at 2026-09-20 11:40:39.764
+Test Case 'AutomaticDepthTests.testV4RecipeRetainsExplicitNarrowRange' passed (0.001 seconds)
+Test Case 'AutomaticDepthTests.testValidInferenceCacheCanBeReused' started at 2026-09-20 11:40:39.766
+Test Case 'AutomaticDepthTests.testValidInferenceCacheCanBeReused' passed (0.0 seconds)
+Test Suite 'AutomaticDepthTests' passed at 2026-09-20 11:40:39.766
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.119 (0.119) seconds
+Test Suite 'DepthCoreTests' started at 2026-09-20 11:40:39.766
+Test Case 'DepthCoreTests.testApertureLimitsAndRoundTrip' started at 2026-09-20 11:40:39.766
+Test Case 'DepthCoreTests.testApertureLimitsAndRoundTrip' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testBlurDecreasesAsFNumberIncreases' started at 2026-09-20 11:40:39.767
+Test Case 'DepthCoreTests.testBlurDecreasesAsFNumberIncreases' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testConstantDepthDoesNotInventAnArtificialGradient' started at 2026-09-20 11:40:39.767
+Test Case 'DepthCoreTests.testConstantDepthDoesNotInventAnArtificialGradient' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testDepthNormalizationRejectsInvalidData' started at 2026-09-20 11:40:39.767
+Test Case 'DepthCoreTests.testDepthNormalizationRejectsInvalidData' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testDepthRowsAndCornersHaveTopLeftOrigin' started at 2026-09-20 11:40:39.767
+Test Case 'DepthCoreTests.testDepthRowsAndCornersHaveTopLeftOrigin' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testExportSizingNeverUpscales' started at 2026-09-20 11:40:39.768
+Test Case 'DepthCoreTests.testExportSizingNeverUpscales' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testFocusSamplesNeighborhoodMedianRatherThanSingleOutlier' started at 2026-09-20 11:40:39.768
+Test Case 'DepthCoreTests.testFocusSamplesNeighborhoodMedianRatherThanSingleOutlier' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testInvalidDimensionsAreRejected' started at 2026-09-20 11:40:39.768
+Test Case 'DepthCoreTests.testInvalidDimensionsAreRejected' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testRecipeRoundTripAndSanitization' started at 2026-09-20 11:40:39.768
+Test Case 'DepthCoreTests.testRecipeRoundTripAndSanitization' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testSameDepthHasSameBlurRegardlessOfSpatialDistance' started at 2026-09-20 11:40:39.769
+Test Case 'DepthCoreTests.testSameDepthHasSameBlurRegardlessOfSpatialDistance' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testSquareCropMapsBackToOriginalDepth' started at 2026-09-20 11:40:39.769
+Test Case 'DepthCoreTests.testSquareCropMapsBackToOriginalDepth' passed (0.0 seconds)
+Test Case 'DepthCoreTests.testTapOutsideAspectFitImageIsIgnored' started at 2026-09-20 11:40:39.769
+Test Case 'DepthCoreTests.testTapOutsideAspectFitImageIsIgnored' passed (0.0 seconds)
+Test Suite 'DepthCoreTests' passed at 2026-09-20 11:40:39.769
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+Test Suite 'DraftStoreTests' started at 2026-09-20 11:40:39.769
+Test Case 'DraftStoreTests.testCorruptAnalysisIsRecoverableWithoutLosingOriginalAndEdits' started at 2026-09-20 11:40:39.769
+[Draft] 已保存原图 + 带来源校验的自动深度/原生深度 + v4 编辑参数
+[Draft] 分析缓存不可用，将根据原图重新识别：The operation could not be completed. The data isn’t in the correct format.
+Test Case 'DraftStoreTests.testCorruptAnalysisIsRecoverableWithoutLosingOriginalAndEdits' passed (0.009 seconds)
+Test Case 'DraftStoreTests.testCurrentDraftRoundTripStoresTypedAnalysisAndRecipe' started at 2026-09-20 11:40:39.778
+[Draft] 已保存原图 + 带来源校验的自动深度/原生深度 + v4 编辑参数
+Test Case 'DraftStoreTests.testCurrentDraftRoundTripStoresTypedAnalysisAndRecipe' passed (0.002 seconds)
+Test Case 'DraftStoreTests.testEmptyStoreHasNoDraft' started at 2026-09-20 11:40:39.781
+Test Case 'DraftStoreTests.testEmptyStoreHasNoDraft' passed (0.001 seconds)
+Test Case 'DraftStoreTests.testLegacyAIDepthIsDiscardedNotMislabeledAsNative' started at 2026-09-20 11:40:39.782
+[Draft] 迁移旧版草稿：保留原图和参数，不复用旧外部模型的深度缓存
+Test Case 'DraftStoreTests.testLegacyAIDepthIsDiscardedNotMislabeledAsNative' passed (0.002 seconds)
+Test Case 'DraftStoreTests.testNewSnapshotCleansOnlyOwnUUIDDirectories' started at 2026-09-20 11:40:39.783
+[Draft] 已保存原图 + 带来源校验的自动深度/原生深度 + v4 编辑参数
+[Draft] 已保存原图 + 带来源校验的自动深度/原生深度 + v4 编辑参数
+Test Case 'DraftStoreTests.testNewSnapshotCleansOnlyOwnUUIDDirectories' passed (0.003 seconds)
+Test Case 'DraftStoreTests.testPointerCannotEscapeDraftDirectory' started at 2026-09-20 11:40:39.786
+Test Case 'DraftStoreTests.testPointerCannotEscapeDraftDirectory' passed (0.001 seconds)
+Test Case 'DraftStoreTests.testPreviousCompleteDraftSurvivesRejectedSave' started at 2026-09-20 11:40:39.787
+[Draft] 已保存原图 + 带来源校验的自动深度/原生深度 + v4 编辑参数
+Test Case 'DraftStoreTests.testPreviousCompleteDraftSurvivesRejectedSave' passed (0.002 seconds)
+Test Case 'DraftStoreTests.testV3DraftPersistsEditedLayersUnknownAndFocusTogether' started at 2026-09-20 11:40:39.789
+[Draft] 已保存原图 + 带来源校验的自动深度/原生深度 + v4 编辑参数
+Test Case 'DraftStoreTests.testV3DraftPersistsEditedLayersUnknownAndFocusTogether' passed (0.003 seconds)
+Test Suite 'DraftStoreTests' passed at 2026-09-20 11:40:39.792
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.023 (0.023) seconds
+Test Suite 'LayerRegressionTests' started at 2026-09-20 11:40:39.792
+Test Case 'LayerRegressionTests.testUnassignedPixelsAreNotAssumedToBeFarBackground' started at 2026-09-20 11:40:39.792
+Test Case 'LayerRegressionTests.testUnassignedPixelsAreNotAssumedToBeFarBackground' passed (0.001 seconds)
+Test Suite 'LayerRegressionTests' passed at 2026-09-20 11:40:39.793
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'ReferenceSceneTests' started at 2026-09-20 11:40:39.793
+Test Case 'ReferenceSceneTests.testBottleMonitorToyAndTableShareNearLayer' started at 2026-09-20 11:40:39.793
+Test Case 'ReferenceSceneTests.testBottleMonitorToyAndTableShareNearLayer' passed (0.205 seconds)
+Test Case 'ReferenceSceneTests.testCabinetCheckerboardAndFloorAreFarLayer' started at 2026-09-20 11:40:39.998
+Test Case 'ReferenceSceneTests.testCabinetCheckerboardAndFloorAreFarLayer' passed (0.204 seconds)
+Test Case 'ReferenceSceneTests.testFarFocusBlursAllNearObjectsNotJustDisplay' started at 2026-09-20 11:40:40.202
+Test Case 'ReferenceSceneTests.testFarFocusBlursAllNearObjectsNotJustDisplay' passed (0.525 seconds)
+Test Case 'ReferenceSceneTests.testFixtureIsDeclaredHumanAnnotatedNotAutomatic' started at 2026-09-20 11:40:40.727
+Test Case 'ReferenceSceneTests.testFixtureIsDeclaredHumanAnnotatedNotAutomatic' passed (0.2 seconds)
+Test Case 'ReferenceSceneTests.testNativeAndLayeredMasksUseDifferentExplicitSources' started at 2026-09-20 11:40:40.927
+Test Case 'ReferenceSceneTests.testNativeAndLayeredMasksUseDifferentExplicitSources' passed (0.01 seconds)
+Test Case 'ReferenceSceneTests.testNearFocusMatchesRequestedGrouping' started at 2026-09-20 11:40:40.937
+Test Case 'ReferenceSceneTests.testNearFocusMatchesRequestedGrouping' passed (0.542 seconds)
+Test Case 'ReferenceSceneTests.testReferenceMasksRemainSameInPreviewAndExportCoordinates' started at 2026-09-20 11:40:41.479
+Test Case 'ReferenceSceneTests.testReferenceMasksRemainSameInPreviewAndExportCoordinates' passed (0.245 seconds)
+Test Suite 'ReferenceSceneTests' passed at 2026-09-20 11:40:41.724
+	 Executed 7 tests, with 0 failures (0 unexpected) in 1.931 (1.931) seconds
+Test Suite 'SceneLayerTests' started at 2026-09-20 11:40:41.724
+Test Case 'SceneLayerTests.testAllObjectsOnTheSelectedLayerStaySharp' started at 2026-09-20 11:40:41.724
+Test Case 'SceneLayerTests.testAllObjectsOnTheSelectedLayerStaySharp' passed (0.0 seconds)
+Test Case 'SceneLayerTests.testAssigningMaskUsesTopLeftNormalizedCoordinatesAtDifferentResolution' started at 2026-09-20 11:40:41.725
+Test Case 'SceneLayerTests.testAssigningMaskUsesTopLeftNormalizedCoordinatesAtDifferentResolution' passed (0.0 seconds)
+Test Case 'SceneLayerTests.testBrushInterpolatesFullStrokeAndCanEraseToUnknown' started at 2026-09-20 11:40:41.725
+Test Case 'SceneLayerTests.testBrushInterpolatesFullStrokeAndCanEraseToUnknown' passed (0.102 seconds)
+Test Case 'SceneLayerTests.testBrushRadiusUsesShortEdgeInsteadOfDistortingPortrait' started at 2026-09-20 11:40:41.827
+Test Case 'SceneLayerTests.testBrushRadiusUsesShortEdgeInsteadOfDistortingPortrait' passed (0.001 seconds)
+Test Case 'SceneLayerTests.testCropInverseMapsFocusToSameSceneLayer' started at 2026-09-20 11:40:41.829
+Test Case 'SceneLayerTests.testCropInverseMapsFocusToSameSceneLayer' passed (0.0 seconds)
+Test Case 'SceneLayerTests.testEveryPixelOnFocusedLayerHasZeroBlurForAllLayerChoices' started at 2026-09-20 11:40:41.829
+Test Case 'SceneLayerTests.testEveryPixelOnFocusedLayerHasZeroBlurForAllLayerChoices' passed (0.005 seconds)
+Test Case 'SceneLayerTests.testExplicitFillUnknownDoesNotOverwriteAlreadyAssignedSubjects' started at 2026-09-20 11:40:41.834
+Test Case 'SceneLayerTests.testExplicitFillUnknownDoesNotOverwriteAlreadyAssignedSubjects' passed (0.0 seconds)
+Test Case 'SceneLayerTests.testFarFocusBlursAllNearObjectsTogether' started at 2026-09-20 11:40:41.835
+Test Case 'SceneLayerTests.testFarFocusBlursAllNearObjectsTogether' passed (0.0 seconds)
+Test Case 'SceneLayerTests.testInvalidLayerValuesAreRejectedRatherThanUsedAsDistances' started at 2026-09-20 11:40:41.835
+Test Case 'SceneLayerTests.testInvalidLayerValuesAreRejectedRatherThanUsedAsDistances' passed (0.001 seconds)
+Test Case 'SceneLayerTests.testMiddleFocusDoesNotBecomeBackgroundInverse' started at 2026-09-20 11:40:41.836
+Test Case 'SceneLayerTests.testMiddleFocusDoesNotBecomeBackgroundInverse' passed (0.001 seconds)
+Test Case 'SceneLayerTests.testPolygonMarksMissedTransparentObjectWithoutVision' started at 2026-09-20 11:40:41.837
+Test Case 'SceneLayerTests.testPolygonMarksMissedTransparentObjectWithoutVision' passed (0.0 seconds)
+Test Case 'SceneLayerTests.testReassignmentChangesLayerOfAllFutureFocusMasks' started at 2026-09-20 11:40:41.838
+Test Case 'SceneLayerTests.testReassignmentChangesLayerOfAllFutureFocusMasks' passed (0.0 seconds)
+Test Case 'SceneLayerTests.testSceneRoundTripRetainsUnknownAndProvenance' started at 2026-09-20 11:40:41.838
+Test Case 'SceneLayerTests.testSceneRoundTripRetainsUnknownAndProvenance' passed (0.001 seconds)
+Test Case 'SceneLayerTests.testUndoRedoAndNewBranchAreBoundedAndDeterministic' started at 2026-09-20 11:40:41.839
+Test Case 'SceneLayerTests.testUndoRedoAndNewBranchAreBoundedAndDeterministic' passed (0.0 seconds)
+Test Case 'SceneLayerTests.testUnknownPixelsAreNotFarAndAreProtected' started at 2026-09-20 11:40:41.839
+Test Case 'SceneLayerTests.testUnknownPixelsAreNotFarAndAreProtected' passed (0.001 seconds)
+Test Case 'SceneLayerTests.testVisionIDsDoNotOrderOrAssignDepth' started at 2026-09-20 11:40:41.840
+Test Case 'SceneLayerTests.testVisionIDsDoNotOrderOrAssignDepth' passed (0.001 seconds)
+Test Suite 'SceneLayerTests' passed at 2026-09-20 11:40:41.840
+	 Executed 16 tests, with 0 failures (0 unexpected) in 0.116 (0.116) seconds
+Test Suite 'SubjectMaskTests' started at 2026-09-20 11:40:41.840
+Test Case 'SubjectMaskTests.testApertureDoesNotChangeSelectionMask' started at 2026-09-20 11:40:41.840
+Test Case 'SubjectMaskTests.testApertureDoesNotChangeSelectionMask' passed (0.001 seconds)
+Test Case 'SubjectMaskTests.testBackgroundDoesNotReturnAnInverseSelection' started at 2026-09-20 11:40:41.841
+Test Case 'SubjectMaskTests.testBackgroundDoesNotReturnAnInverseSelection' passed (0.0 seconds)
+Test Case 'SubjectMaskTests.testBiggerLocalRadiusPreservesMoreArea' started at 2026-09-20 11:40:41.842
+Test Case 'SubjectMaskTests.testBiggerLocalRadiusPreservesMoreArea' passed (0.002 seconds)
+Test Case 'SubjectMaskTests.testCoverageSelectionDoesNotAssumeLabelOrderingIsDepth' started at 2026-09-20 11:40:41.844
+Test Case 'SubjectMaskTests.testCoverageSelectionDoesNotAssumeLabelOrderingIsDepth' passed (0.001 seconds)
+Test Case 'SubjectMaskTests.testExplicitLocalModeOverridesDetectedSubjects' started at 2026-09-20 11:40:41.845
+Test Case 'SubjectMaskTests.testExplicitLocalModeOverridesDetectedSubjects' passed (0.01 seconds)
+Test Case 'SubjectMaskTests.testFutureRecipeVersionIsRejected' started at 2026-09-20 11:40:41.854
+Test Case 'SubjectMaskTests.testFutureRecipeVersionIsRejected' passed (0.0 seconds)
+Test Case 'SubjectMaskTests.testHitTestKeepsTopLeftOriginAndClampsBorders' started at 2026-09-20 11:40:41.855
+Test Case 'SubjectMaskTests.testHitTestKeepsTopLeftOriginAndClampsBorders' passed (0.0 seconds)
+Test Case 'SubjectMaskTests.testInvalidMaskDimensionsAndByteCountAreRejected' started at 2026-09-20 11:40:41.855
+Test Case 'SubjectMaskTests.testInvalidMaskDimensionsAndByteCountAreRejected' passed (0.0 seconds)
+Test Case 'SubjectMaskTests.testLegacyRecipeRetainsEditsAndAddsNewDefaults' started at 2026-09-20 11:40:41.855
+Test Case 'SubjectMaskTests.testLegacyRecipeRetainsEditsAndAddsNewDefaults' passed (0.0 seconds)
+Test Case 'SubjectMaskTests.testLocalFallbackIsCircularInImagePixelsNotStretched' started at 2026-09-20 11:40:41.855
+Test Case 'SubjectMaskTests.testLocalFallbackIsCircularInImagePixelsNotStretched' passed (0.002 seconds)
+Test Case 'SubjectMaskTests.testMaskDecoderValidatesDimensions' started at 2026-09-20 11:40:41.858
+Test Case 'SubjectMaskTests.testMaskDecoderValidatesDimensions' passed (0.0 seconds)
+Test Case 'SubjectMaskTests.testRecipeSanitizesNewValues' started at 2026-09-20 11:40:41.858
+Test Case 'SubjectMaskTests.testRecipeSanitizesNewValues' passed (0.0 seconds)
+Test Case 'SubjectMaskTests.testSoftMaskValuesAreRetained' started at 2026-09-20 11:40:41.859
+Test Case 'SubjectMaskTests.testSoftMaskValuesAreRetained' passed (0.0 seconds)
+Test Case 'SubjectMaskTests.testSubjectMaskBuilderDoesNotConvertLabelsIntoDepth' started at 2026-09-20 11:40:41.859
+Test Case 'SubjectMaskTests.testSubjectMaskBuilderDoesNotConvertLabelsIntoDepth' passed (0.0 seconds)
+Test Case 'SubjectMaskTests.testTypedAnalysisRoundTripsWithoutInventingDepth' started at 2026-09-20 11:40:41.859
+Test Case 'SubjectMaskTests.testTypedAnalysisRoundTripsWithoutInventingDepth' passed (0.002 seconds)
+Test Case 'SubjectMaskTests.testUnknownOrDuplicateSubjectIDsAreRejected' started at 2026-09-20 11:40:41.861
+Test Case 'SubjectMaskTests.testUnknownOrDuplicateSubjectIDsAreRejected' passed (0.0 seconds)
+Test Suite 'SubjectMaskTests' passed at 2026-09-20 11:40:41.861
+	 Executed 16 tests, with 0 failures (0 unexpected) in 0.02 (0.02) seconds
+Test Suite 'debug.xctest' passed at 2026-09-20 11:40:41.861
+	 Executed 74 tests, with 0 failures (0 unexpected) in 4.64 (4.64) seconds
+Test Suite 'All tests' passed at 2026-09-20 11:40:41.861
+	 Executed 74 tests, with 0 failures (0 unexpected) in 4.64 (4.64) seconds
+◇ Test run started.
+↳ Testing Library Version: 6.2.1 (c9d57c83568b06d)
+↳ Target Platform: x86_64-unknown-linux-gnu
+✔ Test run with 0 tests in 0 suites passed after 0.003 seconds.

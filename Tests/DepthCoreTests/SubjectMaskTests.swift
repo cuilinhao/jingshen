@@ -29,17 +29,13 @@ final class SubjectMaskTests: XCTestCase {
         XCTAssertEqual(s.instance(at: UnitPoint2D(x: 1, y: 1)), 2)
         XCTAssertEqual(s.instance(at: UnitPoint2D(x: 4, y: 1)), 2)
     }
-    func testSelectedSubjectStaysSharpRegardlessOfLabelOrdering() throws {
+    func testCoverageSelectionDoesNotAssumeLabelOrderingIsDepth() throws {
         let s = try sample()
-        let selected = try s.sharpMask(at: .center)
-        XCTAssertEqual(Array(selected.bytes), [0,255,0, 0,255,0, 0,255,0])
-        let farRight = try s.sharpMask(at: UnitPoint2D(x: 1, y: 0.5))
-        XCTAssertEqual(Array(farRight.bytes), [0,0,255, 0,0,255, 0,0,255])
+        XCTAssertEqual(s.subject(at: .center)?.id, 7)
+        XCTAssertEqual(s.subject(at: .init(x:1,y:0.5))?.id, 2)
     }
-    func testBackgroundSelectsInverseOfAllSubjects() throws {
-        let s = try sample()
-        let background = try s.sharpMask(at: UnitPoint2D(x: 0, y: 0.5))
-        XCTAssertEqual(Array(background.bytes), [255,0,0, 255,0,0, 255,0,0])
+    func testBackgroundDoesNotReturnAnInverseSelection() throws {
+        XCTAssertNil(try sample().subject(at: .init(x:0,y:0.5)))
     }
     func testUnknownOrDuplicateSubjectIDsAreRejected() throws {
         let s = try sample()
@@ -51,8 +47,9 @@ final class SubjectMaskTests: XCTestCase {
         let labels = try GrayMask(width: 3, height: 1, bytes: Data([0,4,4]))
         let mask = try GrayMask(width: 3, height: 1, bytes: Data([0,96,255]))
         let s = try SubjectSegmentation(labels: labels, subjects: [SubjectMask(id: 4, mask: mask)])
-        XCTAssertEqual(Array(try s.sharpMask(at: .center).bytes), [0,96,255])
-        XCTAssertEqual(Array(try s.sharpMask(at: UnitPoint2D(x: 0, y: 0)).bytes), [255,159,0])
+        XCTAssertEqual(Array(s.subjects[0].mask.bytes), [0,96,255])
+        XCTAssertNil(s.subject(at: .center)) // Coverage below 0.5 is not a confident hit.
+        XCTAssertEqual(s.subject(at: .init(x:1,y:0))?.id,4)
     }
     func testLocalFallbackIsCircularInImagePixelsNotStretched() throws {
         let m = try LocalFocusMask.make(width: 201, height: 101, imageSize: PixelSize(width: 200, height: 100),
@@ -73,12 +70,12 @@ final class SubjectMaskTests: XCTestCase {
         let s = try sample()
         var r = EditRecipe(); r.focusPoint = .center
         let output = try FocusMaskBuilder.make(analysis: .subjects(s), recipe: r, imageSize: PixelSize(width: 300, height: 300))
-        XCTAssertEqual(Array(output.blur.bytes), [255,0,255, 255,0,255, 255,0,255])
+        XCTAssertEqual(Array(output.blur.bytes), [0,0,0, 0,0,0, 0,0,0])
         XCTAssertNil(output.nearDefocus)
         r.focusPoint = UnitPoint2D(x: 0, y: 0.5)
         let background = try FocusMaskBuilder.make(analysis: .subjects(s), recipe: r, imageSize: PixelSize(width: 300, height: 300))
-        XCTAssertNotNil(background.nearDefocus)
-        XCTAssertEqual(Array(background.blur.bytes), [0,255,255, 0,255,255, 0,255,255])
+        XCTAssertNil(background.nearDefocus)
+        XCTAssertEqual(Array(background.blur.bytes), [0,0,0, 0,0,0, 0,0,0])
     }
     func testApertureDoesNotChangeSelectionMask() throws {
         let s = try sample(); var recipe = EditRecipe()
@@ -106,7 +103,7 @@ final class SubjectMaskTests: XCTestCase {
     func testLegacyRecipeRetainsEditsAndAddsNewDefaults() throws {
         let legacy = Data(#"{"schemaVersion":1,"focusPoint":{"x":0.1,"y":0.2},"aperture":4,"depthEnabled":false,"effectStrength":1.2,"focusTolerance":0.07,"exposure":0.5,"crop":"square","style":"warm"}"#.utf8)
         let r = try JSONDecoder().decode(EditRecipe.self, from: legacy)
-        XCTAssertEqual(r.schemaVersion, 2)
+        XCTAssertEqual(r.schemaVersion, 4)
         XCTAssertEqual(r.focusMode, .automatic)
         XCTAssertEqual(r.focusPoint, UnitPoint2D(x:0.1,y:0.2))
         XCTAssertEqual(r.aperture,4); XCTAssertEqual(r.crop,.square); XCTAssertFalse(r.depthEnabled)

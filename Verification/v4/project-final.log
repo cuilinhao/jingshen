@@ -1,0 +1,21 @@
+test_actual_project_membership_and_schema (test_native_project.NativeProjectTests.test_actual_project_membership_and_schema) ... ok
+test_automatic_model_replaces_subject_only_depth_guess (test_native_project.NativeProjectTests.test_automatic_model_replaces_subject_only_depth_guess) ... ok
+test_human_fixture_is_test_only_and_normal_import_is_automatic (test_native_project.NativeProjectTests.test_human_fixture_is_test_only_and_normal_import_is_automatic) ... ok
+test_layer_changes_invalidate_cached_masks (test_native_project.NativeProjectTests.test_layer_changes_invalidate_cached_masks) ... ok
+test_no_download_scripts_or_placeholder_model (test_native_project.NativeProjectTests.test_no_download_scripts_or_placeholder_model) ... ok
+test_no_model_build_phase (test_native_project.NativeProjectTests.test_no_model_build_phase) ... ok
+test_no_single_subject_focus_rule_remains (test_native_project.NativeProjectTests.test_no_single_subject_focus_rule_remains) ... ok
+test_only_swift_product_code (test_native_project.NativeProjectTests.test_only_swift_product_code) ... ok
+test_reference_geometry_and_fixed_pointer_are_retained (test_native_project.NativeProjectTests.test_reference_geometry_and_fixed_pointer_are_retained) ... ok
+test_selected_layer_is_protected_after_diffusion (test_native_project.NativeProjectTests.test_selected_layer_is_protected_after_diffusion) ... ok
+test_compiled_bundle_model_load_is_implemented (test_offline_model_project.OfflineDeliveryTests.test_compiled_bundle_model_load_is_implemented) ... ok
+test_model_is_a_native_xcode_source_not_raw_copy (test_offline_model_project.OfflineDeliveryTests.test_model_is_a_native_xcode_source_not_raw_copy) ... ok
+test_no_download_stage_or_runtime_network (test_offline_model_project.OfflineDeliveryTests.test_no_download_stage_or_runtime_network) ... ok
+test_ordinary_import_runs_depth_inference_not_blank_labels (test_offline_model_project.OfflineDeliveryTests.test_ordinary_import_runs_depth_inference_not_blank_labels) ... ok
+test_sample_uses_same_import_as_user_photo (test_offline_model_project.OfflineDeliveryTests.test_sample_uses_same_import_as_user_photo) ... ok
+test_uploaded_full_weights_are_present (test_offline_model_project.OfflineDeliveryTests.test_uploaded_full_weights_are_present) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 3.561s
+
+OK
