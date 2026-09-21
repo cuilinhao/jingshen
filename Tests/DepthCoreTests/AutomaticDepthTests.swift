@@ -80,7 +80,7 @@ final class AutomaticDepthTests: XCTestCase {
     func testV3RecipeMigratesFocusRangeButRetainsPhotoEdits() throws {
         let old = Data(#"{"schemaVersion":3,"focusTolerance":0.035,"aperture":2.1,"focusMode":"automatic","focusPoint":{"x":0.48,"y":0.85},"crop":"square"}"#.utf8)
         let r = try JSONDecoder().decode(EditRecipe.self, from: old)
-        XCTAssertEqual(r.schemaVersion, 4); XCTAssertEqual(r.focusTolerance, 0.22)
+        XCTAssertEqual(r.schemaVersion, 5); XCTAssertEqual(r.focusTolerance, 0.22)
         XCTAssertEqual(r.aperture, 2.1); XCTAssertEqual(r.crop, .square)
         XCTAssertEqual(r.focusPoint, .init(x: 0.48, y: 0.85))
     }

@@ -103,7 +103,7 @@ final class SubjectMaskTests: XCTestCase {
     func testLegacyRecipeRetainsEditsAndAddsNewDefaults() throws {
         let legacy = Data(#"{"schemaVersion":1,"focusPoint":{"x":0.1,"y":0.2},"aperture":4,"depthEnabled":false,"effectStrength":1.2,"focusTolerance":0.07,"exposure":0.5,"crop":"square","style":"warm"}"#.utf8)
         let r = try JSONDecoder().decode(EditRecipe.self, from: legacy)
-        XCTAssertEqual(r.schemaVersion, 4)
+        XCTAssertEqual(r.schemaVersion, 5)
         XCTAssertEqual(r.focusMode, .automatic)
         XCTAssertEqual(r.focusPoint, UnitPoint2D(x:0.1,y:0.2))
         XCTAssertEqual(r.aperture,4); XCTAssertEqual(r.crop,.square); XCTAssertFalse(r.depthEnabled)

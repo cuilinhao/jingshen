@@ -7,6 +7,12 @@ struct SavedDraft: Sendable {
     /// Nil means reanalyze the original. This is how legacy/external-model caches are migrated.
     let analysis: PhotoAnalysis?
     let imageSize: PixelSize?
+    let portrait: PortraitAnalysis?
+    init(sourceData: Data, title: String, recipe: EditRecipe, analysis: PhotoAnalysis?,
+         imageSize: PixelSize?, portrait: PortraitAnalysis? = nil) {
+        self.sourceData = sourceData; self.title = title; self.recipe = recipe
+        self.analysis = analysis; self.imageSize = imageSize; self.portrait = portrait
+    }
 }
 
 enum DraftDataError: Error, LocalizedError {
@@ -43,7 +49,7 @@ actor DraftStore {
         guard UUID(uuidString: id) != nil else { throw DraftDataError.incompatible }
         let folder = root.appendingPathComponent(id, isDirectory: true)
         let metadata = try JSONDecoder().decode(Metadata.self, from: read(folder.appendingPathComponent("recipe.json"), maximumBytes: 1024 * 1024))
-        guard (1...4).contains(metadata.version) else { throw DraftDataError.incompatible }
+        guard (1...5).contains(metadata.version) else { throw DraftDataError.incompatible }
         let source = try read(folder.appendingPathComponent("source.data"), maximumBytes: 100 * 1024 * 1024)
         guard !source.isEmpty, metadata.sourceByteCount == nil || metadata.sourceByteCount == source.count else {
             throw DraftDataError.invalidSource
@@ -60,8 +66,13 @@ actor DraftStore {
             // v1's origin=ai depth.json is NOT a native depth map. Discard it and run the bundled estimator.
             print("[Draft] 迁移旧版草稿：保留原图和参数，不复用旧外部模型的深度缓存")
         }
+        var portrait: PortraitAnalysis?
+        if metadata.version >= 5 {
+            portrait = try? PropertyListDecoder().decode(PortraitAnalysis.self,
+                from: read(folder.appendingPathComponent("portrait.plist"), maximumBytes: 32 * 1024 * 1024))
+        }
         return SavedDraft(sourceData: source, title: metadata.title, recipe: metadata.recipe,
-                          analysis: analysis, imageSize: metadata.imageSize)
+                          analysis: analysis, imageSize: metadata.imageSize, portrait: portrait)
     }
 
     func save(_ draft: SavedDraft) throws {
@@ -73,13 +84,17 @@ actor DraftStore {
         try fm.createDirectory(at: folder, withIntermediateDirectories: true)
         do {
             var recipe = draft.recipe; recipe.sanitize()
-            let metadata = Metadata(version: 4, title: draft.title, recipe: recipe,
+            let metadata = Metadata(version: 5, title: draft.title, recipe: recipe,
                                     sourceByteCount: draft.sourceData.count, imageSize: draft.imageSize)
             let json = JSONEncoder(); json.outputFormatting = [.prettyPrinted, .sortedKeys]
             try draft.sourceData.write(to: folder.appendingPathComponent("source.data"), options: .atomic)
             if let analysis = draft.analysis {
                 let plist = PropertyListEncoder(); plist.outputFormat = .binary
                 try plist.encode(analysis).write(to: folder.appendingPathComponent("analysis.plist"), options: .atomic)
+            }
+            if let portrait = draft.portrait {
+                let plist = PropertyListEncoder(); plist.outputFormat = .binary
+                try plist.encode(portrait).write(to: folder.appendingPathComponent("portrait.plist"), options: .atomic)
             }
             try json.encode(metadata).write(to: folder.appendingPathComponent("recipe.json"), options: .atomic)
             try Task.checkCancellation()
@@ -95,7 +110,7 @@ actor DraftStore {
         }
         let source = draft.analysis?.sourceDescription ?? "无可用分析缓存，下次重新计算"
         let depthInfo = draft.analysis?.continuousDepth.map { "，深度 \($0.width)×\($0.height)" } ?? ""
-        print("[Draft] v4 已保存原图及编辑参数；分析来源=\(source)\(depthInfo)")
+        print("[Draft] v5 已保存原图及编辑参数；分析来源=\(source)\(depthInfo)")
     }
 
     private func read(_ url: URL, maximumBytes: Int) throws -> Data {

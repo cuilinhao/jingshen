@@ -70,7 +70,8 @@ enum PhotoStyle: String, Codable, CaseIterable, Identifiable, Sendable {
 }
 
 struct EditRecipe: Codable, Equatable, Sendable {
-    var schemaVersion = 4
+    var schemaVersion = 5
+    var selectedPersonID: UInt8? = nil
     var focusPoint = UnitPoint2D(x: 0.48, y: 0.56)
     var aperture: Double = 1.8
     var depthEnabled = true
@@ -87,16 +88,17 @@ struct EditRecipe: Codable, Equatable, Sendable {
     init() {}
 
     private enum CodingKeys: String, CodingKey {
-        case schemaVersion, focusPoint, aperture, depthEnabled, effectStrength, focusTolerance
+        case schemaVersion, selectedPersonID, focusPoint, aperture, depthEnabled, effectStrength, focusTolerance
         case exposure, crop, style, focusMode, localRadius, edgeFeather
     }
     init(from decoder: Decoder) throws {
         self.init()
         let box = try decoder.container(keyedBy: CodingKeys.self)
         let version = try box.decodeIfPresent(Int.self, forKey: .schemaVersion) ?? 1
-        guard (1...4).contains(version) else {
+        guard (1...5).contains(version) else {
             throw DecodingError.dataCorruptedError(forKey: .schemaVersion, in: box, debugDescription: "不支持的编辑配方版本")
         }
+        selectedPersonID = version >= 5 ? try box.decodeIfPresent(UInt8.self, forKey: .selectedPersonID) : nil
         focusPoint = try box.decodeIfPresent(UnitPoint2D.self, forKey: .focusPoint) ?? focusPoint
         aperture = try box.decodeIfPresent(Double.self, forKey: .aperture) ?? aperture
         depthEnabled = try box.decodeIfPresent(Bool.self, forKey: .depthEnabled) ?? depthEnabled
@@ -112,7 +114,8 @@ struct EditRecipe: Codable, Equatable, Sendable {
     }
 
     mutating func sanitize() {
-        schemaVersion = 4
+        schemaVersion = 5
+        if selectedPersonID == 0 { selectedPersonID = nil }
         focusPoint = focusPoint.clamped
         localRadius = localRadius.isFinite ? min(0.7, max(0.08, localRadius)) : 0.24
         edgeFeather = edgeFeather.isFinite ? min(6, max(0, edgeFeather)) : 1.2

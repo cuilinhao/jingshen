@@ -90,7 +90,7 @@ final class DraftStoreTests: XCTestCase {
         try await store.save(input)
         let loaded = try await store.load()
         let output = try XCTUnwrap(loaded)
-        XCTAssertEqual(output.recipe.schemaVersion,4)
+        XCTAssertEqual(output.recipe.schemaVersion,5)
         XCTAssertEqual(output.analysis,input.analysis)
         let masks = try FocusMaskBuilder.make(analysis:try XCTUnwrap(output.analysis),recipe:output.recipe,imageSize:.init(width:400,height:100))
         XCTAssertEqual(Array(masks.blur.bytes),[0,0,255,0])
